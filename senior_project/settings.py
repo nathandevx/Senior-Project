@@ -37,9 +37,19 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    'django.contrib.sites',  # allauth
+
+    # allauth specific
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+
+    # our generated apps
     "users.apps.UsersConfig",
     "home.apps.HomeConfig",
 ]
+
+SITE_ID = 1  # allauth
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -64,9 +74,16 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                'django.template.context_processors.request',  # for allauth
             ],
         },
     },
+]
+
+# allauth
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  # needed to login by username?
+    'allauth.account.auth_backends.AuthenticationBackend',  # needed to login by email?
 ]
 
 WSGI_APPLICATION = "senior_project.wsgi.application"

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block contents %}
+
+    <div class="container-fluid text-center">
+        <h1>Delete account?</h1>
+		<form action="{% url 'users:delete-user' %}" method="POST">
+			{% csrf_token %}
+			{{ form.as_p }}
+			<button type="submit">Submit Deletion</button>
+		</form>
+    </div>
+
+
+{% endblock %}

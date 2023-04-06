@@ -66,7 +66,8 @@ ROOT_URLCONF = "senior_project.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / 'templates'],
+        # BASE_DIR / 'templates' / 'allauth' / 'account' this is required for allauth to find templates
+        "DIRS": [BASE_DIR / 'templates', BASE_DIR / 'templates' / 'allauth' / 'account'],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -118,6 +119,22 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# allauth config
+# https://django-allauth.readthedocs.io/en/latest/configuration.html
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # DO NOT USE IN PRODUCTION
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 5
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+# ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'  # production only?
+ACCOUNT_MAX_EMAIL_ADDRESSES = 3
+ACCOUNT_PREVENT_ENUMERATION = False  # low - look more into this, https://docs.djangoproject.com/en/dev/ref/settings/#email-host
+ACCOUNT_SIGNUP_EMAIL_ENTER_TWICE = True
+ACCOUNT_USERNAME_REQUIRED = False
+# The following are not needed if a username is not required ----
+# ACCOUNT_USERNAME_BLACKLIST = ['Admin', 'admin']
+# ACCOUNT_USERNAME_MIN_LENGTH = 5
+# ----
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/

@@ -131,9 +131,6 @@ ACCOUNT_MAX_EMAIL_ADDRESSES = 3
 ACCOUNT_PREVENT_ENUMERATION = False  # low - look more into this, https://docs.djangoproject.com/en/dev/ref/settings/#email-host
 ACCOUNT_SIGNUP_EMAIL_ENTER_TWICE = True
 ACCOUNT_USERNAME_REQUIRED = False
-# The following are not needed if a username is not required ----
-# ACCOUNT_USERNAME_BLACKLIST = ['Admin', 'admin']
-# ACCOUNT_USERNAME_MIN_LENGTH = 5
 # ----
 
 # Internationalization

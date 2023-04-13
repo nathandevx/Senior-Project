@@ -1,19 +1,9 @@
 {% extends 'base.html' %}
-{% load i18n %}
 
 {% block contents %}
 
     <div class="container-fluid text-center">
-		{% if messages %}
-			<div>
-				<strong>{% trans "Messages:" %}</strong>
-				<ul>
-					{% for message in messages %}
-						<li>{{message}}</li>
-					{% endfor %}
-				</ul>
-			</div>
-		{% endif %}
+
         <h1>Profile page</h1>
         <p><a href="{% url 'account_change_password' %}">Change password</a></p>
         <p><a href="{% url 'users:delete-user' %}">Delete account</a></p>

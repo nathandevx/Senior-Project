@@ -24,7 +24,7 @@ def delete_user(request):
                         rem.delete()
                         logout(request)
                         messages.info(request, "Your account has been deleted.")
-                        return redirect(reverse("users:profile"))
+                        return redirect(reverse("home:home"))
                     else:
                         messages.info(request, "There was an error.")
         else:

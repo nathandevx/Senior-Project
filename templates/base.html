@@ -1,5 +1,6 @@
 <!doctype html>
 {% load static %}
+{% load i18n %}
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
@@ -15,6 +16,16 @@
             {% include 'components/navbar.html' %}
         {% endblock %}
 
+	    <div class="container-fluid text-center">
+			{% if messages %}
+				<div>
+					<strong>{% trans "Messages:" %}</strong>
+					{% for message in messages %}
+						<p>{{message}}</p>
+					{% endfor %}
+				</div>
+			{% endif %}
+	    </div>
 
 		{% block contents %}
 

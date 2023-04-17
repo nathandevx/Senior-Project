@@ -3,7 +3,8 @@
 
 # Directory for environment variables, tester files, anything not to be included in the git repo.
 exclude/
-
+# Exclude any venv directories
+venv/
 
 ### OSX ###
 .DS_Store

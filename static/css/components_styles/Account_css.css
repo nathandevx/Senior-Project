@@ -1,0 +1,326 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Ubuntu', sans-serif;
+
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+:root {
+    --blue: #287bff;
+    --white: #fff;
+    --grey: #f5f5f5;
+    --black1: #1a1a1a;
+    --black2: #999;
+    --black3: #a6323200;
+    --purple: rgb(109, 44, 249);
+    --tan: #F2E6D9;
+    --tan2: #f8dab9;
+}
+
+body {
+  /*background-color: var(--tan);
+  filter: blur(30px);*/
+  background: linear-gradient(45deg, rgba(242, 163, 4, 0.752), var(--tan));
+  background-size:3px;
+  font-family: Arial, sans-serif;
+  min-height:100vh;
+  overflow-x: hidden;
+}
+
+header {
+  background-color: #B2BEC3;
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+.main {
+  margin: 20px;
+  position: absolute;
+  width: calc(100% - 300px);
+  left: 300px;
+  min-height: 100vh;
+  /*background-color: var(--tan);*/
+  transition: 0.5s;
+}
+.main.active {
+  width: calc(100% - 80px);
+  left: 80px;
+}
+
+form {
+  display:contents;
+  flex-direction: column;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+label {
+  margin-top: 10px;
+  font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  font-size: 21px;
+  color: gray;
+}
+
+input {
+  padding: 5px;
+  border-radius: 50px;
+  margin: 5px 0 20px 0;
+
+}
+
+button {
+  /*
+    submit info button
+  */
+  background-color: #B2BEC3;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #7F8C8D;
+}
+/*:required {
+
+}
+*/
+
+
+
+
+
+
+.container {
+  position: relative;
+  width: 100%;
+}
+.navigation {
+  /*position: relative;*/
+  position: absolute;
+  width: 300px;
+  height:100%;
+  background: var(--tan2);
+  border-left: 10px solid var(--tan2);
+  transition: 0.5s;
+  overflow: hidden;
+  border-radius: 30px;
+  /*box-shadow: 10px 0px 0 0px #1a1a1a2c;*/
+  box-shadow: 30px 7px 25px rgba(0,0,0,0.08);
+}
+
+.navigation.active {
+  width: 80px;
+}
+
+.navigation ul{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+.navigation ul li {
+  position: relative;
+  width:100%;
+  list-style: none;
+  border-top-left-radius: 30px;
+  border-bottom-left-radius: 30px;
+}
+
+.navigation ul li:hover,
+.navigation ul li.hovered {
+  background: var(--tan);
+}
+
+.navigation ul li:nth-child(1) {
+  margin-bottom: 40px;
+  pointer-events: none;
+}
+
+.navigation ul li a {
+  /* navigation TEXT*/
+  position:relative;
+  display: block;
+  width: 100%;
+  display: flex;
+  text-decoration: none;
+  color: var(--white);
+}
+
+.navigation ul li:hover a, 
+.navigation ul li.hovered a {
+  color: var(--black1);
+}
+.navigation ul li a .icon {
+  position: relative;
+  display:block;
+  min-width: 60px;
+  height: 60px;
+  line-height: 70px;
+  text-align: center;
+}
+.navigation ul li a .icon ion-icon {
+  font-size: 1.75em;
+}
+
+.navigation ul li a .title {
+  position: relative;
+  display:block;
+  padding: 0 10px;
+  height: 60px;
+  line-height: 60px;
+  text-align: start;
+  white-space: nowrap;
+}
+
+/*curve outside */
+.navigation ul li:hover a::before,
+.navigation ul li.hovered a::before {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: -50px;
+  width: 50px;
+  height: 50px;
+  background: transparent;
+  border-radius: 50%;
+  box-shadow: 35px 35px 0 10px var(--tan);
+  pointer-events: none;
+}
+.navigation ul li:hover a::after, 
+.navigation ul li.hovered a::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: -50px;
+  width: 50px;
+  height: 50px;
+  background: transparent;
+  border-radius: 50%;
+  box-shadow: 35px -35px 0 10px var(--tan);
+  pointer-events: none;
+}
+
+.details {
+  position: relative;
+  display:table;
+  width: 100%;
+  padding: 20px;
+  display:grid;
+  grid-template-columns: 2fr 1fr;
+  grid-gap: 30px;
+  
+  /*margin-top: 10px;*/
+}
+
+.details .container {
+  position:relative;
+  display:table;
+  min-height: 500px;
+  background: var(--white);
+  padding: 20px;
+  box-shadow: 30px 7px 25px rgba(0,0,0,0.08);
+  border-radius: 20px;
+
+
+}
+
+.topbar {
+  width: 100%;
+  height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 10px;
+}
+.toggle {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  justify-content: center;
+  align-items: center;
+  font-size: 2.5em;
+  cursor: pointer; 
+
+}
+.search {
+  position:absolute;
+
+  width: 400px;
+  margin: 0 1200px;
+}
+
+.search label {
+  position: relative;
+  width: 400px;
+}
+
+/*.search label input {
+  width: 100%;
+  height: 40px;
+  border-radius: 40px;
+  padding: 5px 20px;
+  padding-left: 35px;
+  font-size: 18px;
+  outline: none;
+  border: 1px solid var(--black2);
+}*/
+.search label ion-icon {
+  position: absolute;
+  top: 0;
+  right: 10px;
+  font-size: 2.0em;
+  cursor: pointer;
+  color: white;
+}
+
+.user {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+}
+.user img {
+  position:absolute;
+  top:0;
+  left:0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+
+}
+
+
+.container-fluid {
+  padding: 20px;
+  padding-bottom: 10px;
+  background-color: #f7f7f7;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+p {
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}

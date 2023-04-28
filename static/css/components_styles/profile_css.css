@@ -18,14 +18,14 @@
     --black2: #999;
     --black3: #a6323200;
     --purple: rgb(109, 44, 249);
-    --tan: #F2E6D9;
-    --tan2: #f8dab9;
+    --tan: #d3e0fb;
+    --tan2: #907c60;
 }
 
 body {
   /*background-color: var(--tan);
   filter: blur(30px);*/
-  background: linear-gradient(45deg, rgba(242, 163, 4, 0.752), var(--tan));
+  background: linear-gradient(45deg, rgb(255 255 255 / 75%), var(--tan));
   background-size:3px;
   font-family: Arial, sans-serif;
   min-height:100vh;
@@ -33,7 +33,7 @@ body {
 }
 
 header {
-  background-color: #B2BEC3;
+  background-color: #6e797f;
   color: white;
   text-align: center;
   padding: 20px;

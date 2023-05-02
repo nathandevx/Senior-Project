@@ -66,7 +66,7 @@ ROOT_URLCONF = "senior_project.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        # BASE_DIR / 'templates' / 'allauth' / 'account' this is required for allauth to find templates
+        # BASE_DIR / 'templates' / 'allauth' this is required for allauth to find templates
         "DIRS": [BASE_DIR / 'templates', BASE_DIR / 'templates' / 'allauth'],
         "APP_DIRS": True,
         "OPTIONS": {

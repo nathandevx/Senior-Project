@@ -1,5 +1,7 @@
 # Pastry Bites: Pastry Ordering Website
 
+![Project logo](static/images/README/logo.jpg)
+
 ## Quick Links
 - [Introduction](#introduction)
 - [The Client](#the-client)
@@ -8,9 +10,16 @@
 - [Technologies](#technologies)
 - [Testing](#testing)
 - [Developer Instructions](#developer-instructions)
+- [Project Images](#project-images)
+  - [JIRA roadmap (part of it)](#jira-roadmap-part-of-it)
+  - [Sign up page](#sign-up-page)
+  - [Login page](#login-page)
+  - [Profile page](#profile-page)
+  - [Manage registered emails page](#manage-registered-emails)
+  - [Admin page](#admin-page)
 
 ## Introduction
-- Sacramento State CSC 190-191 Senior Project.
+- Sacramento State CSC [190](https://catalog.csus.edu/search/?P=CSC%20190)-[191](https://catalog.csus.edu/search/?P=CSC%20191) Senior Project.
 - Pastry Bites is a website that allows customers to order and pay for pastries, while providing a user-friendly interface for managing orders and generating reports for the client (admin).
 
 ## The Client
@@ -53,6 +62,7 @@
 
 ## Testing
 - When the web application is finished, it will have tests for user account creation, checkout page, payments, order tracking, emails, etc.
+- We will use Django's builtin tester for unit tests and selenium for integration tests.
 
 ## Deployment
 - The application will be deployed using Heroku. It will be accessible to anyone with a link.
@@ -72,3 +82,26 @@
   - Install the dependencies by running "pip install -r requirements.txt"
   - Set up the database by running "python manage.py migrate"
   - Finally, run the development server by running "python manage.py runserver". It will output a link where you can view the project.
+
+## Project images
+- The pages are still in progress and the design has not been finalized yet. We will continue to add more pages and make improvements to them during CSC 191.
+- The first image is part of our JIRA roadmap. It shows when we expect certain features to be done. The other images relate to the project.
+
+## JIRA roadmap (part of it)
+![part of our JIRA roadmap](static/images/README/roadmap.PNG)
+
+### Sign up page
+![sign up page](static/images/README/register_page.PNG)
+
+### Login page
+![login page](static/images/README/login_page.PNG)
+
+### Profile page
+![profile page](static/images/README/profile_page.PNG)
+
+### Manage registered emails
+![manage registered emails page](static/images/README/manage_emails_page.PNG)
+
+### Admin page
+![admin page](static/images/README/admin_page.PNG)
+

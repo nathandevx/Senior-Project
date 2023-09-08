@@ -1,7 +1,13 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" href="{% static 'css/order_css.css' %}">
+{% endblock %}
+
+{% block title %}Pastry Bites{% endblock %}
 
 {% block contents %}
-<link rel="stylesheet" href="order_css.css">
     <div class="container-fluid text-center">
         <div class="title">
             <h1> Checkout page </h1>

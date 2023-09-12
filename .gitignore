@@ -5,6 +5,8 @@
 exclude/
 # Exclude any venv directories
 venv/
+# Where product images are uploaded to
+product_images/
 
 ### OSX ###
 .DS_Store

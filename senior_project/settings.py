@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    'django.contrib.sites',  # allauth
+    'django.contrib.sites',
+    'ckeditor',  # django-ckeditor
 
     # allauth specific
     'allauth',
@@ -158,3 +159,19 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Customer user model
 AUTH_USER_MODEL = 'users.User'
+
+# django-ckeditor configuration
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'Custom',
+        'toolbar_Custom': [
+            ['Bold', 'Italic', 'Underline', 'Blockquote'],
+            ['Format'],
+            ['NumberedList', 'BulletedList', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight'],
+            ['Link', 'Unlink'],
+            ['FontSize', 'TextColor'],
+            ['Maximize', 'Preview', 'Source']
+        ]
+    }
+}
+

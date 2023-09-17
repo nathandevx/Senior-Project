@@ -1,4 +1,7 @@
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-&*_jy^t2n!@lmx!=*-f$8le3cu41)m%#*%v1r$yski_z6q(%y2"
@@ -134,4 +137,15 @@ CKEDITOR_CONFIGS = {
         ]
     }
 }
+
+CONTACT_EMAIL = 'nathanmartinez@csus.edu'
+ADMIN_EMAILS = ['jordan_huang916@yahoo.com', ]
+
+
+# Twilio SendGrid
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'apikey'
+EMAIL_HOST_PASSWORD = os.environ.get('SENDGRID_API_KEY')
 

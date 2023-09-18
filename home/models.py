@@ -227,3 +227,17 @@ class Contact(models.Model):
 
     def __str__(self):
         return self.email
+	
+	
+class OrderHistory(TimestampCreatorMixin):
+	"""
+	Displays the dates the order was placed on, number of pastries ordered, 
+	totals, and order numbers (for future reference for the owner)
+	"""
+	date = models.CharField(max_length=100)
+	num_of_pastries = models.CharField(max_length=100)
+	total = models.CharField(max_length=100)
+	order_number = models.CharField(max_length=200)
+
+	def __str__(self):
+		return f"{self.date}, {self.num_of_pastries}, {self.total}, {self.order_number}"

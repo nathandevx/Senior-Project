@@ -1,11 +1,15 @@
 from pathlib import Path
+import environ
 import os
-from dotenv import load_dotenv
-load_dotenv()
+
+env = environ.Env(
+    DEBUG=(bool, False)
+)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = "django-insecure-&*_jy^t2n!@lmx!=*-f$8le3cu41)m%#*%v1r$yski_z6q(%y2"
-DEBUG = True
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))  # django-environ
+SECRET_KEY = env('SECRET_KEY')
+DEBUG = env('DEBUG')
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [

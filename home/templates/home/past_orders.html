@@ -1,22 +1,33 @@
 {% load static %}
 
+<style>
+    table, th, td {
+      border:2px solid #DDD;
+      border-collapse: collapse;
+    }
+
+    tr:hover {background-color: #5dfcc7;}
+
+    </style>
+
 <h1>Order History</h1>
 <h3>View all your past orders below</h3>
 <ul id="past-orders-list">
     <!-- Past orders will be displayed here -->
 
-    <table>
+    <table style="width:70%">
         <tr>
-            <td>Date</td>
-            <td>Number of Items</td>
-            <td>Total</td>
-            <td>Order Number</td>
+            <td><h2>Date</h2></td>
+            <td><h2>Number of Items</h2></td>
+            <td><h2>Total</h2></td>
+            <td><h2>Order Number</h2></td>
+        </tr>
+        <tr>
+            <th>09/07/2023</th>
+            <th>3</th>
+            <th>$9.50</th>
+            <th>12345</th>
         </tr>
     </table>
-
-    <h2>Date</h2>
-    <h2>Number of Items</h2>
-    <h2>Total</h2>
-    <h2>Order Number</h2>
 
 </ul>

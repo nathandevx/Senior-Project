@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Blog{% endblock %}
+
+{% block contents %}
+	<div class="container">
+		<h1 class="text-center">Blog</h1>
+		{% if user.is_superuser %}
+	        <p class="mt-3 bold text-center">
+				<span class="fw-bold">Admin viewable only:</span>
+	            <a href="{{ post_model.get_create_url }}">Create a post</a>
+	        </p>
+		{% endif %}
+		{% if posts %}
+			{% for post in posts %}
+                <a href="{{ post.get_read_url }}" class="text-decoration-none">
+                    <h2 class="post-title text-dark">{{ post.title }}</h2>
+                </a>
+                <p class="text-muted">
+                    Posted by
+                    <a href="">{{ post.creator }}</a>
+                    on {{ post.created_at_formatted }}
+                </p>
+				<p>{{ post.preview_text }}</p>
+				<hr class="my-4">
+			{% endfor %}
+		{% else %}
+			<p>There are no blog posts yet.</p>
+		{% endif %}
+	</div>
+{% endblock %}

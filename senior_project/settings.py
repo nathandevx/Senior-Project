@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     # our generated apps
     "users.apps.UsersConfig",
     "home.apps.HomeConfig",
+    "blog.apps.BlogConfig",
 
     #django storages package
     'storages'

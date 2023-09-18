@@ -26,6 +26,9 @@ INSTALLED_APPS = [
     # our generated apps
     "users.apps.UsersConfig",
     "home.apps.HomeConfig",
+
+    #django storages package
+    'storages'
 ]
 
 SITE_ID = 1
@@ -148,4 +151,12 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'apikey'
 EMAIL_HOST_PASSWORD = os.environ.get('SENDGRID_API_KEY')
+
+
+# set environment variables
+AWS_S3_ACCESS_KEY_ID=os.environ.get('AWS_S3_ACCESS_KEY_ID')
+AWS_STORAGE_BUCKET_NAME=os.environ.get('AWS_STORAGE_BUCKET_NAME')
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+DEFAULT_FILE_STORAGE = 'storages.backends.s3.S3Storage'
 

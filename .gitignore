@@ -5,8 +5,13 @@
 exclude/
 # Exclude any venv directories
 venv/
+.venv/
 # Where product images are uploaded to
 product_images/
+
+# Environment variables
+.env
+env
 
 ### OSX ###
 .DS_Store
@@ -90,5 +95,4 @@ target/
 *.log
 *.pyc
 local_settings.py
-.env
 db.sqlite3

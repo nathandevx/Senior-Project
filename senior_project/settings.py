@@ -146,16 +146,14 @@ CKEDITOR_CONFIGS = {
     }
 }
 
-CONTACT_EMAIL = 'nathanmartinez@csus.edu'
-ADMIN_EMAILS = ['jordan_huang916@yahoo.com', ]
-
-
-# Twilio SendGrid
 EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER = 'apikey'  # this is exactly the value 'apikey'
+EMAIL_HOST_PASSWORD = env('SECRET_KEY')
 EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'apikey'
-EMAIL_HOST_PASSWORD = os.environ.get('SENDGRID_API_KEY')
+EMAIL_USE_TLS = False
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+DEFAULT_FROM_EMAIL = env('FROM_EMAIL')
+
 
 
 # set environment variables

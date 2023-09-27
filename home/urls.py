@@ -7,7 +7,9 @@ urlpatterns = [
 	path('about/', views.about, name='about'),
 	path('contact/', views.contact, name='contact'),
 
+
 	# Products
+	path('product/', views.product, name='product'),
 	path('product/create/', products.product_create, name='product-create'),
 	path('product/<int:pk>/', products.product_read, name='product-read'),
 	path('product/update/<int:pk>/', products.product_update, name='product-update'),
@@ -24,6 +26,7 @@ urlpatterns = [
 	path('checkout/payment-cancel/', checkout.payment_cancel, name='payment-cancel'),
 
 	# Orders
+	path('order', views.order, name='order'),
 	path('order/list/', orders.order_list, name='order-list'),
 	path('order-confirmation/<uuid:order_uuid>/', orders.order_confirmation, name='order-confirmation'),
 

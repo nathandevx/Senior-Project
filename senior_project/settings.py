@@ -33,7 +33,12 @@ INSTALLED_APPS = [
     "blog.apps.BlogConfig",
 
     #django storages package
-    'storages'
+    'storages',
+
+    # crispy_forms
+    'crispy_forms',
+
+    'crispy_bootstrap5'
 ]
 
 SITE_ID = 1
@@ -46,6 +51,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = "senior_project.urls"
@@ -162,4 +168,10 @@ AWS_STORAGE_BUCKET_NAME=os.environ.get('AWS_STORAGE_BUCKET_NAME')
 AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_ACL = None
 DEFAULT_FILE_STORAGE = 'storages.backends.s3.S3Storage'
+# Crispy forms settings
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = 'bootstrap5'  
+
+
+
 

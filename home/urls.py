@@ -18,6 +18,7 @@ urlpatterns = [
 	# Carts
 	path('cart/<int:pk>/', carts.cart_read, name='cart-read'),  # also acts as cart/update/
 	path('cart/delete/<int:pk>/', carts.cart_delete, name='cart-delete'),
+    path('carts/read', carts.cart_read, name = 'cart-read'),
 
 	# Checkout
 	path('checkout/shipping-info/', checkout.shipping_info, name='shipping-info'),

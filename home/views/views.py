@@ -8,16 +8,17 @@ import environ
 import os
 
 env = environ.Env(
-    # set casting, default value
-    DEBUG=(bool, False)
+	# set casting, default value
+	DEBUG=(bool, False)
 )
 
+
 def about(request):
-    return render(request, 'home/about.html')
+	return render(request, 'home/about.html')
 
 
 def blog(request):
-    return render(request, 'home/blog.html')
+	return render(request, 'home/blog.html')
 
 
 def contact(request):
@@ -37,16 +38,16 @@ def contact(request):
 
 
 def home(request):
-    return render(request, 'home/home.html')
+	return render(request, 'home/home.html')
 
 
 def order(request):
-    return render(request, 'home/order.html')
+	return render(request, 'home/order.html')
 
 
 def product(request):
-    return render(request, 'home/product.html')
+	return render(request, 'home/product.html')
 
 
 def report(request):
-    return render(request, 'home/report.html')
+	return render(request, 'home/report.html')

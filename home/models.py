@@ -6,10 +6,21 @@ from django.db.models.functions import ExtractYear
 from django.db.models import Count, Sum, Q
 from ckeditor.fields import RichTextField
 from senior_project.utils import format_datetime
-from senior_project.exceptions import MoreThanOneActiveCartError
+from senior_project.exceptions import MoreThanOneActiveCartError, ErrorCreatingAStripeProduct, ErrorUpdatingAStripeProduct, ErrorDeletingAStripeProduct, ErrorCreatingStripeCheckoutSession
 from senior_project.constants import MONTHS
+from senior_project.utils import get_full_url
 from decimal import Decimal
 import uuid
+import stripe
+import environ
+
+
+env = environ.Env(
+	# set casting, default value
+	DEBUG=(bool, False)
+)
+
+stripe.api_key = env('STRIPE_SECRET_KEY')
 
 
 # An abstract class that other models will inherit from.
@@ -107,6 +118,22 @@ class Product(TimestampCreatorMixin):
 	def is_inactive(self):
 		return self.status == Product.INACTIVE
 
+	def get_images(self):
+		"""
+		An abstraction for productimage_set.all()
+		@return: a QuerySet of ProductImages associated with the Product.
+		"""
+		images = self.productimage_set.all()
+		return images
+
+	def delete_images(self):
+		"""
+		Deletes the images associated with the product by calling the overridden delete() method directly.
+		@return: nothing.
+		"""
+		for image in self.get_images():
+			image.delete()
+
 	@classmethod
 	def get_active_products(cls):
 		"""
@@ -116,16 +143,104 @@ class Product(TimestampCreatorMixin):
 		return products
 
 	def create_stripe_product_and_price_objs(self):
-		# todo: waiting for stripe integration
-		pass
+		"""
+		Creates a stripe product and price object. And associates them with the product.
+		@return: nothing, ErrorCreatingAStripeProduct() exception otherwise.
+		"""
+		try:
+			# Create product on stripe
+			stripe_product = stripe.Product.create(
+				name=self.name,
+				url=get_full_url(self.get_read_url())
+			)
 
-	def update_stripe_product_and_price_objs(self):
-		# todo: waiting for stripe integration
-		pass
+			# Associate a price with that stripe product
+			stripe_price = stripe.Price.create(
+				unit_amount=int(self.price * 100),
+				currency="usd",
+				product=stripe_product.id,
+			)
 
-	def set_stripe_product_as_inactive(self):
-		# todo: waiting for stripe integration
-		pass
+			# Add the product and price ID's to the new product instance
+			self.stripe_product_id = stripe_product.id
+			self.stripe_price_id = stripe_price.id
+			self.save()
+		except:
+			self.delete()
+			raise ErrorCreatingAStripeProduct("An error occurred with creating a product on stripe. The product was deleted to avoid confusion and further errors.")
+
+	@staticmethod
+	def update_stripe_product_and_price_objs(updated_product):
+		"""
+		Updates the stripe product and stripe price objects.
+		Will not update the price if no price change has occurred.
+		Will not update the product from the DB if an exception happens.
+		@param updated_product: the updated product from the form.
+		@return: nothing, ErrorUpdatingAStripeProduct() exception otherwise.
+		"""
+		try:
+			# Update product on stripe
+			stripe_product = stripe.Product.modify(
+				updated_product.stripe_product_id,
+				name=updated_product.name,
+				description=updated_product.description,
+				url=get_full_url(updated_product.get_read_url())
+			)
+
+			# Mark the old stripe price object as inactive.
+			# You can't delete a price object.
+			# You cannot modify the unit_amount (price) of a price object, you have to create a new one.
+			old_stripe_price = stripe.Price.retrieve(updated_product.stripe_price_id)
+			# If the price has not changed, do nothing.
+			if (old_stripe_price.unit_amount / 100) == updated_product.price:
+				pass
+			else:
+				# Create a new stripe price obj
+				stripe_price = stripe.Price.create(
+					unit_amount=int(updated_product.price * 100),
+					currency="usd",
+					product=stripe_product.id
+				)
+
+				# Update the stripe product obj and set the newly created price as the default
+				stripe_product = stripe.Product.modify(
+					updated_product.stripe_product_id,
+					default_price=stripe_price.id
+				)
+
+				# This is performed after creating a new stripe price obj and updating the product price obj
+				# Because if it were the default price, then it would cause an error.
+				stripe.Price.modify(
+					updated_product.stripe_price_id,
+					active=False
+				)
+				updated_product.stripe_price_id = stripe_price.id
+			updated_product.stripe_product_id = stripe_product.id
+			updated_product.save()  # only save the newly creating product when the stripe product was successfully updated
+		except:
+			raise ErrorUpdatingAStripeProduct(
+				"An error occurred with updating a product on stripe. The product was not saved to avoid confusion and further errors.")
+
+	def delete_product_and_set_stripe_product_as_inactive(self):
+		"""
+		Deletes the product from the DB and calls delete_images() to delete images from AWS.
+		Also sets the stripe product as inactive (it's not possible to delete a stripe product).
+		Will not delete the product from the DB if an exception occurs.
+		@return: nothing, ErrorDeletingAStripeProduct() exception otherwise.
+		"""
+		try:
+			# Stripe products cannot be deleted if they have price object references, which also can't be deleted.
+			# Therefor the only way to "delete" them is to set them as inactive.
+			stripe.Product.modify(
+				self.stripe_product_id,
+				active=False
+			)
+
+			self.delete_images()
+			self.delete()
+		except:
+			raise ErrorDeletingAStripeProduct(
+				"An error occurred with deleting a product on stripe. The product was not deleted.")
 
 	def save_product_images(self):
 		# todo: waiting for AWS integration
@@ -165,6 +280,12 @@ class ProductImage(TimestampCreatorMixin):
 	class Meta:
 		verbose_name = 'Product image'
 		verbose_name_plural = 'Product images'
+
+	def delete(self, *args, **kwargs):
+		# Delete the image file associated with this object
+		self.image.delete(save=False)
+		# Call the parent class's delete method to delete the object itself
+		super(ProductImage, self).delete(*args, **kwargs)
 
 
 class ShippingAddress(TimestampCreatorMixin):
@@ -332,6 +453,34 @@ class Cart(TimestampCreatorMixin):
 		full_canceled_url = f"{scheme}://{domain}{cancel}"
 		return full_success_url, full_canceled_url
 
+	def create_stripe_checkout_session(self, request):
+		"""
+		Creates a stripe checkout session.
+		@return: a stripe checkout session URL, an ErrorCreatingStripeCheckoutSession() exception otherwise.
+		"""
+		success_url, canceled_url = self.get_payment_success_and_payment_cancel_url(request)
+
+		# Get the cart items prices and quantity
+		line_items = []
+		for cart_item in self.get_cartitems():
+			line_items.append(
+				{
+					'price': cart_item.product.stripe_price_id,
+					'quantity': cart_item.quantity
+				}
+			)
+
+		# try:
+		checkout_session = stripe.checkout.Session.create(
+			line_items=line_items,
+			mode='payment',
+			success_url=success_url,
+			cancel_url=canceled_url,
+		)
+		return checkout_session.url
+		# except:
+		# 	raise ErrorCreatingStripeCheckoutSession("Error creating a stripe checkout session.")
+
 	class Meta:
 		verbose_name = 'Cart'
 		verbose_name_plural = 'Carts'
@@ -405,9 +554,11 @@ class Order(TimestampCreatorMixin):
 	SHIPPED = 'Shipped'
 	DELIVERED = 'Delivered'
 	CANCELED = 'Canceled'
+	CHOICES = [(PLACED, PLACED), (SHIPPED, SHIPPED), (DELIVERED, DELIVERED), (CANCELED, CANCELED)]
+
 	cart = models.OneToOneField(Cart, on_delete=models.CASCADE)
 	total_price = models.DecimalField(max_digits=10, decimal_places=2)
-	status = models.CharField(max_length=50, choices=[(PLACED, PLACED), (SHIPPED, SHIPPED), (DELIVERED, DELIVERED), (CANCELED, CANCELED)])
+	status = models.CharField(max_length=50, choices=CHOICES)
 	estimated_delivery_date = models.DateField(null=True, blank=True)
 	notes = models.TextField(default='', max_length=5000, blank=True, null=True)
 	uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
@@ -498,6 +649,7 @@ class Order(TimestampCreatorMixin):
 		verbose_name = 'Order'
 		verbose_name_plural = 'Orders'
 
+
 class Contact(models.Model):
 	email = models.EmailField()
 	subject = models.CharField(max_length=255)
@@ -505,11 +657,11 @@ class Contact(models.Model):
 
 	def __str__(self):
 		return self.email
-	
-	
+
+
 class OrderHistory(TimestampCreatorMixin):
 	"""
-	Displays the dates the order was placed on, number of pastries ordered, 
+	Displays the dates the order was placed on, number of pastries ordered,
 	totals, and order numbers (for future reference for the owner)
 	"""
 	date = models.CharField(max_length=100)

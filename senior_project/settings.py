@@ -173,5 +173,8 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = 'bootstrap5'  
 
 
-
-
+# Dev vs prod settings
+if DEBUG:
+    USE_HTTPS = False
+else:
+    USE_HTTPS = True

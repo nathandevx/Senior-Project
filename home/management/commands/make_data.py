@@ -3,10 +3,10 @@ from django.contrib.auth import get_user_model
 from django.core.files import File
 from django.conf import settings
 from faker import Faker
-from datetime import date
 from home.models import Product, ProductImage, ShippingAddress, Cart, CartItem, Order
 from blog.models import Post
 from senior_project.exceptions import CommandNotAllowedInProduction
+from senior_project.utils import get_random_date
 import random
 import uuid
 import warnings
@@ -26,33 +26,22 @@ class Command(BaseCommand):
 	)
 
 	@staticmethod
-	def get_random_date():
-		random_month = random.randint(1, 12)
-		if random_month in [1, 3, 5, 7, 8, 10, 12]:
-			random_day = random.randint(1, 31)
-		elif random_month == 2:
-			random_day = random.randint(1, 28)  # Assuming 2023 is not a leap year
-		else:
-			random_day = random.randint(1, 30)
-		random_year = random.randint(2020, 2050)
-		random_date = date(random_year, random_month, random_day)
-		return random_date
-
-	def create_random_user(self):
+	def create_random_user():
 		user = User.objects.create_user(
 			username=faker.user_name(),
 			email=faker.email(),
 			password=faker.password(),
-			date_joined=self.get_random_date()
+			date_joined=get_random_date()
 		)
 		return user
 
-	def create_random_product(self, creator):
+	@staticmethod
+	def create_random_product(creator):
 		product = Product.objects.create(
 			name=faker.word(),
 			description=faker.sentence(),
 			price=random.uniform(10, 200),
-			estimated_delivery_date=self.get_random_date(),
+			estimated_delivery_date=get_random_date(),
 			status=random.choice([Product.ACTIVE, Product.INACTIVE]),
 			stock=random.randint(1, 5),
 			stripe_product_id=str(uuid.uuid4()),
@@ -109,18 +98,20 @@ class Command(BaseCommand):
 		)
 		return cart_item
 
-	def create_random_order(self, cart, creator):
+	@staticmethod
+	def create_random_order(cart, creator):
 		order = Order.objects.create(
 			cart=cart,
 			total_price=cart.get_total_cart_price(),
 			status=random.choice([Order.PLACED, Order.SHIPPED, Order.DELIVERED, Order.CANCELED]),
 			creator=creator,
 			updater=creator,
-			created_at=self.get_random_date(),
+			created_at=get_random_date(),
 		)
 		return order
 
-	def create_random_blog_posts(self, creator):
+	@staticmethod
+	def create_random_blog_posts(creator):
 		post = Post.objects.create(
 			title=faker.word(),
 			preview_text=faker.sentence(),
@@ -128,7 +119,7 @@ class Command(BaseCommand):
 			status=Post.ACTIVE,
 			creator=creator,
 			updater=creator,
-			created_at=self.get_random_date()
+			created_at=get_random_date()
 		)
 		return post
 
@@ -155,7 +146,8 @@ class Command(BaseCommand):
 			user = self.create_random_user()
 			address = self.create_random_shipping_address(user)
 			cart = self.create_random_cart(user, address)
-			post = self.create_random_blog_posts(user)
+			self.create_random_blog_posts(user)
+
 			# Make cart items
 			for _ in range(random.randrange(4)):  # 0-3 (not including 4)
 				self.create_random_cart_item(cart, random.choice(all_products), user)

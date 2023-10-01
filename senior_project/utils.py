@@ -1,6 +1,8 @@
 from django.utils import timezone
 from django.contrib.sites.models import Site
 from django.conf import settings
+from django.http import HttpResponseForbidden
+from functools import wraps
 from datetime import date
 import random
 
@@ -42,3 +44,29 @@ def get_random_date():
 	random_year = random.randint(2020, 2050)
 	random_date = date(random_year, random_month, random_day)
 	return random_date
+
+
+def superuser_required(func):
+	"""
+	Checks if the user is a superuser.
+	@return: HTTP 403 if the user is not a superuser, nothing otherwise.
+	"""
+	@wraps(func)
+	def check_superuser(request, *args, **kwargs):
+		if not request.user.is_superuser:
+			return HttpResponseForbidden()
+		return func(request, *args, **kwargs)
+	return check_superuser
+
+
+def login_required(func):
+	"""
+	Checks if the user is logged in.
+	@return: HTTP 403 if user is not logged in, nothing otherwise.
+	"""
+	@wraps(func)
+	def check_login(request, *args, **kwargs):
+		if not request.user.is_superuser:
+			return HttpResponseForbidden()
+		return func(request, *args, **kwargs)
+	return check_login

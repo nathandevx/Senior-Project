@@ -1,11 +1,7 @@
-from pyexpat.errors import messages
-from django.conf import settings
 from django.core.mail import send_mail
-from django.http import HttpResponseServerError
 from django.shortcuts import redirect, render
 from ..forms import ContactForm
 import environ
-import os
 
 env = environ.Env(
 	# set casting, default value
@@ -15,10 +11,6 @@ env = environ.Env(
 
 def about(request):
 	return render(request, 'home/about.html')
-
-
-def blog(request):
-	return render(request, 'home/blog.html')
 
 
 def contact(request):

@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.core.files import File
 from django.http import HttpResponseForbidden
 from home.models import Product, ProductImage, Cart, CartItem
-from senior_project.utils import get_random_date
+from senior_project.utils import get_random_date, login_required
 import environ
 import stripe
 
@@ -14,22 +14,27 @@ env = environ.Env(
 stripe.api_key = env('STRIPE_SECRET_KEY')
 
 
+@login_required
 def shipping_info(request):
 	return render(request, 'home/checkout/shipping_info.html')
 
 
+@login_required
 def proceed_to_stripe(request):
 	return render(request, 'home/checkout/proceed_to_stripe.html')
 
 
+@login_required
 def payment_success(request, cart_uuid):
 	return render(request, 'home/checkout/payment_success.html')
 
 
+@login_required
 def payment_cancel(request):
 	return render(request, 'home/checkout/payment_cancel.html')
 
 
+@login_required
 def stripe_test(request):
 	# Logged in users only
 	if not request.user.is_authenticated:

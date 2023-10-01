@@ -1,10 +1,10 @@
 from django.shortcuts import render
 from django.http import HttpResponseForbidden
+from senior_project.utils import superuser_required
 
 
+@superuser_required
 def product_create(request):
-	if not request.user.is_superuser:
-		return HttpResponseForbidden()
 	return render(request, 'home/products/create.html')
 
 
@@ -12,13 +12,11 @@ def product_read(request):
 	return render(request, 'home/products/read.html')
 
 
+@superuser_required
 def product_update(request):
-	if not request.user.is_superuser:
-		return HttpResponseForbidden()
 	return render(request, 'home/products/update.html')
 
 
+@superuser_required
 def product_delete(request):
-	if not request.user.is_superuser:
-		return HttpResponseForbidden()
 	return render(request, 'home/products/delete.html')

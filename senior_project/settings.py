@@ -20,25 +20,23 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     'django.contrib.sites',
-    'ckeditor',  # django-ckeditor
 
-    # allauth specific
+    # django-allauth
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
 
-    # our generated apps
+    # More packages
+    'ckeditor',  # django-ckeditor
+    'storages',  # django-storages
+    'crispy_forms',  # crispy-forms
+    'crispy_bootstrap5',  # crispy-forms
+
+    # Our apps
     "users.apps.UsersConfig",
     "home.apps.HomeConfig",
     "blog.apps.BlogConfig",
 
-    #django storages package
-    'storages',
-
-    # crispy_forms
-    'crispy_forms',
-
-    'crispy_bootstrap5'
 ]
 
 SITE_ID = 1
@@ -51,7 +49,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    #"allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = "senior_project.urls"
@@ -60,7 +57,7 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         # Django will look for the requested template within these directories. If it doesn't find the template,
-        # then django will look inside each apps 'templates' directory.
+        # then django will look inside each app's 'templates' directory.
         "DIRS": [BASE_DIR / 'templates', BASE_DIR / 'users' / 'templates' / 'users' / 'allauth'],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -106,7 +103,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # django-allauth config
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # todo: do not use in prod.
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 5

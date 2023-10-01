@@ -1,56 +1,48 @@
 from django.shortcuts import render
 from django.http import HttpResponseForbidden, HttpResponse
+from senior_project.utils import superuser_required
 
 
+@superuser_required
 def report_list(request):
-	if not request.user.is_superuser:
-		return HttpResponseForbidden()
 	return render(request, 'home/reports/list.html')
 
 
+@superuser_required
 def report_orders(request):
-	if not request.user.is_superuser:
-		return HttpResponseForbidden()
 	return render(request, 'home/reports/orders.html')
 
 
+@superuser_required
 def report_products(request):
-	if not request.user.is_superuser:
-		return HttpResponseForbidden()
 	return render(request, 'home/reports/products.html')
 
 
+@superuser_required
 def report_charts(request):
-	if not request.user.is_superuser:
-		return HttpResponseForbidden()
 	return render(request, 'home/reports/charts.html')
 
 
+@superuser_required
 def update_total_orders_chart_data(request):
-	if not request.user.is_superuser:
-		return HttpResponseForbidden()
 	return HttpResponse("Got orders data")
 
 
+@superuser_required
 def update_total_users_chart_data(request):
-	if not request.user.is_superuser:
-		return HttpResponseForbidden()
 	return HttpResponse("Got users data")
 
 
+@superuser_required
 def report_export(request):
-	if not request.user.is_superuser:
-		return HttpResponseForbidden()
 	return render(request, 'home/reports/export.html')
 
 
+@superuser_required
 def report_export_download(request):
-	if not request.user.is_superuser:
-		return HttpResponseForbidden()
 	return HttpResponse("Downloaded")
 
 
+@superuser_required
 def report_api_status(request):
-	if not request.user.is_superuser:
-		return HttpResponseForbidden()
 	return render(request, 'home/reports/api_status.html')

@@ -1,3 +1,4 @@
+from django.core.mail import send_mail
 from django.core.validators import RegexValidator, MinValueValidator
 from django.db import models
 from django.conf import settings
@@ -126,6 +127,20 @@ class Product(TimestampCreatorMixin):
 		images = self.productimage_set.all()
 		return images
 
+	def save_images(self, request):
+		"""
+		Saves a list of images and associates them with the product.
+		@param request: the incoming request.
+		@return: nothing.
+		"""
+		for file in request.FILES.getlist('image'):
+			ProductImage.objects.create(
+				product=self,
+				image=file,
+				creator=request.user,
+				updater=request.user,
+			)
+
 	def delete_images(self):
 		"""
 		Deletes the images associated with the product by calling the overridden delete() method directly.
@@ -241,14 +256,6 @@ class Product(TimestampCreatorMixin):
 		except:
 			raise ErrorDeletingAStripeProduct(
 				"An error occurred with deleting a product on stripe. The product was not deleted.")
-
-	def save_product_images(self):
-		# todo: waiting for AWS integration
-		pass
-
-	def delete_product_images(self):
-		# todo: waiting for AWS integration
-		pass
 
 	@classmethod
 	def get_top_10_selling_products(cls):
@@ -571,6 +578,9 @@ class Order(TimestampCreatorMixin):
 	def get_list_url():
 		return reverse('home:order-list')
 
+	def get_read_url(self):
+		return reverse('home:order-confirmation', kwargs={'order_uuid': self.uuid})
+
 	def get_order_confirmation_url(self):
 		return reverse('home:order-confirmation', kwargs={'uuid': self.uuid})
 
@@ -612,8 +622,36 @@ class Order(TimestampCreatorMixin):
 		)
 
 	def send_order_confirmation_email(self):
-		# todo: waiting for SendGrid implementation.
-		pass
+		"""
+		Sends the order confirmation email to the customer.
+		@return: nothing, just sends an email.
+		"""
+		subject = 'Order Confirmation'
+		from_email = env('FROM_EMAIL')
+		recipient_list = [env('ADMIN_EMAIL')]  # todo make the customer the recipient
+		order_confirmation_url = get_full_url(self.get_read_url())
+		html_message = \
+			f"""
+					<html>
+					<head></head>
+					<body>
+						<h2>Thanks for your order!</h2>
+						<p>Order confirmation page <a href="{order_confirmation_url}">{order_confirmation_url}</a><p>
+						<p>Date: {self.created_at_formatted()}</p>
+						<p>Shipping Address: {self.cart.shipping_address}</p>
+						<ul>
+			"""
+
+		for cart_item in self.cart.get_cartitems():
+			html_message += f"<li>{cart_item.quantity} of {cart_item.product.name} for ${cart_item.original_price} each.</li>"
+
+		html_message += f"""
+						</ul>
+						<p>Total: ${self.total_price}</p>
+					</body>
+					</html>
+				"""
+		send_mail(subject, html_message, from_email, recipient_list, html_message=html_message)
 
 	@classmethod
 	def get_order_counts_by_month_for_year(cls, year):

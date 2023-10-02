@@ -20,35 +20,63 @@
                     <h3>Overview</h3>
                     <hr>
                     <div class="row">
-                        <!-- sales graph -->
-                        <div class="col-xs-6 md-2">
-                            <canvas id="salesChart"></canvas>
-                        </div>
+                        <div class="card">
+                                <div class="col-xs-3 md-2">
+                                    <canvas id="salesChart"></canvas>
+                                </div>
+                                <div class="col-xs-3 md-2">
+                                    <canvas id="trafficChart"></canvas>
+                                </div>
 
-                        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                        <script>
-                            const ctx = document.getElementById('salesChart');
+                                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                                <script>
+                                    <!-- sales-graph -->
+                                    const ctx = document.getElementById('salesChart');
 
-                            new Chart(ctx, {
-                                type: 'line',
-                                data: {
-                                    labels: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-                                datasets: [{
-                                    label: 'Sale Numbers by Day',
-                                    data: [12, 19, 3, 5, 2, 3, 7],
-                                    borderWidth: 1
-                                }]
-                                },
-                                options: {
-                                    scales: {
-                                        y: {
-                                            beginAtZero: true
+                                    new Chart(ctx, {
+                                        type: 'line',
+                                        data: {
+                                            labels: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+                                            datasets: [{
+                                                label: 'Sale Numbers by Day',
+                                                data: [12, 19, 3, 5, 2, 3, 7],
+                                                borderWidth: 1
+                                            }]
+                                         },
+                                        options: {
+                                            scales: {
+                                                y: {
+                                                    beginAtZero: true
+                                                }
+                                            }
                                         }
-                                    }
-                                }
-                            });
-                        </script>
+                                    });
+
+                                    <!-- traffic graph -->
+                                    const ctx2 = document.getElementById('trafficChart');
+
+                                    new Chart(ctx2, {
+                                        type: 'line',
+                                        data: {
+                                            labels: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+                                            datasets: [{
+                                                label: 'Visitors by Day',
+                                                data: [7, 9, 3, 1, 2, 3, 6],
+                                                borderWidth: 1
+                                            }]
+                                         },
+                                        options: {
+                                            scales: {
+                                                y: {
+                                                    beginAtZero: true
+                                                }
+                                            }
+                                        }
+                                    });
+                                </script>
+                        </div>
                     </div>
+
 
                     <div class="table-responsive">
                         <!-- will show most recent 5 orders -->
@@ -204,15 +232,9 @@
                     </div>
                     <!-- Export for Orders in Progress -->
                     <div class="px-2 py-2" style="text-align:right">
-                        <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="inProgress" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <button class="btn btn-secondary" type="button">
                                 Export Orders in Progress
                             </button>
-                            <div class="dropdown-menu" aria-labelledby="inProgress">
-                                <a class="dropdown-item" href="#">To CSV</a>
-                                <a class="dropdown-item" href="#">To ...</a>
-                            </div>
-                        </div>
                     </div>
 
 
@@ -320,18 +342,10 @@
                         </script>
                     </div>
                     <!-- Export for Finished Orders -->
-                    <div class="table-responsive">
                     <div class="px-2 py-2" style="text-align:right">
-                        <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="inProgress" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <button class="btn btn-secondary dropdown-toggle" type="button">
                                 Export Finished Orders
                             </button>
-                            <div class="dropdown-menu" aria-labelledby="inProgress">
-                                <a class="dropdown-item" href="#">To CSV</a>
-                                <a class="dropdown-item" href="#">To ...</a>
-                            </div>
-                        </div>
-                    </div>
                     </div>
 
                 </div>
@@ -341,14 +355,14 @@
                     <hr>
                     <div class="table-responsive">
                         <div style="text-align:center" class="py-2">
-                            <p>Click by <b>Customer Name</b> or <b>City</b> to sort alphabetically. First click will sort in ascending, second click will sort in descending.</p>
+                            <p>Click by <b>Customer Name</b> to sort alphabetically. First click will sort in ascending, second click will sort in descending.</p>
                         </div>
 
                     <table class="table table-bordered" id="address">
                         <tr>
                             <th style="text-align:center" onclick="sortTable3(0)">Customer Name</th>
                             <th style="text-align:center">Street Name</th>
-                            <th style="text-align:center" onclick="sortTable3(1)">City</th>
+                            <th style="text-align:center">City</th>
                             <th style="text-align:center">Zip Code</th>
                         </tr>
                         <tr>

@@ -7,10 +7,16 @@
     }
 
     tr:hover {background-color: #5dfcc7;}
-
     </style>
 
 <h1>Order History</h1>
+
+<form method="POST" action="{% url 'past-orders' %}" class="past-orders">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <input type="submit" class="btn btn-primary" value="{% trans 'past-orders' %}" />
+</form>
+
 <h3>View all your past orders below</h3>
 <ul id="past-orders-list">
     <!-- Past orders will be displayed here -->

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADD TO CART PAGE</title>
+    <style>
+            /* Reset */
+            body, h1, h2, h3, h5, p, a, table {
+                margin: 0;
+                padding: 0;
+                text-decoration: none;
+            }
+    
+            /* Body */
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #eee;
+                display: flex;
+                flex-direction: column;
+                min-height: 100vh;
+                
+            }
+    
+            /* Container */
+            .container {
+                max-width: 80%;
+                margin: 2rem auto;
+                flex: 1;
+            }
+    
+            /* Content */
+            .content {
+                padding: 20px;
+                background-color: rgba(255, 255, 255, 0.95);
+                box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+                border-radius: 5px;
+            }
+    
+            /* Logo */
+            #logo {
+                display: block;
+                margin: 0 auto 30px auto;
+                width: 300px;
+            }
+    
+            /* Headings */
+            h1 {
+                text-align: center;
+                color: #555;
+                margin-bottom: 20px;
+            }
+            h2 {
+                text-align: left;
+                color: #555;
+                margin-bottom: 20px;
+            }
+
+    
+            h5 {
+                color: #333;
+            }
+    
+            /* Product Image */
+            .cart-product-imitation {
+                margin-right: 15px;
+                height: 80px;
+                width: 80px;
+                background-color: #f0f0f0;
+                border-radius: 5px;
+            }
+    
+            /* Description */
+            .desc {
+                display: flex;
+                align-items: center;
+            }
+    
+            /* Tables */
+            .shoping-cart-table, .summary-table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+    
+            .shoping-cart-table th, .shoping-cart-table td, .summary-table th, .summary-table td {
+                padding: 10px;
+                border-bottom: 1px solid #ddd;
+            }
+    
+            .shoping-cart-table th, .summary-table th {
+                background-color: #f5f5f5;
+            }
+    
+            /* Buttons */
+            button.btn {
+                text-align: center;
+                padding: 10px 20px;
+                border-radius: 5px;
+                font-weight: bold;
+                transition: background-color 0.2s;
+            }
+    
+            button.btn-primary {
+                
+                background-color: #ffffff;
+                border: 1px solid #ddd;
+                color: #555;
+            }
+    
+            button.btn-primary:hover {
+                
+                background-color: #f9f9f9;
+            }
+    
+            button.btn-white {
+               
+                background-color: #ffffff;
+                border: 1px solid #ddd;
+                color: #555;
+            }
+    
+            button.btn-white:hover {
+                background-color: #f9f9f9;
+            }
+            .summary-table {
+                margin-top: 30px;
+                margin-bottom: 50px; 
+                width: 40%; 
+                float: right; 
+            }
+    
+            /* Footer */
+            .footer {
+                position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+            padding: 10px 0;
+            color: #666;
+            border-top: 1px solid #ddd;
+            background-color: rgba(255, 255, 255, 0.95);
+            }
+        </style>
+</head>
+<body>
+    <div class="container">
+        <img src="Pastry-Bites-Logo_Hrz.jpeg" alt="Pastry Shop Logo" id="logo">
+        <h1>Shopping cart </h1>
+        <h2>Items in your cart</h2>
+
+        <table class="shoping-cart-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="desc">
+                        <div class="cart-product-imitation"></div>
+                        <div>
+                            <h3><a href="#" class="text-navy">Baklava</a></h3>
+                            <p>A rich, sweet dessert pastry made of layers of filo filled with chopped nuts and sweetened.</p>
+                            <div>
+                               
+                                <a href="#" class="text-muted">Remove item <i class="fa fa-trash"></i></a>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" value="1">
+                    </td>
+                    <td>
+                        $180.00 <br> <s class="small text-muted">$230.00</s>
+                    </td>
+                </tr>
+                <!-- Additional items can be added similarly -->
+                <tr>
+                    <td class="desc">
+                        <div class="cart-product-imitation"></div>
+                        <div>
+                            <h3><a href="#" class="text-navy">Sweets </a></h3>
+                            <p>A rich, sweet dessert pastry made of layers of filo filled with chopped nuts and sweetened.</p>
+                            <div>
+                               
+                                <a href="#" class="text-muted">Remove item <i class="fa fa-trash"></i></a>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" value="5">
+                    </td>
+                    <td>
+                        $180.00 <br> <s class="small text-muted">$230.00</s>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="desc">
+                        <div class="cart-product-imitation"></div>
+                        <div>
+                            <h3><a href="#" class="text-navy">Baklava</a></h3>
+                            <p>A rich, sweet dessert pastry made of layers of filo filled with chopped nuts and sweetened.</p>
+                            <div>
+                               
+                                <a href="#" class="text-muted">Remove item <i class="fa fa-trash"></i></a>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" value="1">
+                    </td>
+                    <td>
+                        $180.00 <br> <s class="small text-muted">$230.00</s>
+                    </td>
+                </tr>
+            
+                <tr>
+                    <td class="desc">
+                        <div class="cart-product-imitation"></div>
+                        <div>
+                            <h3><a href="#" class="text-navy">Sweets </a></h3>
+                            <p>A rich, sweet dessert pastry made of layers of filo filled with chopped nuts and sweetened.</p>
+                            <div>
+                               
+                                <a href="#" class="text-muted">Remove item <i class="fa fa-trash"></i></a>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" value="5">
+                    </td>
+                    <td>
+                        $180.00 <br> <s class="small text-muted">$230.00</s>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+
+        <table class="summary-table">
+            <thead>
+                <tr>
+                    <th colspan="2">Order Summary</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Subtotal:</td>
+                    <td>$180.00</td> <!-- Example value, adjust accordingly -->
+                </tr>
+                <tr>
+                    <td>Tax (10%):</td>
+                    <td>$18.00</td> <!-- Example value, adjust accordingly -->
+                </tr>
+                <tr>
+                    <td>Total:</td>
+                    <td>$198.00</td> <!-- Example value, adjust accordingly -->
+                </tr>
+            </tbody>
+        </table>
+
+        
+        <div class="ibox-content">
+            <button class="btn btn-primary"><a href="orderdetails.html">Checkout</a></button>
+            <button class="btn btn-white"><a href="home.html">Continue Shopping</a></button>
+        </div>
+
+        <div class="footer">
+            &copy; 2023 Pastry Bites. All rights reserved.
+        </div>
+    </div>
+</body>
+</html>
+

@@ -7,7 +7,6 @@ urlpatterns = [
 	path('about/', views.about, name='about'),
 	path('contact/', views.contact, name='contact'),
 
-
 	# Products
 	path('product/', views.product, name='product'),
 	path('product/create/', products.product_create, name='product-create'),
@@ -33,6 +32,7 @@ urlpatterns = [
 	path('order-confirmation/<uuid:order_uuid>/', orders.order_confirmation, name='order-confirmation'),
 
 	# Reports
+	path('report/', views.report, name='report'),
 	path('report/list/', reports.report_list, name='report-list'),
 	path('report/orders/', reports.report_orders, name='report-orders'),
 	path('report/products/', reports.report_products, name='report-products'),

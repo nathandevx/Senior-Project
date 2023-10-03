@@ -102,7 +102,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# django-allauth config
+# django-allauth settings
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 5
@@ -118,9 +118,7 @@ TIME_ZONE = "America/Los_Angeles"
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-# If you {% load static %} in a template, then django will look for static files within this directory.
-# the directory being "/static/..." like "/static/css/style.css".
+# Static files
 STATIC_URL = "/static/"
 # The path where django will store static files at in prep for deployment.
 STATIC_ROOT = BASE_DIR / 'staticfiles'
@@ -133,7 +131,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Custom user model
 AUTH_USER_MODEL = 'users.User'
 
-# django-ckeditor configuration
+# django-ckeditor settings
 CKEDITOR_CONFIGS = {
     'default': {
         'toolbar': 'Custom',
@@ -148,6 +146,7 @@ CKEDITOR_CONFIGS = {
     }
 }
 
+# SendGrid settings
 EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_HOST_USER = 'apikey'  # this is exactly the value 'apikey'
 EMAIL_HOST_PASSWORD = env('SECRET_KEY')
@@ -164,7 +163,8 @@ AWS_STORAGE_BUCKET_NAME=os.environ.get('AWS_STORAGE_BUCKET_NAME')
 AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_ACL = None
 DEFAULT_FILE_STORAGE = 'storages.backends.s3.S3Storage'
-# Crispy forms settings
+
+# django-crispy-forms settings
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = 'bootstrap5'  
 

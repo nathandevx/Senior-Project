@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}Empty Cart{% endblock %}
+
+{% block contents %}
+
+    <div class="container-fluid text-center">
+        <h1>Empty cart</h1>
+        <p>Your cart is empty, add items <a href="{{ product_model.get_list_url }}">here</a>.</p>
+    </div>
+
+{% endblock %}

@@ -10,6 +10,14 @@ class MoreThanOneActiveCartError(Exception):
 	pass
 
 
+class MoreThanOneCartItemError(Exception):
+	"""
+	A person can have only 1 cart. That cart can only have 1 cart item per product. There was probably an error with
+	deleting a cart item after the cart was deleted.
+	"""
+	pass
+
+
 class ErrorCreatingAStripeProduct(Exception):
 	"""
 	When an error occurs when creating a product on stripe.

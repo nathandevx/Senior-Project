@@ -2,12 +2,14 @@ from django.core.mail import send_mail
 from django.core.validators import RegexValidator, MinValueValidator
 from django.db import models
 from django.conf import settings
-from django.shortcuts import reverse
+from django.http import HttpResponseForbidden
+from django.shortcuts import reverse, render
 from django.db.models.functions import ExtractYear
 from django.db.models import Count, Sum, Q
+from django.contrib import messages
 from ckeditor.fields import RichTextField
 from senior_project.utils import format_datetime
-from senior_project.exceptions import MoreThanOneActiveCartError, ErrorCreatingAStripeProduct, ErrorUpdatingAStripeProduct, ErrorDeletingAStripeProduct, ErrorCreatingStripeCheckoutSession
+from senior_project.exceptions import MoreThanOneActiveCartError, MoreThanOneCartItemError, ErrorCreatingAStripeProduct, ErrorUpdatingAStripeProduct, ErrorDeletingAStripeProduct, ErrorCreatingStripeCheckoutSession
 from senior_project.constants import MONTHS
 from senior_project.utils import get_full_url
 from decimal import Decimal
@@ -184,54 +186,52 @@ class Product(TimestampCreatorMixin):
 			self.delete()
 			raise ErrorCreatingAStripeProduct("An error occurred with creating a product on stripe. The product was deleted to avoid confusion and further errors.")
 
-	@staticmethod
-	def update_stripe_product_and_price_objs(updated_product):
+	def update_stripe_product_and_price_objs(self):
 		"""
 		Updates the stripe product and stripe price objects.
 		Will not update the price if no price change has occurred.
 		Will not update the product from the DB if an exception happens.
-		@param updated_product: the updated product from the form.
 		@return: nothing, ErrorUpdatingAStripeProduct() exception otherwise.
 		"""
 		try:
 			# Update product on stripe
 			stripe_product = stripe.Product.modify(
-				updated_product.stripe_product_id,
-				name=updated_product.name,
-				description=updated_product.description,
-				url=get_full_url(updated_product.get_read_url())
+				self.stripe_product_id,
+				name=self.name,
+				description=self.description,
+				url=get_full_url(self.get_read_url())
 			)
 
 			# Mark the old stripe price object as inactive.
 			# You can't delete a price object.
 			# You cannot modify the unit_amount (price) of a price object, you have to create a new one.
-			old_stripe_price = stripe.Price.retrieve(updated_product.stripe_price_id)
+			old_stripe_price = stripe.Price.retrieve(self.stripe_price_id)
 			# If the price has not changed, do nothing.
-			if (old_stripe_price.unit_amount / 100) == updated_product.price:
+			if (old_stripe_price.unit_amount / 100) == self.price:
 				pass
 			else:
 				# Create a new stripe price obj
 				stripe_price = stripe.Price.create(
-					unit_amount=int(updated_product.price * 100),
+					unit_amount=int(self.price * 100),
 					currency="usd",
 					product=stripe_product.id
 				)
 
 				# Update the stripe product obj and set the newly created price as the default
 				stripe_product = stripe.Product.modify(
-					updated_product.stripe_product_id,
+					self.stripe_product_id,
 					default_price=stripe_price.id
 				)
 
 				# This is performed after creating a new stripe price obj and updating the product price obj
 				# Because if it were the default price, then it would cause an error.
 				stripe.Price.modify(
-					updated_product.stripe_price_id,
+					self.stripe_price_id,
 					active=False
 				)
-				updated_product.stripe_price_id = stripe_price.id
-			updated_product.stripe_product_id = stripe_product.id
-			updated_product.save()  # only save the newly creating product when the stripe product was successfully updated
+				self.stripe_price_id = stripe_price.id
+			self.stripe_product_id = stripe_product.id
+			self.save()  # only save the newly creating product when the stripe product was successfully updated
 		except:
 			raise ErrorUpdatingAStripeProduct(
 				"An error occurred with updating a product on stripe. The product was not saved to avoid confusion and further errors.")
@@ -267,6 +267,43 @@ class Product(TimestampCreatorMixin):
 		product_names = [product.name for product in top_products]
 		total_solds = [product.total_sold if product.total_sold else 0 for product in top_products]
 		return product_names, total_solds
+
+	def add_product_to_cart(self, request, cart, quantity):
+		"""
+		Adds a product to a cart.
+		If the Product is already in the cart, it adds to the existing quantity of that product.
+		@param request: the incoming request.
+		@param cart: the cart to add the Product to.
+		@param quantity: the number of units of the product to add to the cart.
+		@return: nothing.
+		"""
+		# Check if a CartItem for the Product is already in the Cart
+		cart_items = CartItem.objects.filter(cart=cart, product=self)
+
+		# A Cart cannot have more than 1 CartItem of the same product.
+		if cart_items.count() > 1:
+			raise MoreThanOneCartItemError(
+				"More than 1 cart items for a product within a cart were found. A Cart cannot have more than 1 CartItem of the same product."
+			)
+		# If the Product has not been added to the Cart, create a CartItem for it
+		elif cart_items.count() < 1:
+			cart_item = CartItem.objects.create(
+				cart=cart,
+				product=self,
+				quantity=quantity,
+				creator=request.user,
+				updater=request.user,
+			)
+			return cart_item
+		# If the Product has a CartItem associated with it in the Cart, increment the quantity
+		elif cart_items.count() == 1:
+			cart_item = cart_items.first()
+			cart_item.quantity += quantity
+			cart_item.updater = request.user
+			cart_item.save()
+			return cart_item
+		else:
+			raise ValueError("Unexpected cart_items model count encountered")
 
 	class Meta:
 		verbose_name = 'Product'
@@ -385,6 +422,10 @@ class Cart(TimestampCreatorMixin):
 			total += item.get_total_price()
 		return total
 
+	def set_shipping_address(self, shipping_address):
+		self.shipping_address = shipping_address
+		self.save()
+
 	@classmethod
 	def get_active_cart_or_create_new_cart(cls, request):
 		"""
@@ -401,11 +442,10 @@ class Cart(TimestampCreatorMixin):
 			return cls.objects.create(status=cls.ACTIVE, creator=request.user, updater=request.user)
 
 	@staticmethod
-	def set_cart_as_inactive(request, cart_uuid):
+	def set_cart_as_inactive(request):
 		"""
 		Sets the active cart associated with the user as inactive.
 		@param request: the incoming request.
-		@param cart_uuid: the uuid associated with the cart.
 		@return: nothing. Or raises exceptions if an unexpected cart count occurred.
 		"""
 		# First check if there are an unexpected number of active Carts associated with the user
@@ -416,7 +456,6 @@ class Cart(TimestampCreatorMixin):
 			raise ValueError("An unexpected total of active carts associated to a user were found.")
 
 		# Then set the cart as inactive
-		carts.filter(uuid=cart_uuid)
 		if carts.count() == 1:  # there's an active cart associated with the user
 			cart = carts.first()
 			cart.status = Cart.INACTIVE
@@ -463,6 +502,7 @@ class Cart(TimestampCreatorMixin):
 	def create_stripe_checkout_session(self, request):
 		"""
 		Creates a stripe checkout session.
+		@param request: the incoming request.
 		@return: a stripe checkout session URL, an ErrorCreatingStripeCheckoutSession() exception otherwise.
 		"""
 		success_url, canceled_url = self.get_payment_success_and_payment_cancel_url(request)
@@ -477,16 +517,106 @@ class Cart(TimestampCreatorMixin):
 				}
 			)
 
-		# try:
-		checkout_session = stripe.checkout.Session.create(
-			line_items=line_items,
-			mode='payment',
-			success_url=success_url,
-			cancel_url=canceled_url,
+		# Stripe checkout session
+		try:
+			checkout_session = stripe.checkout.Session.create(
+				line_items=line_items,
+				mode='payment',
+				success_url=success_url,
+				cancel_url=canceled_url,
+			)
+			return checkout_session.url
+		except:
+			raise ErrorCreatingStripeCheckoutSession("Error creating a stripe checkout session.")
+
+	def create_order(self, request):
+		"""
+		Creates an Order from a Cart.
+		@param request: the incoming request.
+		@return: nothing.
+		"""
+		order = Order.objects.create(
+			cart=self,
+			total_price=self.get_total_cart_price(),
+			status=Order.PLACED,
+			creator=request.user,
+			updater=request.user,
 		)
-		return checkout_session.url
-		# except:
-		# 	raise ErrorCreatingStripeCheckoutSession("Error creating a stripe checkout session.")
+		return order
+
+	def handle_cart_errors(self, request):
+		"""
+		Uses has_out_of_stock_or_inactive_products() to check if cart has errors.
+		If cart has errors, an appropriate template is rendered.
+		@param request: the incoming request.
+		@return: render().
+		"""
+		# Check if cart has errors
+		stock_limit, inactive_product = self.has_out_of_stock_or_inactive_products()
+		if stock_limit or inactive_product:
+			context = {'cart': self, 'stock_limit': stock_limit, 'inactive_product': inactive_product}
+			return render(request, 'home/carts/cart_errors.html', context=context)
+
+	def handle_cart_empty(self, request):
+		"""
+		Uses is_empty() to check if cart is empty.
+		If cart is empty, an appropriate template is rendered.
+		@param request: the incoming request.
+		@return: render().
+		"""
+		if self.is_empty():
+			return render(request, 'home/carts/cart_empty.html', {'product_model': Product})
+
+	def handle_cart_access(self, request):
+		"""
+		If the cart's creator is not the request user or if the cart is inactive, an exception is raised.
+		@param request: the incoming request.
+		@return: nothing or HttpResponseForbidden()
+		"""
+		if self.creator != request.user or self.is_inactive():
+			return HttpResponseForbidden()
+
+	def handle_cart_purchase(self, request, order):
+		"""
+		Handles what happens when a user finishes paying for an order.
+		Handles what happens if a product became inactive or had its stock reduced while the user was inputting
+		their payment info on the stripe gateway page.
+		Handles updating product stock.
+		@param request: the incoming request.
+		@param order: the order associated with the cart.
+		@return: nothing.
+		"""
+		for item in self.get_cartitems():
+			product = item.product
+
+			# If item is inactive
+			if item.is_product_inactive():
+				order.has_errors = True
+				order.save()
+				# send_mail("Order has error", "Look at it.", env('FROM_EMAIL'), [env('ADMIN_EMAIL')])  # todo edit and uncomment this
+				messages.warning(request, f"'{product.name}' is an inactive product. Contact us regarding this issue. An admin has been notified.")
+
+			# If item quantity > stock
+			if item.is_quantity_gt_stock():
+				order.has_errors = True
+				order.save()
+				product.stock = 0
+				product.stock_overflow = item.quantity - product.stock
+				product.status = Product.INACTIVE
+				product.save()
+				# send_mail("Order has error", "Look at it.", env('FROM_EMAIL'), [env('ADMIN_EMAIL')])  # todo edit and uncomment this
+				messages.warning(request, f"The quantity for '{product.name}' exceeds available stock! Contact us regarding this issue. An admin has been notified.")
+
+			# If item quantity <= stock
+			if item.is_quantity_lte_stock():
+				# If product stock is now 0
+				if (product.stock - item.quantity) == 0:
+					product.stock = 0
+					product.status = Product.INACTIVE
+					product.save()
+				else:
+					product.stock -= item.quantity
+					product.save()
 
 	class Meta:
 		verbose_name = 'Cart'
@@ -604,22 +734,6 @@ class Order(TimestampCreatorMixin):
 		"""
 		orders = cls.objects.filter(creator=user)
 		return orders
-
-	@classmethod
-	def create_order(cls, cart, request):
-		"""
-		Creates an Order from a Cart.
-		@param cart: the Cart to be associated with the Order.
-		@param request: the incoming request.
-		@return: nothing.
-		"""
-		Order.objects.create(
-			cart=cart,
-			total_price=cart.get_total_cart_price(),
-			status=Order.PLACED,
-			creator=request.user,
-			updater=request.user,
-		)
 
 	def send_order_confirmation_email(self):
 		"""

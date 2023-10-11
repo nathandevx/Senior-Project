@@ -66,7 +66,7 @@ def login_required(func):
 	"""
 	@wraps(func)
 	def check_login(request, *args, **kwargs):
-		if not request.user.is_superuser:
+		if not request.user.is_authenticated:
 			return HttpResponseForbidden()
 		return func(request, *args, **kwargs)
 	return check_login

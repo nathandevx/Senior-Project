@@ -149,17 +149,16 @@ CKEDITOR_CONFIGS = {
 # SendGrid settings
 EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_HOST_USER = 'apikey'  # this is exactly the value 'apikey'
-EMAIL_HOST_PASSWORD = env('SECRET_KEY')
+EMAIL_HOST_PASSWORD = env('SENDGRID_API_KEY')
 EMAIL_PORT = 587
 EMAIL_USE_TLS = False
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 DEFAULT_FROM_EMAIL = env('FROM_EMAIL')
 
-
-
-# set environment variables
-AWS_S3_ACCESS_KEY_ID=os.environ.get('AWS_S3_ACCESS_KEY_ID')
-AWS_STORAGE_BUCKET_NAME=os.environ.get('AWS_STORAGE_BUCKET_NAME')
+# AWS settings
+AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
 AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_ACL = None
 DEFAULT_FILE_STORAGE = 'storages.backends.s3.S3Storage'

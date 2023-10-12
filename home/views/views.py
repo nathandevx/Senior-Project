@@ -43,3 +43,7 @@ def product(request):
 
 def report(request):
 	return render(request, 'home/report.html')
+
+
+def cart_demo(request):
+	return render(request, 'home/addtocart.html')

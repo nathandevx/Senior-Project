@@ -21,7 +21,7 @@ def contact(request):
 			subject = form.cleaned_data['subject']
 			message = form.cleaned_data['message']
 			#try:
-			send_mail(subject, message, env('FROM_EMAIL'), [env('ADMIN_EMAIL')])  # todo: change to_email
+			send_mail(subject, f" \nFrom: {env('ADMIN_EMAIL')}\n\n" + message, env('FROM_EMAIL'), [env('ADMIN_EMAIL')])  # todo: change to_email
 			#messages.success(request, f'Email sent successfully.')
 			return redirect('home:home')
 			#except:

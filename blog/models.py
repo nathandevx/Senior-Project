@@ -40,6 +40,9 @@ class Post(TimestampCreatorMixin):
 	def get_delete_url(self):
 		return reverse('blog:post-delete', kwargs={'pk': self.pk})
 
+	def is_superuser_or_active_post(self, user):
+		return user.is_superuser or self.status == Post.ACTIVE
+
 	class Meta:
 		verbose_name = 'Post'
 		verbose_name_plural = 'Posts'

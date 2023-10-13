@@ -412,6 +412,7 @@ class Cart(TimestampCreatorMixin):
 		"""
 		items = self.cartitem_set.all()
 		return items
+	
 
 	def get_total_cart_price(self):
 		"""
@@ -700,6 +701,10 @@ class Order(TimestampCreatorMixin):
 	notes = models.TextField(default='', max_length=5000, blank=True, null=True)
 	uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 	has_errors = models.BooleanField(default=False)
+
+	#date_ordered = models.DateField(null=True, blank=True)
+	#number_of_items = models.IntegerField(max_length=5000)
+	#order_number = models.CharField(max_length= 15, unique=True)
 
 	def __str__(self):
 		return f"Email: {self.creator.email}, Status: {self.status}, Created: {self.created_at_formatted()}"

@@ -14,8 +14,6 @@ urlpatterns = [
 
 from . import views
 urlpatterns = [
-    # ... Your other URL patterns
-
     path('export/user_counts/<int:year>/', views.export_user_counts_to_csv, name='export_user_counts'),
     path('export/years_with_users/', views.export_years_with_users_to_csv, name='export_years_with_users'),
 ]

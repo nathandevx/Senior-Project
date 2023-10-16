@@ -21,11 +21,11 @@
                     <hr>
                     <div class="row">
                         <div class="card">
-                                <div class="col-xs-3 md-2">
+                                <div class="chart-container" style="position: relative">
                                     <canvas id="salesChart"></canvas>
                                 </div>
-                                <div class="col-xs-3 md-2">
-                                    <canvas id="trafficChart"></canvas>
+                                <div class="chart-container" style="position: relative">
+                                    <canvas id="statusChart"></canvas>
                                 </div>
 
                                 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -40,7 +40,7 @@
                                             datasets: [{
                                                 label: 'Sale Numbers by Day',
                                                 data: [12, 19, 3, 5, 2, 3, 7],
-                                                borderWidth: 1
+                                                borderWidth: 3
                                             }]
                                          },
                                         options: {
@@ -52,16 +52,18 @@
                                         }
                                     });
 
-                                    <!-- traffic graph -->
-                                    const ctx2 = document.getElementById('trafficChart');
+                                    <!-- status graph -->
+                                    const ctx2 = document.getElementById('statusChart');
 
                                     new Chart(ctx2, {
-                                        type: 'line',
+                                        type: 'bar',
                                         data: {
-                                            labels: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+                                            labels: ['Placed', 'Shipped', 'Delivered', 'Canceled'],
                                             datasets: [{
-                                                label: 'Visitors by Day',
-                                                data: [7, 9, 3, 1, 2, 3, 6],
+                                                label: 'Order Status',
+                                                {% for order in orders %}
+                                                data: [{{order.get_order_status_counts}}],
+                                                {% endfor %}
                                                 borderWidth: 1
                                             }]
                                          },
@@ -233,7 +235,7 @@
                     <!-- Export for Orders in Progress -->
                     <div class="px-2 py-2" style="text-align:right">
                             <button class="btn btn-secondary" type="button">
-                                Export Orders in Progress
+                                Export Orders in Progress to CSV
                             </button>
                     </div>
 
@@ -343,8 +345,8 @@
                     </div>
                     <!-- Export for Finished Orders -->
                     <div class="px-2 py-2" style="text-align:right">
-                            <button class="btn btn-secondary dropdown-toggle" type="button">
-                                Export Finished Orders
+                            <button class="btn btn-secondary" type="button">
+                                Export Finished Orders to CSV
                             </button>
                     </div>
 

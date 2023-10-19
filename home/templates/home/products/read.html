@@ -1,9 +1,9 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
-{% block title %}Product{% endblock %}
-
-{% block contents %}
-	<div class="container">
-		<h1 class="text-center">Product read</h1>
-	</div>
+{% block content %}
+    <h2>{{ product.name }}</h2>
+    <p>Description: {{ product.description }}</p>
+    <p>Price: {{ product.price }}</p>
+    <!-- Add other fields as needed -->
+    <a href="{% url 'home:home' %}">Back to Product List</a>
 {% endblock %}

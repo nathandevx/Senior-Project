@@ -568,14 +568,13 @@ class Cart(TimestampCreatorMixin):
 		if self.is_empty():
 			return render(request, 'home/carts/cart_empty.html', {'product_model': Product})
 
-	def handle_cart_access(self, request):
+	def not_creator_or_inactive_cart(self, request):
 		"""
-		If the cart's creator is not the request user or if the cart is inactive, an exception is raised.
+		If the cart's creator is not the request user or if the cart is inactive, returns True.
 		@param request: the incoming request.
-		@return: nothing or HttpResponseForbidden()
+		@return: boolean.
 		"""
-		if self.creator != request.user or self.is_inactive():
-			return HttpResponseForbidden()
+		return self.creator != request.user or self.is_inactive()
 
 	def handle_cart_purchase(self, request, order):
 		"""

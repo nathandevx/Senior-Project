@@ -5,6 +5,13 @@ from django.http import HttpResponseForbidden
 from functools import wraps
 from datetime import date
 import random
+import environ
+
+
+env = environ.Env(
+	# set casting, default value
+	DEBUG=(bool, False)
+)
 
 
 def format_datetime(datetime_obj):
@@ -70,3 +77,13 @@ def login_required(func):
 			return HttpResponseForbidden()
 		return func(request, *args, **kwargs)
 	return check_login
+
+
+def get_allowed_cities():
+	cities = env('ALLOWED_CITIES')
+	cities = cities.split(',')
+	new_cities = []
+	for city in cities:
+		if city not in ['', ',', ' ']:
+			new_cities.append(city.strip())
+	return new_cities

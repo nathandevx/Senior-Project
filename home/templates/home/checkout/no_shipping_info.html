@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}No shipping address{% endblock %}
+
+{% block contents %}
+
+    <div class="container-fluid text-center">
+	    <h1>No shipping address</h1>
+        <p>You haven't added a shipping address, please do so <a href="{% url 'home:shipping-info' %}">here</a> to continue the checkout process.</p>
+    </div>
+
+{% endblock %}

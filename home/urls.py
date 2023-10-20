@@ -24,7 +24,6 @@ urlpatterns = [
 	path('checkout/proceed-to-stripe/', checkout.proceed_to_stripe, name='proceed-to-stripe'),
 	path('checkout/payment-success/<uuid:cart_uuid>/', checkout.payment_success, name='payment-success'),
 	path('checkout/payment-cancel/', checkout.payment_cancel, name='payment-cancel'),
-	path('checkout/stripe-test/', checkout.stripe_test, name='stripe-test'),
 
 	# Orders
 	path('order', views.order, name='order'),

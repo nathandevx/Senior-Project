@@ -16,6 +16,7 @@ from decimal import Decimal
 import uuid
 import stripe
 import environ
+import csv
 
 
 env = environ.Env(
@@ -412,7 +413,6 @@ class Cart(TimestampCreatorMixin):
 		"""
 		items = self.cartitem_set.all()
 		return items
-	
 
 	def get_total_cart_price(self):
 		"""
@@ -702,10 +702,6 @@ class Order(TimestampCreatorMixin):
 	uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 	has_errors = models.BooleanField(default=False)
 
-	#date_ordered = models.DateField(null=True, blank=True)
-	#number_of_items = models.IntegerField(max_length=5000)
-	#order_number = models.CharField(max_length= 15, unique=True)
-
 	def __str__(self):
 		return f"Email: {self.creator.email}, Status: {self.status}, Created: {self.created_at_formatted()}"
 
@@ -730,6 +726,30 @@ class Order(TimestampCreatorMixin):
 
 	def is_canceled(self):
 		return self.status == Order.CANCELED
+
+	@staticmethod
+	def get_export_data(response):
+		"""
+		Gets all order data and writes it to a TSV file.
+		@param response: HttpResponse()
+		@return: a .tsv file with order data.
+		"""
+		writer = csv.writer(response, delimiter='\t')
+
+		# TSV file header
+		writer.writerow([
+			'Order ID', 'Order date', 'Order total price', 'Order status', 'User email',
+			'Shipping address', 'Ordered products'
+		])
+
+		# Loop through every order
+		for order in Order.objects.all():
+			products = []
+			# Loop through every CartItem associated to the order
+			for cart_item in order.cart.get_cartitems():
+				products.append(cart_item.product.name)
+			writer.writerow([order.pk, order.created_at, order.total_price, order.status, order.creator.email, order.cart.shipping_address, products])
+		return writer
 
 	@classmethod
 	def get_users_orders(cls, user):
@@ -828,3 +848,26 @@ class OrderHistory(TimestampCreatorMixin):
 
 	def __str__(self):
 		return f"{self.date}, {self.num_of_pastries}, {self.total}, {self.order_number}"
+
+
+class Configurations(models.Model):
+	phone_number = models.CharField(max_length=15, blank=True, null=True, help_text="Displayed on contact page")
+	email = models.EmailField(blank=True, null=True, help_text="Displayed on contact page")
+	address = models.TextField(blank=True, null=True, help_text="Where customers will pick up their orders")
+	facebook_url = models.URLField(blank=True, null=True, help_text="Displayed on about page")
+	instagram_url = models.URLField(blank=True, null=True, help_text="Displayed on about page")
+
+	def __str__(self):
+		return f"Configuration {self.pk}"
+
+	@classmethod
+	def get_first_configuration(cls):
+		"""
+		Gets the first Configuration entry in the database.
+		@return: a Configuration model.
+		"""
+		return cls.objects.all().first()
+
+	class Meta:
+		verbose_name = "Configuration"
+		verbose_name_plural = "Configurations"

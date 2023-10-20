@@ -1,6 +1,8 @@
 from django.core.mail import send_mail
 from django.shortcuts import redirect, render
-from ..forms import ContactForm
+from home.forms import ContactForm
+from home.models import Configurations
+
 import environ
 
 env = environ.Env(
@@ -14,6 +16,7 @@ def about(request):
 
 
 def contact(request):
+	config = Configurations.get_first_configuration()
 	if request.method == 'POST':
 		form = ContactForm(request.POST)
 		if form.is_valid():
@@ -26,7 +29,7 @@ def contact(request):
 			return redirect('home:home')
 			#except:
 				#return HttpResponseServerError('There was a problem sending the email. Please contact the email listed on the contact page directly.')
-	return render(request, 'home/contact.html')
+	return render(request, 'home/contact.html', {"config": config})
 
 
 def home(request):

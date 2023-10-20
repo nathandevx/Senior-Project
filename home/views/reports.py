@@ -1,6 +1,7 @@
 from django.shortcuts import render
-from django.http import HttpResponseForbidden, HttpResponse
+from django.http import HttpResponse
 from senior_project.utils import superuser_required
+from home.models import Order
 
 
 @superuser_required
@@ -40,7 +41,11 @@ def report_export(request):
 
 @superuser_required
 def report_export_download(request):
-	return HttpResponse("Downloaded")
+	# Create the HttpResponse object with the appropriate headers for CSV.
+	response = HttpResponse(content_type='text/tsv')
+	response['Content-Disposition'] = 'attachment; filename="report.tsv"'
+	Order.get_export_data(response)
+	return response
 
 
 @superuser_required

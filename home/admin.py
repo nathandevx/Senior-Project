@@ -3,6 +3,8 @@ from django.conf import settings
 from .models import Product, ProductImage, ShippingAddress, Cart, CartItem, Order, Contact, OrderHistory, Configurations
 
 
+admin.site.register(Configurations)
+
 # The models shouldn't be editable via admin in production
 if settings.DEBUG:  # if in development
 	admin.site.register(Product)
@@ -13,4 +15,3 @@ if settings.DEBUG:  # if in development
 	admin.site.register(Order)
 	admin.site.register(Contact)
 	admin.site.register(OrderHistory)
-	admin.site.register(Configurations)

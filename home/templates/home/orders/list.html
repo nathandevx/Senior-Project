@@ -1,40 +1,38 @@
 {% extends 'base.html' %}
 
-{% block title %}Order list{% endblock %}
+{% block title %}Past orders{% endblock %}
 
 {% block contents %}
 	<div class="container">
-		<h1 class="text-center">Order list</h1>
-        <h4>View all your past orders below:</h4>
-		<br>
+		{% if orders %}
+			<h1 class="text-center">Past orders</h1>
+		    <div class="table-responsive">
+				<table class="table table-hover text-center">
+					<thead>
+						<tr>
+							<th><h5>#</h5></th>
+							<th><h5>Order link</h5></th>
+							<th><h5>Date</h5></th>
+							<th><h5>Total</h5></th>
+							<th><h5>Status</h5></th>
+						</tr>
+					</thead>
+					<tbody>
+					    {% for order in orders %}
+							<tr>
+								<td>{{ order.pk}}</td>
+								<td><a href="{{ order.get_read_url }}">Link</a></td>
+								<td>{{ order.created_at }}</td>
+								<td>${{ order.total_price }}</td>
+								<td>{{ order.status }}</td>
+							</tr>
+					    {% endfor %}
+					</tbody>
+				</table>
+			</div>
+		{% else %}
+			<h1 class="text-center">No orders found.</h1>
+		{% endif %}
 
-
-    <div class="table-responsive">
-		<table class="table table-hover text-center">
-			<thead>
-				<tr>
-					<th><h5>Date</h5></th>
-					<th><h5>Order Confirmation Page</h5></th>
-					<th><h5>Total</h5></th>
-					<th><h5>Order Number</h5></th>
-					<th><h5>Date of Delivery</h5></th>
-					<th><h5>Order Status</h5></th>
-				</tr>
-			</thead>
-			<tbody>
-			    {% for order in orders %}
-					<tr>
-
-						<td>{{ order.created_at }}</td>
-						<td><a href="{{ order.get_read_url }}">Order</a></td>
-						<td>{{ order.total_price }}</td>
-						<td>{{ order.pk}}</td>
-						<td>{{ order.estimated_delivery_date }}</td>
-						<td>{{ order.status }}</td>
-					</tr>
-			    {% endfor %}
-			</tbody>
-		</table>
-	</div>
 	</div>
 {% endblock %}

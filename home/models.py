@@ -729,7 +729,8 @@ class Order(TimestampCreatorMixin):
 	@staticmethod
 	def get_export_data(response):
 		"""
-		Gets all order data and writes it to a TSV file.
+		Gets all Order and OrderHistory data and writes it to a TSV file.
+		OrderHistory data is Order data that was saved before a user deletes their account.
 		@param response: HttpResponse()
 		@return: a .tsv file with order data.
 		"""
@@ -741,13 +742,18 @@ class Order(TimestampCreatorMixin):
 			'Shipping address', 'Ordered products'
 		])
 
-		# Loop through every order
+		# Loop through every Order
 		for order in Order.objects.all():
 			products = []
 			# Loop through every CartItem associated to the order
 			for cart_item in order.cart.get_cartitems():
 				products.append(cart_item.product.name)
 			writer.writerow([order.pk, order.created_at, order.total_price, order.status, order.creator.email, order.cart.shipping_address, products])
+
+		# Loop through every OrderHistory
+		for order in OrderHistory.objects.all():
+			writer.writerow([order.order_number, order.created_at, order.total_price, order.status, "account deleted", "account deleted", "account deleted"])
+
 		return writer
 
 	@classmethod
@@ -835,18 +841,34 @@ class Contact(models.Model):
 		return self.email
 
 
-class OrderHistory(TimestampCreatorMixin):
-	"""
-	Displays the dates the order was placed on, number of pastries ordered,
-	totals, and order numbers (for future reference for the owner)
-	"""
-	date = models.CharField(max_length=100)
-	num_of_pastries = models.CharField(max_length=100)
-	total = models.CharField(max_length=100)
-	order_number = models.CharField(max_length=200)
+# If a user deletes their account, OrderHistory is a backup for their orders
+class OrderHistory(models.Model):
+	order_number = models.IntegerField()
+	total_price = models.DecimalField(max_digits=10, decimal_places=2)
+	status = models.CharField(max_length=50, choices=Order.CHOICES)
+	created_at = models.DateTimeField()
 
 	def __str__(self):
-		return f"{self.date}, {self.num_of_pastries}, {self.total}, {self.order_number}"
+		return f"OrderHistory - Status: {self.status}"
+
+	@classmethod
+	def create_order_history_objs(cls, orders):
+		"""
+		Creates a OrderHistory object for each order.
+		@param orders: a QuerySet of orders.
+		@return: Nothing.
+		"""
+		for order in orders:
+			cls.objects.create(
+				order_number=order.pk,
+				total_price=order.total_price,
+				status=order.status,
+				created_at=order.created_at,
+			)
+
+	class Meta:
+		verbose_name = "Order History"
+		verbose_name_plural = "Order Histories"
 
 
 class Configurations(models.Model):

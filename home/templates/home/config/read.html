@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Configurations{% endblock %}
+
+{% block contents %}
+
+    <div class="container">
+        <h1 class="text-center">Your configurations</h1>
+	    <p>Update your configuration <a href="{{ config.get_update_url }}">here</a></p>
+        <p>Phone number: {{ config.phone_number }}</p>
+		<p>Email: {{ config.email }}</p>
+		<p>Address: {{ config.address }}</p>
+		<p>Facebook_url: {{ config.facebook_url }}</p>
+		<p>Instagram_url: {{ config.instagram_url }}</p>
+    </div>
+
+{% endblock %}

@@ -859,6 +859,16 @@ class Configurations(models.Model):
 	def __str__(self):
 		return f"Configuration {self.pk}"
 
+	@staticmethod
+	def get_create_url():
+		return reverse('home:config-create')
+
+	def get_read_url(self):
+		return reverse('home:config-read', kwargs={'pk': self.pk})
+
+	def get_update_url(self):
+		return reverse('home:config-update', kwargs={'pk': self.pk})
+
 	@classmethod
 	def get_first_configuration(cls):
 		"""
@@ -866,6 +876,10 @@ class Configurations(models.Model):
 		@return: a Configuration model.
 		"""
 		return cls.objects.all().first()
+
+	@classmethod
+	def config_exists(cls):
+		return cls.objects.exists()
 
 	class Meta:
 		verbose_name = "Configuration"

@@ -7,10 +7,7 @@ from blog.models import Post
 
 
 def post_list(request):
-	if request.user.is_superuser:
-		posts = Post.objects.all()
-	else:
-		posts = Post.objects.filter(status=Post.ACTIVE)
+	posts = Post.get_active_posts()
 	return render(request, 'blog/list.html', {'posts': posts, 'post_model': Post})
 
 

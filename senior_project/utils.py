@@ -2,6 +2,7 @@ from django.utils import timezone
 from django.contrib.sites.models import Site
 from django.conf import settings
 from django.http import HttpResponseForbidden
+from django.utils import timezone
 from functools import wraps
 from datetime import date
 import random
@@ -80,6 +81,10 @@ def login_required(func):
 
 
 def get_allowed_cities():
+	"""
+	Gets the ALLOWED_CITIES and puts them into a comma separated list.
+	@return: a list.
+	"""
 	cities = env('ALLOWED_CITIES')
 	cities = cities.split(',')
 	new_cities = []
@@ -87,3 +92,19 @@ def get_allowed_cities():
 		if city not in ['', ',', ' ']:
 			new_cities.append(city.strip())
 	return new_cities
+
+
+def combine_form_dicts(user, form_data: dict):
+	"""
+	@param user: the user.
+	@param form_data: a dict.
+	@return: the form_data + TimeStampCreatorMixin data in dictionary format.
+	"""
+	extra_data = {
+		'creator': user,
+		'updater': user,
+		'created_at': timezone.now(),
+		'updated_at': timezone.now(),
+	}
+	# form_data + data
+	return {**form_data, **extra_data}

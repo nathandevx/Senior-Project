@@ -9,6 +9,7 @@
 		<form method="POST">
 			{% csrf_token %}
 		    {{ form.media }}
+			{{ form.content.errors }}
 			{{ form|crispy }}
 			<button type="submit" class="btn btn-success">Update</button>
 			<a href="{{ post.get_read_url }}" class="btn btn-primary">Cancel</a>

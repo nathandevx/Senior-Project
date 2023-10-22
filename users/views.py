@@ -32,5 +32,4 @@ def delete_user(request):
                     messages.info(request, "There was an error.")
     else:
         form = DeleteUserForm()
-        context = {'form': form}
-        return render(request, 'users/delete_account.html', context)
+    return render(request, 'users/delete_account.html', {'form': form})

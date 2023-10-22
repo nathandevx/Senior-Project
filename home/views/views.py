@@ -1,8 +1,7 @@
 from django.core.mail import send_mail
 from django.shortcuts import redirect, render
 from home.forms import ContactForm
-from home.models import Configurations
-
+from home.models import Product, Configurations
 import environ
 
 env = environ.Env(

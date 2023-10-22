@@ -1,5 +1,4 @@
-from django.utils import timezone
-from django.contrib.sites.models import Site
+from django.contrib.sites.shortcuts import get_current_site
 from django.conf import settings
 from django.http import HttpResponseForbidden
 from django.utils import timezone
@@ -18,21 +17,21 @@ env = environ.Env(
 def format_datetime(datetime_obj):
 	"""
 	Formats a datetime object.
-	Ex: "September 12, 2023, at 08:19 AM"
+	Ex: "January 01, 2023, 06:30 AM"
 	@param datetime_obj: datetime object.
 	@return: a formatted datetime object.
 	"""
 	return timezone.localtime(datetime_obj).strftime('%B %d, %Y, %I:%M %p')
 
 
-def get_full_url(url):
+def get_full_url(url, request):
 	"""
 	Gets the full URL.
 	@param url: an url like "product/1/"
 	@return: an url like "https://localhost.com/product/1/"
 	"""
 	# url can be model_instance.get_read_url
-	current_site_domain = Site.objects.get(pk=1).domain
+	current_site_domain = get_current_site(request)
 	protocol = 'https' if settings.USE_HTTPS else 'http'
 	return f"{protocol}://{current_site_domain}{url}"
 
@@ -80,12 +79,16 @@ def login_required(func):
 	return check_login
 
 
-def get_allowed_cities():
+def get_allowed_cities(test_cities=None):
 	"""
 	Gets the ALLOWED_CITIES and puts them into a comma separated list.
-	@return: a list.
+	@param test_cities: used for test cases.
+	@return: a list
 	"""
-	cities = env('ALLOWED_CITIES')
+	if test_cities:
+		cities = test_cities
+	else:
+		cities = env('ALLOWED_CITIES')
 	cities = cities.split(',')
 	new_cities = []
 	for city in cities:

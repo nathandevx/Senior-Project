@@ -160,7 +160,7 @@ class Product(TimestampCreatorMixin):
 		products = cls.objects.filter(status=cls.ACTIVE)
 		return products
 
-	def create_stripe_product_and_price_objs(self):
+	def create_stripe_product_and_price_objs(self, request):
 		"""
 		Creates a stripe product and price object. And associates them with the product.
 		@return: nothing, ErrorCreatingAStripeProduct() exception otherwise.
@@ -169,7 +169,7 @@ class Product(TimestampCreatorMixin):
 			# Create product on stripe
 			stripe_product = stripe.Product.create(
 				name=self.name,
-				url=get_full_url(self.get_read_url())
+				url=get_full_url(self.get_read_url(), request)
 			)
 
 			# Associate a price with that stripe product
@@ -187,7 +187,7 @@ class Product(TimestampCreatorMixin):
 			self.delete()
 			raise ErrorCreatingAStripeProduct("An error occurred with creating a product on stripe. The product was deleted to avoid confusion and further errors.")
 
-	def update_stripe_product_and_price_objs(self):
+	def update_stripe_product_and_price_objs(self, request):
 		"""
 		Updates the stripe product and stripe price objects.
 		Will not update the price if no price change has occurred.
@@ -200,7 +200,7 @@ class Product(TimestampCreatorMixin):
 				self.stripe_product_id,
 				name=self.name,
 				description=self.description,
-				url=get_full_url(self.get_read_url())
+				url=get_full_url(self.get_read_url(), request)
 			)
 
 			# Mark the old stripe price object as inactive.
@@ -765,7 +765,7 @@ class Order(TimestampCreatorMixin):
 		orders = cls.objects.filter(creator=user)
 		return orders
 
-	def send_order_confirmation_email(self):
+	def send_order_confirmation_email(self, request):
 		"""
 		Sends the order confirmation email to the customer.
 		@return: nothing, just sends an email.
@@ -773,7 +773,7 @@ class Order(TimestampCreatorMixin):
 		subject = 'Order Confirmation'
 		from_email = env('FROM_EMAIL')
 		recipient_list = [env('ADMIN_EMAIL')]  # todo: change to_email
-		order_confirmation_url = get_full_url(self.get_read_url())
+		order_confirmation_url = get_full_url(self.get_read_url(), request)
 		html_message = \
 			f"""
 					<html>

@@ -1,9 +1,14 @@
 from django.contrib.auth.models import AbstractUser
 from django.db.models.functions import ExtractYear
+from django.shortcuts import reverse
 from senior_project.constants import MONTHS
 
 
 class User(AbstractUser):
+	@staticmethod
+	def get_delete_url():
+		return reverse('users:delete-user')
+
 	@classmethod
 	def get_user_counts_by_month_for_year(cls, year):
 		"""

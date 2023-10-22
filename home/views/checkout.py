@@ -75,7 +75,7 @@ def payment_success(request, cart_uuid):
 	order = cart.create_order(request)
 	cart.handle_cart_purchase(request, order)
 	cart.set_original_price_for_all_cart_items()
-	order.send_order_confirmation_email()
+	order.send_order_confirmation_email(request)
 	cart.set_cart_as_inactive(request)
 	cart.get_active_cart_or_create_new_cart(request)
 	return redirect(order.get_read_url())

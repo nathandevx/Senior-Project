@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
 from django.test import TestCase
 import environ
 
@@ -17,6 +18,9 @@ class BaseTestCase(TestCase):
 		self.superuser = User.objects.create_superuser(username='Admin', email=env("ADMIN_EMAIL"), password='123')
 		self.superuser_password = '123'
 
-		# Create regular user
+		# Create regular users
 		self.user1 = User.objects.create_user(username='User 1', email='example@example.com', password='123')
 		self.user1_password = '123'
+
+		# Create anonymous users
+		self.anonymous_user = AnonymousUser()

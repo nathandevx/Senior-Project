@@ -59,3 +59,20 @@ class TestDeleteUser(BaseTestCase):
 		self.assertFormError(DeleteUserForm(form_data), 'delete_checkbox', [Field.default_error_messages['required']])
 		self.assertEquals(response.request.get('PATH_INFO'), self.url)
 		self.assertEquals(response.status_code, 200)
+
+
+class TestConfigurationPages(BaseTestCase):
+	def setUp(self):
+		super().setUp()
+
+	def _create_objects(self):
+		pass
+
+	def test_config_create(self):
+		pass
+
+	def test_config_read(self):
+		pass
+
+	def test_config_update(self):
+		pass

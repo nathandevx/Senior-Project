@@ -26,7 +26,7 @@ class TestUtilityFunctions(BaseTestCase):
 		request = self.factory.get(url)
 		protocol = 'https' if settings.USE_HTTPS else 'http'
 		full_url = f"{protocol}://{get_current_site(request)}{url}"
-		self.assertEquals(full_url, utils.get_full_url(url, request))
+		self.assertEquals(full_url, utils.get_full_url(url))
 
 	def test_get_random_date(self):
 		"""No tests needed, only used in development."""
@@ -40,6 +40,10 @@ class TestUtilityFunctions(BaseTestCase):
 
 	def test_combine_form_dicts(self):
 		"""No tests needed, uses built-in Python code."""
+		pass
+
+	def test_get_table_data(self):
+		# todo: test this
 		pass
 
 
@@ -106,7 +110,7 @@ class TestTemplateTags(BaseTestCase):
 		rendered_template = template.render(Context({'request': request}))
 
 		# Get the expected cart url
-		expected_url = Cart.get_active_cart_or_create_new_cart(request).get_read_url()
+		expected_url = Cart.get_active_cart_or_create_new_cart(request.user).get_read_url()
 
 		# Assert that the template contains the url
 		self.assertIn(expected_url, rendered_template)

@@ -1,5 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
+from django.contrib.sites.models import Site
+from django.conf import settings
 from django.test import TestCase
 import environ
 
@@ -14,13 +16,21 @@ User = get_user_model()
 
 class BaseTestCase(TestCase):
 	def setUp(self):
+		# The default password
+		self.password = '123'
+
 		# Create superuser
-		self.superuser = User.objects.create_superuser(username='Admin', email=env("ADMIN_EMAIL"), password='123')
-		self.superuser_password = '123'
+		self.superuser = User.objects.create_superuser(username='Admin', email=env("ADMIN_EMAIL"), password=self.password)
+		self.superuser_password = self.password
 
 		# Create regular users
-		self.user1 = User.objects.create_user(username='User 1', email='example@example.com', password='123')
-		self.user1_password = '123'
+		self.user1 = User.objects.create_user(username='User 1', email='example@example.com', password=self.password)
+		self.user1_password = self.password
 
 		# Create anonymous users
 		self.anonymous_user = AnonymousUser()
+
+		# The site's domain name, ex: example.com.
+		self.domain = Site.objects.get(pk=settings.SITE_ID).domain
+		# The site's protocol, ex: http or https
+		self.protocol = 'https' if settings.USE_HTTPS else 'http'

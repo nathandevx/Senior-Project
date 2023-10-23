@@ -8,7 +8,7 @@ from django.db.models.functions import ExtractYear
 from django.db.models import Count, Sum, Q
 from django.contrib import messages
 from ckeditor.fields import RichTextField
-from senior_project.utils import format_datetime
+from senior_project.utils import format_datetime, get_protocol, get_domain
 from senior_project.exceptions import MoreThanOneActiveCartError, MoreThanOneCartItemError, ErrorCreatingAStripeProduct, ErrorUpdatingAStripeProduct, ErrorDeletingAStripeProduct, ErrorCreatingStripeCheckoutSession
 from senior_project.constants import MONTHS
 from senior_project.utils import get_full_url
@@ -130,18 +130,19 @@ class Product(TimestampCreatorMixin):
 		images = self.productimage_set.all()
 		return images
 
-	def save_images(self, request):
+	def save_images(self, files: list):
 		"""
 		Saves a list of images and associates them with the product.
-		@param request: the incoming request.
+		@param user: the User the ProductImages will be associated with.
+		@param files: a list.
 		@return: nothing.
 		"""
-		for file in request.FILES.getlist('image'):
+		for file in files:
 			ProductImage.objects.create(
 				product=self,
 				image=file,
-				creator=request.user,
-				updater=request.user,
+				creator=self.creator,
+				updater=self.creator,
 			)
 
 	def delete_images(self):
@@ -160,7 +161,7 @@ class Product(TimestampCreatorMixin):
 		products = cls.objects.filter(status=cls.ACTIVE)
 		return products
 
-	def create_stripe_product_and_price_objs(self, request):
+	def create_stripe_product_and_price_objs(self):
 		"""
 		Creates a stripe product and price object. And associates them with the product.
 		@return: nothing, ErrorCreatingAStripeProduct() exception otherwise.
@@ -169,7 +170,7 @@ class Product(TimestampCreatorMixin):
 			# Create product on stripe
 			stripe_product = stripe.Product.create(
 				name=self.name,
-				url=get_full_url(self.get_read_url(), request)
+				url=get_full_url(self.get_read_url())
 			)
 
 			# Associate a price with that stripe product
@@ -187,7 +188,7 @@ class Product(TimestampCreatorMixin):
 			self.delete()
 			raise ErrorCreatingAStripeProduct("An error occurred with creating a product on stripe. The product was deleted to avoid confusion and further errors.")
 
-	def update_stripe_product_and_price_objs(self, request):
+	def update_stripe_product_and_price_objs(self):
 		"""
 		Updates the stripe product and stripe price objects.
 		Will not update the price if no price change has occurred.
@@ -200,7 +201,7 @@ class Product(TimestampCreatorMixin):
 				self.stripe_product_id,
 				name=self.name,
 				description=self.description,
-				url=get_full_url(self.get_read_url(), request)
+				url=get_full_url(self.get_read_url())
 			)
 
 			# Mark the old stripe price object as inactive.
@@ -269,11 +270,11 @@ class Product(TimestampCreatorMixin):
 		total_solds = [product.total_sold if product.total_sold else 0 for product in top_products]
 		return product_names, total_solds
 
-	def add_product_to_cart(self, request, cart, quantity):
+	def add_product_to_cart(self, user, cart, quantity):
 		"""
 		Adds a product to a cart.
 		If the Product is already in the cart, it adds to the existing quantity of that product.
-		@param request: the incoming request.
+		@param user: the User the CartItems will be associated with.
 		@param cart: the cart to add the Product to.
 		@param quantity: the number of units of the product to add to the cart.
 		@return: nothing.
@@ -292,19 +293,23 @@ class Product(TimestampCreatorMixin):
 				cart=cart,
 				product=self,
 				quantity=quantity,
-				creator=request.user,
-				updater=request.user,
+				creator=user,
+				updater=user,
 			)
 			return cart_item
 		# If the Product has a CartItem associated with it in the Cart, increment the quantity
 		elif cart_items.count() == 1:
 			cart_item = cart_items.first()
 			cart_item.quantity += quantity
-			cart_item.updater = request.user
+			cart_item.updater = user
 			cart_item.save()
 			return cart_item
 		else:
 			raise ValueError("Unexpected cart_items model count encountered")
+
+	def get_associated_orders(self):
+		orders = Order.objects.filter(cart__cartitem__product=self)
+		return orders
 
 	class Meta:
 		verbose_name = 'Product'
@@ -428,29 +433,29 @@ class Cart(TimestampCreatorMixin):
 		self.save()
 
 	@classmethod
-	def get_active_cart_or_create_new_cart(cls, request):
+	def get_active_cart_or_create_new_cart(cls, user):
 		"""
 		Gets the active cart of creates a new cart. Raises an error if there's more than 1 cart.
-		@param request: the incoming request.
+		@param user: the User.
 		@return: a cart instance. Or raises exceptions if an unexpected cart count occurred.
 		"""
-		cart = cls.objects.filter(status=cls.ACTIVE, creator=request.user)
+		cart = cls.objects.filter(status=cls.ACTIVE, creator=user)
 		if cart.count() > 1:  # a user shouldn't have multiple active carts
 			raise MoreThanOneActiveCartError("More than 1 active carts were found.")
 		elif cart.count() == 1:  # there's an active cart associated with the user
 			return cart.first()
 		else:  # no active cart associated with the user exists
-			return cls.objects.create(status=cls.ACTIVE, creator=request.user, updater=request.user)
+			return cls.objects.create(status=cls.ACTIVE, creator=user, updater=user)
 
-	@staticmethod
-	def set_cart_as_inactive(request):
+	@classmethod
+	def set_cart_as_inactive(cls, user):
 		"""
 		Sets the active cart associated with the user as inactive.
-		@param request: the incoming request.
+		@param user: the User.
 		@return: nothing. Or raises exceptions if an unexpected cart count occurred.
 		"""
 		# First check if there are an unexpected number of active Carts associated with the user
-		carts = Cart.objects.filter(status=Cart.ACTIVE, creator=request.user)
+		carts = cls.objects.filter(status=cls.ACTIVE, creator=user)
 		if carts.count() > 1:  # a user shouldn't have multiple active carts
 			raise MoreThanOneActiveCartError("More than 1 active carts were found.")
 		if carts.count() < 1:
@@ -459,7 +464,7 @@ class Cart(TimestampCreatorMixin):
 		# Then set the cart as inactive
 		if carts.count() == 1:  # there's an active cart associated with the user
 			cart = carts.first()
-			cart.status = Cart.INACTIVE
+			cart.status = cls.INACTIVE
 			cart.save()
 
 	def set_original_price_for_all_cart_items(self):
@@ -484,7 +489,7 @@ class Cart(TimestampCreatorMixin):
 			is_inactive = cart_item.is_product_inactive()
 		return is_out_of_stock, is_inactive
 
-	def get_payment_success_and_payment_cancel_url(self, request):
+	def get_payment_success_and_payment_cancel_url(self):
 		"""
 		Stripe needs 2 URLS for a payment to go smoothly.
 		A success URL: when the payment is successful.
@@ -492,21 +497,18 @@ class Cart(TimestampCreatorMixin):
 		@param request: the incoming request.
 		@return: a size 2 tuple containing (success_url, canceled_url)
 		"""
-		scheme = request.scheme  # 'http' or 'https'
-		domain = request.get_host()  # domain name
 		success = reverse('home:payment-success', kwargs={'cart_uuid': self.uuid})
 		cancel = reverse('home:payment-cancel')
-		full_success_url = f"{scheme}://{domain}{success}"
-		full_canceled_url = f"{scheme}://{domain}{cancel}"
+		full_success_url = f"{get_protocol()}://{get_domain()}{success}"
+		full_canceled_url = f"{get_protocol()}://{get_domain()}{cancel}"
 		return full_success_url, full_canceled_url
 
-	def create_stripe_checkout_session(self, request):
+	def create_stripe_checkout_session(self):
 		"""
 		Creates a stripe checkout session.
-		@param request: the incoming request.
 		@return: a stripe checkout session URL, an ErrorCreatingStripeCheckoutSession() exception otherwise.
 		"""
-		success_url, canceled_url = self.get_payment_success_and_payment_cancel_url(request)
+		success_url, canceled_url = self.get_payment_success_and_payment_cancel_url()
 
 		# Get the cart items prices and quantity
 		line_items = []
@@ -530,18 +532,18 @@ class Cart(TimestampCreatorMixin):
 		except:
 			raise ErrorCreatingStripeCheckoutSession("Error creating a stripe checkout session.")
 
-	def create_order(self, request):
+	def create_order(self):
 		"""
 		Creates an Order from a Cart.
-		@param request: the incoming request.
+		@param user: the User.
 		@return: nothing.
 		"""
 		order = Order.objects.create(
 			cart=self,
 			total_price=self.get_total_cart_price(),
 			status=Order.PLACED,
-			creator=request.user,
-			updater=request.user,
+			creator=self.creator,
+			updater=self.creator,
 		)
 		return order
 
@@ -568,13 +570,13 @@ class Cart(TimestampCreatorMixin):
 		if self.is_empty():
 			return render(request, 'home/carts/cart_empty.html', {'product_model': Product})
 
-	def not_creator_or_inactive_cart(self, request):
+	def not_creator_or_inactive_cart(self, user):
 		"""
 		If the cart's creator is not the request user or if the cart is inactive, returns True.
-		@param request: the incoming request.
+		@param user: the User.
 		@return: boolean.
 		"""
-		return self.creator != request.user or self.is_inactive()
+		return self.creator != user or self.is_inactive()
 
 	def handle_cart_purchase(self, request, order):
 		"""
@@ -711,9 +713,6 @@ class Order(TimestampCreatorMixin):
 	def get_read_url(self):
 		return reverse('home:order-confirmation', kwargs={'order_uuid': self.uuid})
 
-	def get_order_confirmation_url(self):
-		return reverse('home:order-confirmation', kwargs={'uuid': self.uuid})
-
 	def is_placed(self):
 		return self.status == Order.PLACED
 
@@ -727,14 +726,14 @@ class Order(TimestampCreatorMixin):
 		return self.status == Order.CANCELED
 
 	@staticmethod
-	def get_export_data(response):
+	def get_export_data(http_response):
 		"""
 		Gets all Order and OrderHistory data and writes it to a TSV file.
 		OrderHistory data is Order data that was saved before a user deletes their account.
-		@param response: HttpResponse()
+		@param http_response: HttpResponse()
 		@return: a .tsv file with order data.
 		"""
-		writer = csv.writer(response, delimiter='\t')
+		writer = csv.writer(http_response, delimiter='\t')
 
 		# TSV file header
 		writer.writerow([
@@ -765,7 +764,7 @@ class Order(TimestampCreatorMixin):
 		orders = cls.objects.filter(creator=user)
 		return orders
 
-	def send_order_confirmation_email(self, request):
+	def send_order_confirmation_email(self):
 		"""
 		Sends the order confirmation email to the customer.
 		@return: nothing, just sends an email.
@@ -773,7 +772,7 @@ class Order(TimestampCreatorMixin):
 		subject = 'Order Confirmation'
 		from_email = env('FROM_EMAIL')
 		recipient_list = [env('ADMIN_EMAIL')]  # todo: change to_email
-		order_confirmation_url = get_full_url(self.get_read_url(), request)
+		order_confirmation_url = get_full_url(self.get_read_url())
 		html_message = \
 			f"""
 					<html>
@@ -874,7 +873,7 @@ class OrderHistory(models.Model):
 class Configurations(models.Model):
 	phone_number = models.CharField(max_length=15, blank=True, null=True, help_text="Displayed on contact page")
 	email = models.EmailField(blank=True, null=True, help_text="Displayed on contact page")
-	address = models.TextField(blank=True, null=True, help_text="Where customers will pick up their orders")
+	address = models.CharField(max_length=200, blank=True, null=True, help_text="Where customers will pick up their orders")
 	facebook_url = models.URLField(blank=True, null=True, help_text="Displayed on about page")
 	instagram_url = models.URLField(blank=True, null=True, help_text="Displayed on about page")
 

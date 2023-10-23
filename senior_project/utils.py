@@ -2,6 +2,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.conf import settings
 from django.http import HttpResponseForbidden
 from django.utils import timezone
+from django.contrib.sites.models import Site
 from functools import wraps
 from datetime import date
 import random
@@ -24,16 +25,16 @@ def format_datetime(datetime_obj):
 	return timezone.localtime(datetime_obj).strftime('%B %d, %Y, %I:%M %p')
 
 
-def get_full_url(url, request):
+def get_full_url(url):
 	"""
 	Gets the full URL.
 	@param url: an url like "product/1/"
 	@return: an url like "https://localhost.com/product/1/"
 	"""
 	# url can be model_instance.get_read_url
-	current_site_domain = get_current_site(request)
+	domain = Site.objects.get(pk=settings.SITE_ID)
 	protocol = 'https' if settings.USE_HTTPS else 'http'
-	return f"{protocol}://{current_site_domain}{url}"
+	return f"{protocol}://{domain}{url}"
 
 
 def get_random_date():

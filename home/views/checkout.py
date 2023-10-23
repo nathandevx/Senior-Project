@@ -16,9 +16,9 @@ stripe.api_key = env('STRIPE_SECRET_KEY')
 
 @login_required
 def shipping_info(request):
-	cart = Cart.get_active_cart_or_create_new_cart(request)
+	cart = Cart.get_active_cart_or_create_new_cart(request.user)
 
-	access = cart.not_creator_or_inactive_cart(request)
+	access = cart.not_creator_or_inactive_cart(request.user)
 	if access:
 		return HttpResponseForbidden()
 	cart.handle_cart_errors(request)
@@ -47,9 +47,9 @@ def shipping_info(request):
 
 @login_required
 def proceed_to_stripe(request):
-	cart = Cart.get_active_cart_or_create_new_cart(request)
+	cart = Cart.get_active_cart_or_create_new_cart(request.user)
 
-	access = cart.not_creator_or_inactive_cart(request)
+	access = cart.not_creator_or_inactive_cart(request.user)
 	if access:
 		return HttpResponseForbidden()
 	cart.handle_cart_errors(request)
@@ -60,7 +60,7 @@ def proceed_to_stripe(request):
 		return render(request, 'home/checkout/no_shipping_info.html')
 
 	if request.method == 'POST':
-		checkout_session_url = cart.create_stripe_checkout_session(request)
+		checkout_session_url = cart.create_stripe_checkout_session()
 		return redirect(checkout_session_url, code=303)
 	else:
 		return render(request, 'home/checkout/proceed_to_stripe.html')
@@ -69,15 +69,15 @@ def proceed_to_stripe(request):
 @login_required
 def payment_success(request, cart_uuid):
 	cart = get_object_or_404(Cart, uuid=cart_uuid)
-	access = cart.not_creator_or_inactive_cart(request)
+	access = cart.not_creator_or_inactive_cart(request.user)
 	if access:
 		return HttpResponseForbidden()
-	order = cart.create_order(request)
+	order = cart.create_order()
 	cart.handle_cart_purchase(request, order)
 	cart.set_original_price_for_all_cart_items()
-	order.send_order_confirmation_email(request)
-	cart.set_cart_as_inactive(request)
-	cart.get_active_cart_or_create_new_cart(request)
+	order.send_order_confirmation_email()
+	cart.set_cart_as_inactive(request.user)
+	Cart.get_active_cart_or_create_new_cart(request.user)
 	return redirect(order.get_read_url())
 
 

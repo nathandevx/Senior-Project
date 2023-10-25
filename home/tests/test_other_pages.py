@@ -1,7 +1,10 @@
+from django import views
+from django.core.mail import send_mail, mail
 from django.urls import resolve
 from django.shortcuts import reverse
 from django.contrib.auth import get_user_model
 from django.forms.fields import Field
+from home.models import Configurations
 from home.tests.base import BaseTestCase
 from users.forms import DeleteUserForm
 from users.views import delete_user
@@ -76,3 +79,34 @@ class TestConfigurationPages(BaseTestCase):
 
 	def test_config_update(self):
 		pass
+
+class TestContactPage(BaseTestCase):
+	def setUp(self):
+		super().setUp()
+		self.url = reverse('home:contact')
+
+	def test_get_request(self):
+		response = self.client.get(self.url)
+		context = response.context
+
+		self.assertEquals(resolve(self.url).func, views.contact)
+		self.assertTemplateUsed(response, 'home/contact.html')
+		self.assertEquals(response.status_code, 200)
+
+		self.assertIn('config', context)
+		self.assertEquals(context['config'], Configurations.get_first_configuration() or None)  # the config can be empty
+
+	def test_post_request(self):
+		"""They submit the form. Tests if sending an email causes problems."""
+		form_data = {
+			'email': env('ADMIN_EMAIL'),
+			'subject': 'Email subject',
+			'message': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+		}
+		response = self.client.post(self.url, data=form_data)
+		with self.assertRaises(Exception):
+			mail.send_mail(form_data['subject'], form_data['message'], env('FROM_EMAIL'), [env('ADMIN_EMAIL')])
+			self.assertEqual(len(mail.outbox), 1)
+			self.assertEqual(mail.outbox[0].subject, form_data['subject'])
+			self.assertEqual(mail.outbox[0].body, form_data['message'])
+		self.assertRedirects(response, reverse('home:home'), status_code=302, target_status_code=200)

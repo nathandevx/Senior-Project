@@ -18,6 +18,6 @@ class TestEmail(TestCase):
 		message = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
 		try:
 			send_mail(subject, message, env('FROM_EMAIL'), [env('ADMIN_EMAIL')])
-			print('Email was sent successfully!')
+			print('Email functions correctly!')
 		except:
-			print('Email did not send successfully')
+			print('Email does not function correctly')

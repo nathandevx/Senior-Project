@@ -112,3 +112,14 @@ def combine_form_dicts(user, form_data: dict):
 	}
 	# form_data + data
 	return {**form_data, **extra_data}
+
+
+def get_protocol():
+	""" Returns 'http' or 'https'. """
+	return 'https' if settings.USE_HTTPS else 'http'
+
+
+def get_domain():
+	""" Gets the current domain name. """
+	return Site.objects.get(pk=settings.SITE_ID)
+

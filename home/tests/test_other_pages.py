@@ -1,5 +1,5 @@
 from django import views
-from django.core.mail import send_mail, mail
+from django.core.mail import send_mail
 from django.urls import resolve
 from django.shortcuts import reverse
 from django.contrib.auth import get_user_model

@@ -1,6 +1,6 @@
 from django.core.exceptions import ValidationError
 from django import forms
-from .models import Product, ShippingAddress, Contact, Configurations
+from .models import CartItem, Product, ShippingAddress, Contact, Configurations
 from senior_project.utils import get_allowed_cities
 
 
@@ -10,11 +10,16 @@ class ContactForm(forms.ModelForm):
 		fields = '__all__'
 
 
+class CartItemForm(forms.ModelForm):
+	class Meta:
+		model = CartItem
+		fields = ['quantity']
+
+
 class ProductForm(forms.ModelForm):
 	class Meta:
 		model = Product
 		fields = '__all__'
-# This means all fields from the Product model will be included in the form.
 
 
 class ShippingAddressForm(forms.ModelForm):

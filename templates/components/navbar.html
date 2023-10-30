@@ -1,4 +1,6 @@
 {% load static %}
+{% load tags %}
+
 <link rel="stylesheet" href="{% static 'css/components_styles/navbar.css' %}">
 <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
@@ -16,7 +18,16 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'admin:index' %}">Admin</a>
                         </li>
+		                <li class="nav-item">
+	                        <a class="nav-link" href="{% url 'home:report' %}">Reports</a>
+	                    </li>
                     {% endif %}
+	                <li class="nav-item">
+                        <a class="nav-link" href="{% cart_url %}">Cart</a>
+                    </li>
+	                <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home:report-export' %}">Export</a>
+                    </li>
 	                <li class="nav-item">
                         <a class="nav-link" href="{% url 'users:profile' %}">Profile</a>
                     </li>
@@ -34,6 +45,9 @@
                         <a class="nav-link" id="login-nav-link" href="{% url 'account_login' %}">Login</a>
                     </li>
                 {% endif %}
+                <li class="nav-item" id="signup-nav-item">
+                    <a class="nav-link" id="signup-nav-link" href="{% url 'blog:post-list' %}">Blog</a>
+                </li>
             </ul>
         </div>
     </div>

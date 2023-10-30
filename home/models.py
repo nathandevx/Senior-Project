@@ -1,10 +1,30 @@
+from django.core.mail import send_mail
 from django.core.validators import RegexValidator, MinValueValidator
 from django.db import models
 from django.conf import settings
+from django.http import HttpResponseForbidden
+from django.shortcuts import reverse, render
+from django.db.models.functions import ExtractYear
+from django.db.models import Count, Sum, Q
+from django.contrib import messages
 from ckeditor.fields import RichTextField
+from senior_project.utils import format_datetime, get_protocol, get_domain
+from senior_project.exceptions import MoreThanOneActiveCartError, MoreThanOneCartItemError, ErrorCreatingAStripeProduct, ErrorUpdatingAStripeProduct, ErrorDeletingAStripeProduct, ErrorCreatingStripeCheckoutSession
+from senior_project.constants import MONTHS
+from senior_project.utils import get_full_url
 from decimal import Decimal
-from senior_project.utils import format_datetime
 import uuid
+import stripe
+import environ
+import csv
+
+
+env = environ.Env(
+	# set casting, default value
+	DEBUG=(bool, False)
+)
+
+stripe.api_key = env('STRIPE_SECRET_KEY')
 
 
 # An abstract class that other models will inherit from.
@@ -35,12 +55,8 @@ class TimestampCreatorMixin(models.Model):
 		return format_datetime(self.updated_at)
 
 	class Meta:
-		"""
-		Makes the model an abstract model so other models may inherit from it.
-
-		verbose_name and verbose_name_plural defines what the model should be called in the django admin site.
-		"""
-		abstract = True
+		abstract = True  # makes the model an abstract model so other models may inherit from it.
+		# 'verbose_name' and 'verbose_name_plural' defines what the model should be called in the django admin site.
 		verbose_name = "TimestampCreatorMixin"
 		verbose_name_plural = "TimestampCreatorMixins"
 
@@ -83,6 +99,218 @@ class Product(TimestampCreatorMixin):
 	def __str__(self):
 		return self.name
 
+	@staticmethod
+	def get_list_url():
+		return reverse('home:home')
+
+	@staticmethod
+	def get_create_url():
+		return reverse('home:product-create')
+
+	def get_read_url(self):
+		return reverse('home:product-read', kwargs={'pk': self.pk})
+
+	def get_update_url(self):
+		return reverse('home:product-update', kwargs={'pk': self.pk})
+
+	def get_delete_url(self):
+		return reverse('home:product-delete', kwargs={'pk': self.pk})
+
+	def is_active(self):
+		return self.status == Product.ACTIVE
+
+	def is_inactive(self):
+		return self.status == Product.INACTIVE
+
+	def get_images(self):
+		"""
+		An abstraction for productimage_set.all()
+		@return: a QuerySet of ProductImages associated with the Product.
+		"""
+		images = self.productimage_set.all()
+		return images
+
+	def save_images(self, files: list):
+		"""
+		Saves a list of images and associates them with the product.
+		@param user: the User the ProductImages will be associated with.
+		@param files: a list.
+		@return: nothing.
+		"""
+		for file in files:
+			ProductImage.objects.create(
+				product=self,
+				image=file,
+				creator=self.creator,
+				updater=self.creator,
+			)
+
+	def delete_images(self):
+		"""
+		Deletes the images associated with the product by calling the overridden delete() method directly.
+		@return: nothing.
+		"""
+		for image in self.get_images():
+			image.delete()
+
+	@classmethod
+	def get_active_products(cls):
+		"""
+		@return: a QuerySet of products with status=ACTIVE.
+		"""
+		products = cls.objects.filter(status=cls.ACTIVE)
+		return products
+
+	def create_stripe_product_and_price_objs(self):
+		"""
+		Creates a stripe product and price object. And associates them with the product.
+		@return: nothing, ErrorCreatingAStripeProduct() exception otherwise.
+		"""
+		try:
+			# Create product on stripe
+			stripe_product = stripe.Product.create(
+				name=self.name,
+				url=get_full_url(self.get_read_url())
+			)
+
+			# Associate a price with that stripe product
+			stripe_price = stripe.Price.create(
+				unit_amount=int(self.price * 100),
+				currency="usd",
+				product=stripe_product.id,
+			)
+
+			# Add the product and price ID's to the new product instance
+			self.stripe_product_id = stripe_product.id
+			self.stripe_price_id = stripe_price.id
+			self.save()
+		except:
+			self.delete()
+			raise ErrorCreatingAStripeProduct("An error occurred with creating a product on stripe. The product was deleted to avoid confusion and further errors.")
+
+	def update_stripe_product_and_price_objs(self):
+		"""
+		Updates the stripe product and stripe price objects.
+		Will not update the price if no price change has occurred.
+		Will not update the product from the DB if an exception happens.
+		@return: nothing, ErrorUpdatingAStripeProduct() exception otherwise.
+		"""
+		try:
+			# Update product on stripe
+			stripe_product = stripe.Product.modify(
+				self.stripe_product_id,
+				name=self.name,
+				description=self.description,
+				url=get_full_url(self.get_read_url())
+			)
+
+			# Mark the old stripe price object as inactive.
+			# You can't delete a price object.
+			# You cannot modify the unit_amount (price) of a price object, you have to create a new one.
+			old_stripe_price = stripe.Price.retrieve(self.stripe_price_id)
+			# If the price has not changed, do nothing.
+			if (old_stripe_price.unit_amount / 100) == self.price:
+				pass
+			else:
+				# Create a new stripe price obj
+				stripe_price = stripe.Price.create(
+					unit_amount=int(self.price * 100),
+					currency="usd",
+					product=stripe_product.id
+				)
+
+				# Update the stripe product obj and set the newly created price as the default
+				stripe_product = stripe.Product.modify(
+					self.stripe_product_id,
+					default_price=stripe_price.id
+				)
+
+				# This is performed after creating a new stripe price obj and updating the product price obj
+				# Because if it were the default price, then it would cause an error.
+				stripe.Price.modify(
+					self.stripe_price_id,
+					active=False
+				)
+				self.stripe_price_id = stripe_price.id
+			self.stripe_product_id = stripe_product.id
+			self.save()  # only save the newly creating product when the stripe product was successfully updated
+		except:
+			raise ErrorUpdatingAStripeProduct(
+				"An error occurred with updating a product on stripe. The product was not saved to avoid confusion and further errors.")
+
+	def delete_product_and_set_stripe_product_as_inactive(self):
+		"""
+		Deletes the product from the DB and calls delete_images() to delete images from AWS.
+		Also sets the stripe product as inactive (it's not possible to delete a stripe product).
+		Will not delete the product from the DB if an exception occurs.
+		@return: nothing, ErrorDeletingAStripeProduct() exception otherwise.
+		"""
+		try:
+			# Stripe products cannot be deleted if they have price object references, which also can't be deleted.
+			# Therefor the only way to "delete" them is to set them as inactive.
+			stripe.Product.modify(
+				self.stripe_product_id,
+				active=False
+			)
+
+			self.delete_images()
+			self.delete()
+		except:
+			raise ErrorDeletingAStripeProduct(
+				"An error occurred with deleting a product on stripe. The product was not deleted.")
+
+	@classmethod
+	def get_top_10_selling_products(cls):
+		"""
+		Gets the top 10 setting products and how many of each were sold.
+		@return: a tuple of 2 lists. (product names, total solds).
+		"""
+		top_products = cls.objects.annotate(total_sold=Sum('cartitem__quantity', filter=Q(cartitem__cart__status=Cart.INACTIVE))).order_by('-total_sold')[:10]
+		product_names = [product.name for product in top_products]
+		total_solds = [product.total_sold if product.total_sold else 0 for product in top_products]
+		return product_names, total_solds
+
+	def add_product_to_cart(self, user, cart, quantity):
+		"""
+		Adds a product to a cart.
+		If the Product is already in the cart, it adds to the existing quantity of that product.
+		@param user: the User the CartItems will be associated with.
+		@param cart: the cart to add the Product to.
+		@param quantity: the number of units of the product to add to the cart.
+		@return: nothing.
+		"""
+		# Check if a CartItem for the Product is already in the Cart
+		cart_items = CartItem.objects.filter(cart=cart, product=self)
+
+		# A Cart cannot have more than 1 CartItem of the same product.
+		if cart_items.count() > 1:
+			raise MoreThanOneCartItemError(
+				"More than 1 cart items for a product within a cart were found. A Cart cannot have more than 1 CartItem of the same product."
+			)
+		# If the Product has not been added to the Cart, create a CartItem for it
+		elif cart_items.count() < 1:
+			cart_item = CartItem.objects.create(
+				cart=cart,
+				product=self,
+				quantity=quantity,
+				creator=user,
+				updater=user,
+			)
+			return cart_item
+		# If the Product has a CartItem associated with it in the Cart, increment the quantity
+		elif cart_items.count() == 1:
+			cart_item = cart_items.first()
+			cart_item.quantity += quantity
+			cart_item.updater = user
+			cart_item.save()
+			return cart_item
+		else:
+			raise ValueError("Unexpected cart_items model count encountered")
+
+	def get_associated_orders(self):
+		orders = Order.objects.filter(cart__cartitem__product=self)
+		return orders
+
 	class Meta:
 		verbose_name = 'Product'
 		verbose_name_plural = 'Products'
@@ -102,6 +330,12 @@ class ProductImage(TimestampCreatorMixin):
 	class Meta:
 		verbose_name = 'Product image'
 		verbose_name_plural = 'Product images'
+
+	def delete(self, *args, **kwargs):
+		# Delete the image file associated with this object
+		self.image.delete(save=False)
+		# Call the parent class's delete method to delete the object itself
+		super(ProductImage, self).delete(*args, **kwargs)
 
 
 class ShippingAddress(TimestampCreatorMixin):
@@ -156,6 +390,236 @@ class Cart(TimestampCreatorMixin):
 	def __str__(self):
 		return f"Email: {self.creator.email}, Status: {self.status}, Created: {self.created_at_formatted()}"
 
+	def get_read_url(self):
+		return reverse('home:cart-read', kwargs={'pk': self.pk})
+
+	def get_delete_url(self):
+		return reverse('home:cart-delete', kwargs={'pk': self.pk})
+
+	def is_active(self):
+		return self.status == Cart.ACTIVE
+
+	def is_inactive(self):
+		return self.status == Cart.INACTIVE
+
+	def is_empty(self):
+		"""
+		@return: False if no CartItems are associated with the Cart, True otherwise.
+		"""
+		if self.get_cartitems().exists():
+			return False
+		else:
+			return True
+
+	def get_cartitems(self):
+		"""
+		An abstraction for cartitem_set.all()
+		@return: a QuerySet of CartItems associated with the cart.
+		"""
+		items = self.cartitem_set.all()
+		return items
+
+	def get_total_cart_price(self):
+		"""
+		@return: a number representing the total price of all items in the cart.
+		"""
+		total = 0
+		for item in self.get_cartitems():
+			total += item.get_total_price()
+		return total
+
+	def set_shipping_address(self, shipping_address):
+		self.shipping_address = shipping_address
+		self.save()
+
+	@classmethod
+	def get_active_cart_or_create_new_cart(cls, user):
+		"""
+		Gets the active cart of creates a new cart. Raises an error if there's more than 1 cart.
+		@param user: the User.
+		@return: a cart instance. Or raises exceptions if an unexpected cart count occurred.
+		"""
+		cart = cls.objects.filter(status=cls.ACTIVE, creator=user)
+		if cart.count() > 1:  # a user shouldn't have multiple active carts
+			raise MoreThanOneActiveCartError("More than 1 active carts were found.")
+		elif cart.count() == 1:  # there's an active cart associated with the user
+			return cart.first()
+		else:  # no active cart associated with the user exists
+			return cls.objects.create(status=cls.ACTIVE, creator=user, updater=user)
+
+	@classmethod
+	def set_cart_as_inactive(cls, user):
+		"""
+		Sets the active cart associated with the user as inactive.
+		@param user: the User.
+		@return: nothing. Or raises exceptions if an unexpected cart count occurred.
+		"""
+		# First check if there are an unexpected number of active Carts associated with the user
+		carts = cls.objects.filter(status=cls.ACTIVE, creator=user)
+		if carts.count() > 1:  # a user shouldn't have multiple active carts
+			raise MoreThanOneActiveCartError("More than 1 active carts were found.")
+		if carts.count() < 1:
+			raise ValueError("An unexpected total of active carts associated to a user were found.")
+
+		# Then set the cart as inactive
+		if carts.count() == 1:  # there's an active cart associated with the user
+			cart = carts.first()
+			cart.status = cls.INACTIVE
+			cart.save()
+
+	def set_original_price_for_all_cart_items(self):
+		"""
+		The user will want to know how much they originally paid for a product.
+		So set the original price for each cart item in the cart to the current product price.
+		@return: nothing.
+		"""
+		for cart_item in self.get_cartitems():
+			cart_item.original_price = cart_item.product.price
+			cart_item.save()
+
+	def has_out_of_stock_or_inactive_products(self):
+		"""
+		Checks if the Cart has CartItems whose Product are out of stock or are inactive.
+		@return: tuple of booleans.
+		"""
+		is_out_of_stock = False
+		is_inactive = False
+		for cart_item in self.get_cartitems():
+			is_out_of_stock = cart_item.is_quantity_gt_stock()
+			is_inactive = cart_item.is_product_inactive()
+		return is_out_of_stock, is_inactive
+
+	def get_payment_success_and_payment_cancel_url(self):
+		"""
+		Stripe needs 2 URLS for a payment to go smoothly.
+		A success URL: when the payment is successful.
+		A cancel URL: when the payment is canceled by the user.
+		@param request: the incoming request.
+		@return: a size 2 tuple containing (success_url, canceled_url)
+		"""
+		success = reverse('home:payment-success', kwargs={'cart_uuid': self.uuid})
+		cancel = reverse('home:payment-cancel')
+		full_success_url = f"{get_protocol()}://{get_domain()}{success}"
+		full_canceled_url = f"{get_protocol()}://{get_domain()}{cancel}"
+		return full_success_url, full_canceled_url
+
+	def create_stripe_checkout_session(self):
+		"""
+		Creates a stripe checkout session.
+		@return: a stripe checkout session URL, an ErrorCreatingStripeCheckoutSession() exception otherwise.
+		"""
+		success_url, canceled_url = self.get_payment_success_and_payment_cancel_url()
+
+		# Get the cart items prices and quantity
+		line_items = []
+		for cart_item in self.get_cartitems():
+			line_items.append(
+				{
+					'price': cart_item.product.stripe_price_id,
+					'quantity': cart_item.quantity
+				}
+			)
+
+		# Stripe checkout session
+		try:
+			checkout_session = stripe.checkout.Session.create(
+				line_items=line_items,
+				mode='payment',
+				success_url=success_url,
+				cancel_url=canceled_url,
+			)
+			return checkout_session.url
+		except:
+			raise ErrorCreatingStripeCheckoutSession("Error creating a stripe checkout session.")
+
+	def create_order(self):
+		"""
+		Creates an Order from a Cart.
+		@param user: the User.
+		@return: nothing.
+		"""
+		order = Order.objects.create(
+			cart=self,
+			total_price=self.get_total_cart_price(),
+			status=Order.PLACED,
+			creator=self.creator,
+			updater=self.creator,
+		)
+		return order
+
+	def handle_cart_errors(self, request):
+		"""
+		Uses has_out_of_stock_or_inactive_products() to check if cart has errors.
+		If cart has errors, an appropriate template is rendered.
+		@param request: the incoming request.
+		@return: render().
+		"""
+		# Check if cart has errors
+		stock_limit, inactive_product = self.has_out_of_stock_or_inactive_products()
+		if stock_limit or inactive_product:
+			context = {'cart': self, 'stock_limit': stock_limit, 'inactive_product': inactive_product}
+			return render(request, 'home/carts/cart_errors.html', context=context)
+
+	def handle_cart_empty(self, request):
+		"""
+		Uses is_empty() to check if cart is empty.
+		If cart is empty, an appropriate template is rendered.
+		@param request: the incoming request.
+		@return: render().
+		"""
+		if self.is_empty():
+			return render(request, 'home/carts/cart_empty.html', {'product_model': Product})
+
+	def not_creator_or_inactive_cart(self, user):
+		"""
+		If the cart's creator is not the request user or if the cart is inactive, returns True.
+		@param user: the User.
+		@return: boolean.
+		"""
+		return self.creator != user or self.is_inactive()
+
+	def handle_cart_purchase(self, request, order):
+		"""
+		Handles what happens when a user finishes paying for an order.
+		Handles what happens if a product became inactive or had its stock reduced while the user was inputting
+		their payment info on the stripe gateway page.
+		Handles updating product stock.
+		@param request: the incoming request.
+		@param order: the order associated with the cart.
+		@return: nothing.
+		"""
+		for item in self.get_cartitems():
+			product = item.product
+
+			# If item is inactive
+			if item.is_product_inactive():
+				order.has_errors = True
+				order.save()
+				# send_mail("Order has error", "Look at it.", env('FROM_EMAIL'), [env('ADMIN_EMAIL')])  # todo: change to_email and uncomment it
+				messages.warning(request, f"'{product.name}' is an inactive product. Contact us regarding this issue. An admin has been notified.")
+
+			# If item quantity > stock
+			if item.is_quantity_gt_stock():
+				order.has_errors = True
+				order.save()
+				product.stock = 0
+				product.stock_overflow = item.quantity - product.stock
+				product.status = Product.INACTIVE
+				product.save()
+				# send_mail("Order has error", "Look at it.", env('FROM_EMAIL'), [env('ADMIN_EMAIL')])  # todo: change to_email and uncomment it
+				messages.warning(request, f"The quantity for '{product.name}' exceeds available stock! Contact us regarding this issue. An admin has been notified.")
+
+			# If item quantity <= stock
+			if item.is_quantity_lte_stock():
+				# If product stock is now 0
+				if (product.stock - item.quantity) == 0:
+					product.stock = 0
+					product.status = Product.INACTIVE
+					product.save()
+				else:
+					product.stock -= item.quantity
+					product.save()
+
 	class Meta:
 		verbose_name = 'Cart'
 		verbose_name_plural = 'Carts'
@@ -178,6 +642,30 @@ class CartItem(TimestampCreatorMixin):
 
 	def __str__(self):
 		return self.product.name
+
+	def is_quantity_gt_stock(self):
+		"""
+		@return: a boolean, is CartItem quantity > Product stock?
+		"""
+		return self.quantity > self.product.stock
+
+	def is_quantity_lte_stock(self):
+		"""
+		@return: a boolean, is CartItem quantity <= Product stock?
+		"""
+		return self.quantity <= self.product.stock
+
+	def is_quantity_zero(self):
+		return self.quantity == 0
+
+	def is_product_inactive(self):
+		return self.product.is_inactive()
+
+	def get_total_price(self):
+		return self.product.price * self.quantity
+
+	def get_total_original_price(self):
+		return self.original_price * self.quantity
 
 	class Meta:
 		verbose_name = 'Cart Item'
@@ -205,9 +693,11 @@ class Order(TimestampCreatorMixin):
 	SHIPPED = 'Shipped'
 	DELIVERED = 'Delivered'
 	CANCELED = 'Canceled'
+	CHOICES = [(PLACED, PLACED), (SHIPPED, SHIPPED), (DELIVERED, DELIVERED), (CANCELED, CANCELED)]
+
 	cart = models.OneToOneField(Cart, on_delete=models.CASCADE)
 	total_price = models.DecimalField(max_digits=10, decimal_places=2)
-	status = models.CharField(max_length=50, choices=[(PLACED, PLACED), (SHIPPED, SHIPPED), (DELIVERED, DELIVERED), (CANCELED, CANCELED)])
+	status = models.CharField(max_length=50, choices=CHOICES)
 	estimated_delivery_date = models.DateField(null=True, blank=True)
 	notes = models.TextField(default='', max_length=5000, blank=True, null=True)
 	uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
@@ -216,14 +706,202 @@ class Order(TimestampCreatorMixin):
 	def __str__(self):
 		return f"Email: {self.creator.email}, Status: {self.status}, Created: {self.created_at_formatted()}"
 
+	@staticmethod
+	def get_list_url():
+		return reverse('home:order-list')
+
+	def get_read_url(self):
+		return reverse('home:order-confirmation', kwargs={'order_uuid': self.uuid})
+
+	def is_placed(self):
+		return self.status == Order.PLACED
+
+	def is_shipped(self):
+		return self.status == Order.SHIPPED
+
+	def is_delivered(self):
+		return self.status == Order.DELIVERED
+
+	def is_canceled(self):
+		return self.status == Order.CANCELED
+
+	@staticmethod
+	def get_export_data(http_response):
+		"""
+		Gets all Order and OrderHistory data and writes it to a TSV file.
+		OrderHistory data is Order data that was saved before a user deletes their account.
+		@param http_response: HttpResponse()
+		@return: a .tsv file with order data.
+		"""
+		writer = csv.writer(http_response, delimiter='\t')
+
+		# TSV file header
+		writer.writerow([
+			'Order ID', 'Order date', 'Order total price', 'Order status', 'User email',
+			'Shipping address', 'Ordered products'
+		])
+
+		# Loop through every Order
+		for order in Order.objects.all():
+			products = []
+			# Loop through every CartItem associated to the order
+			for cart_item in order.cart.get_cartitems():
+				products.append(cart_item.product.name)
+			writer.writerow([order.pk, order.created_at, order.total_price, order.status, order.creator.email, order.cart.shipping_address, products])
+
+		# Loop through every OrderHistory
+		for order in OrderHistory.objects.all():
+			writer.writerow([order.order_number, order.created_at, order.total_price, order.status, "account deleted", "account deleted", "account deleted"])
+
+		return writer
+
+	@classmethod
+	def get_users_orders(cls, user):
+		"""
+		@param user: the user.
+		@return: a QuerySet of orders associated with the user.
+		"""
+		orders = cls.objects.filter(creator=user)
+		return orders
+
+	def send_order_confirmation_email(self):
+		"""
+		Sends the order confirmation email to the customer.
+		@return: nothing, just sends an email.
+		"""
+		subject = 'Order Confirmation'
+		from_email = env('FROM_EMAIL')
+		recipient_list = [env('ADMIN_EMAIL')]  # todo: change to_email
+		order_confirmation_url = get_full_url(self.get_read_url())
+		html_message = \
+			f"""
+					<html>
+					<head></head>
+					<body>
+						<h2>Thanks for your order!</h2>
+						<p>Order confirmation page <a href="{order_confirmation_url}">{order_confirmation_url}</a><p>
+						<p>Date: {self.created_at_formatted()}</p>
+						<p>Shipping Address: {self.cart.shipping_address}</p>
+						<ul>
+			"""
+
+		for cart_item in self.cart.get_cartitems():
+			html_message += f"<li>{cart_item.quantity} of {cart_item.product.name} for ${cart_item.original_price} each.</li>"
+
+		html_message += f"""
+						</ul>
+						<p>Total: ${self.total_price}</p>
+					</body>
+					</html>
+				"""
+		send_mail(subject, html_message, from_email, recipient_list, html_message=html_message)
+
+	@classmethod
+	def get_order_counts_by_month_for_year(cls, year):
+		"""
+		@param year: The year.
+		@return: A tuple of 2 lists. The first list represents the months in a year. The second year is the total orders
+			in that month.
+		"""
+		months_order_totals = []
+		for i, month in enumerate(MONTHS):
+			total = cls.objects.filter(created_at__year=year, created_at__month=i + 1).count()
+			months_order_totals.append(total)
+		return MONTHS, months_order_totals
+
+	@classmethod
+	def get_years_with_orders(cls):
+		"""
+		@return: a QuerySet of the years in which an order was created.
+		"""
+		orders = cls.objects.annotate(year=ExtractYear('created_at')).values_list('year', flat=True).distinct().order_by('year')
+		return orders
+
+	@classmethod
+	def get_order_status_counts(cls):
+		"""
+		@return: a QuerySet of order statuses and counts.
+			Ex: QuerySet [{'status': 'Canceled', 'total': 2}, {'status': 'Delivered', 'total': 1}]
+		"""
+		order_statuses = cls.objects.values('status').annotate(total=Count('id'))
+		return order_statuses
+
 	class Meta:
 		verbose_name = 'Order'
 		verbose_name_plural = 'Orders'
 
-class Contact(models.Model):
-    email = models.EmailField()
-    subject = models.CharField(max_length=255)
-    message = models.TextField()
 
-    def __str__(self):
-        return self.email
+class Contact(models.Model):
+	email = models.EmailField()
+	subject = models.CharField(max_length=255)
+	message = models.TextField()
+
+	def __str__(self):
+		return self.email
+
+
+# If a user deletes their account, OrderHistory is a backup for their orders
+class OrderHistory(models.Model):
+	order_number = models.IntegerField()
+	total_price = models.DecimalField(max_digits=10, decimal_places=2)
+	status = models.CharField(max_length=50, choices=Order.CHOICES)
+	created_at = models.DateTimeField()
+
+	def __str__(self):
+		return f"OrderHistory - Status: {self.status}"
+
+	@classmethod
+	def create_order_history_objs(cls, orders):
+		"""
+		Creates a OrderHistory object for each order.
+		@param orders: a QuerySet of orders.
+		@return: Nothing.
+		"""
+		for order in orders:
+			cls.objects.create(
+				order_number=order.pk,
+				total_price=order.total_price,
+				status=order.status,
+				created_at=order.created_at,
+			)
+
+	class Meta:
+		verbose_name = "Order History"
+		verbose_name_plural = "Order Histories"
+
+
+class Configurations(models.Model):
+	phone_number = models.CharField(max_length=15, blank=True, null=True, help_text="Displayed on contact page")
+	email = models.EmailField(blank=True, null=True, help_text="Displayed on contact page")
+	address = models.CharField(max_length=200, blank=True, null=True, help_text="Where customers will pick up their orders")
+	facebook_url = models.URLField(blank=True, null=True, help_text="Displayed on about page")
+	instagram_url = models.URLField(blank=True, null=True, help_text="Displayed on about page")
+
+	def __str__(self):
+		return f"Configuration {self.pk}"
+
+	@staticmethod
+	def get_create_url():
+		return reverse('home:config-create')
+
+	def get_read_url(self):
+		return reverse('home:config-read', kwargs={'pk': self.pk})
+
+	def get_update_url(self):
+		return reverse('home:config-update', kwargs={'pk': self.pk})
+
+	@classmethod
+	def get_first_configuration(cls):
+		"""
+		Gets the first Configuration entry in the database.
+		@return: a Configuration model.
+		"""
+		return cls.objects.all().first()
+
+	@classmethod
+	def config_exists(cls):
+		return cls.objects.exists()
+
+	class Meta:
+		verbose_name = "Configuration"
+		verbose_name_plural = "Configurations"

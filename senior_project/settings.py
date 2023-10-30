@@ -20,19 +20,23 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     'django.contrib.sites',
-    'ckeditor',  # django-ckeditor
 
-    # allauth specific
+    # django-allauth
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
 
-    # our generated apps
+    # More packages
+    'ckeditor',  # django-ckeditor
+    'storages',  # django-storages
+    'crispy_forms',  # crispy-forms
+    'crispy_bootstrap5',  # crispy-forms
+
+    # Our apps
     "users.apps.UsersConfig",
     "home.apps.HomeConfig",
+    "blog.apps.BlogConfig",
 
-    #django storages package
-    'storages'
 ]
 
 SITE_ID = 1
@@ -53,7 +57,7 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         # Django will look for the requested template within these directories. If it doesn't find the template,
-        # then django will look inside each apps 'templates' directory.
+        # then django will look inside each app's 'templates' directory.
         "DIRS": [BASE_DIR / 'templates', BASE_DIR / 'users' / 'templates' / 'users' / 'allauth'],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -98,8 +102,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# django-allauth config
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # todo: do not use in prod.
+# django-allauth settings
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 5
@@ -115,9 +118,7 @@ TIME_ZONE = "America/Los_Angeles"
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-# If you {% load static %} in a template, then django will look for static files within this directory.
-# the directory being "/static/..." like "/static/css/style.css".
+# Static files
 STATIC_URL = "/static/"
 # The path where django will store static files at in prep for deployment.
 STATIC_ROOT = BASE_DIR / 'staticfiles'
@@ -130,7 +131,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Custom user model
 AUTH_USER_MODEL = 'users.User'
 
-# django-ckeditor configuration
+# django-ckeditor settings
 CKEDITOR_CONFIGS = {
     'default': {
         'toolbar': 'Custom',
@@ -145,22 +146,30 @@ CKEDITOR_CONFIGS = {
     }
 }
 
-CONTACT_EMAIL = 'nathanmartinez@csus.edu'
-ADMIN_EMAILS = ['jordan_huang916@yahoo.com', ]
-
-
-# Twilio SendGrid
+# SendGrid settings
 EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER = 'apikey'  # this is exactly the value 'apikey'
+EMAIL_HOST_PASSWORD = env('SENDGRID_API_KEY')
 EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'apikey'
-EMAIL_HOST_PASSWORD = os.environ.get('SENDGRID_API_KEY')
+EMAIL_USE_TLS = False
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+DEFAULT_FROM_EMAIL = env('FROM_EMAIL')
 
-
-# set environment variables
-AWS_ACCESS_KEY_ID=os.environ.get('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY=os.environ.get('AWS_SECRET_ACCESS_KEY')
-AWS_STORAGE_BUCKET_NAME=os.environ.get('AWS_STORAGE_BUCKET_NAME')
+# AWS settings
+AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
 AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_ACL = None
 DEFAULT_FILE_STORAGE = 'storages.backends.s3.S3Storage'
+
+# django-crispy-forms settings
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = 'bootstrap5'  
+
+
+# Dev vs prod settings
+if DEBUG:
+    USE_HTTPS = False
+else:
+    USE_HTTPS = True

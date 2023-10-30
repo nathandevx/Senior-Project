@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create Post{% endblock %}
+
+{% block contents %}
+	<div class="container">
+		<h1 class="text-center">Create Post</h1>
+		<form method="POST">
+			{% csrf_token %}
+		    {{ form.media }}
+			{{ form.content.errors }}
+			{{ form|crispy }}
+			<button type="submit" class="btn btn-success">Create</button>
+			<a href="{{ post_model.get_list_url }}" class="btn btn-primary">Cancel</a>
+		</form>
+		<br>
+		<br>
+		<br>
+	</div>
+{% endblock %}

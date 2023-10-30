@@ -3,64 +3,490 @@
 {% block contents %}
 
     <div class="container-fluid">
-        <div class="row flex-moving">
-            <div class="col-auto col-md-3 col-x1-2 px-sm-2 px-0 bg-dark">
-                <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
-                    <a href="/" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-                        <span class="fs-5 d-non d-sm-inline">Pastry Bites</span>
-                    </a>
-                    <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
-                        <li class="nav-item">
-                            <a href="#" class="nav-link align-middle px-0">
-                                <i class="fs-4 bi-house"></i> <span class="ms-1 d-none d-sm-inline">Main Page</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="nav-link px-0 align-middle">
-                                Dashboard
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#submenu1" data-bs-toggle="collapse" class="nav-link px-0 align-middle">
-                                Orders
-                            </a>
-                            <ul class="collapse show nav flex-column ms-1" id="submenu1" data-bs-parent="#menu">
-                                <li class="w-100">
-                                    <a href="#" class="nav-link px-0"> <span class="d-non d-sm-inline">Pending</span></a>
-                                </li>
-                                <li>
-                                    <a href="#" class="nav-link px-0"> <span class="d-non d-sm-inline">Completed</span></a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a href="#submenu2" data-bs-toggle="collapse" class="nav-link px-0 align-middle">
-                                Address Book
-                            </a>
-                            <ul class="collapse show nav flex-column ms-1" id="submenu2" data-bs-parent="#menu">
-                                <li class="w-100">
-                                    <a href="#" class="nav-link px-0"> <span class="d-none d-sm-inline">Returning Customers</span></a>
-                                </li>
-                                <li>
-                                    <a href="#" class="nav-link px-0"> <span class="d-none d-sm-inline">New Customers</span></a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
+    <div class="row">
+        <div class="col-md-2 md-2 bg-light d-none d-md-block sidebar">
+            <div class="d-flex align-items-start">
+                <div class="nav flex-column nav-pills me-3" id="dashboard" role="tablist" aria-orientation="vertical">
+                    <button class="nav-link active" id="overview-tab" data-bs-toggle="pill" data-bs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="true">Overview</button>
+                    <button class="nav-link" id="orders-tab" data-bs-toggle="pill" data-bs-target="#orders" type="button" role="tab" aria-controls="orders" aria-selected="false">Orders</button>
+                    <button class="nav-link" id="address-tab" data-bs-toggle="pill" data-bs-target="#address" type="button" role="tab" aria-controls="address" aria-selected="false">Address Book</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9 ml-sm-auto col-lg-10 px-4">
+            <div class="tab-content" id="dashboard-content">
+                <!-- Overview -->
+                <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+                    <h3>Overview</h3>
+                    <hr>
+                    <div class="row">
+                        <div class="card">
+                                <div class="chart-container" style="position: relative">
+                                    <canvas id="salesChart"></canvas>
+                                </div>
+                                <div class="chart-container" style="position: relative">
+                                    <canvas id="statusChart"></canvas>
+                                </div>
+
+                                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                                <script>
+                                    <!-- sales-graph -->
+                                    const ctx = document.getElementById('salesChart');
+
+                                    new Chart(ctx, {
+                                        type: 'line',
+                                        data: {
+                                            labels: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+                                            datasets: [{
+                                                label: 'Sale Numbers by Day',
+                                                data: [12, 19, 3, 5, 2, 3, 7],
+                                                borderWidth: 3
+                                            }]
+                                         },
+                                        options: {
+                                            scales: {
+                                                y: {
+                                                    beginAtZero: true
+                                                }
+                                            }
+                                        }
+                                    });
+
+                                    <!-- status graph -->
+                                    const ctx2 = document.getElementById('statusChart');
+
+                                    new Chart(ctx2, {
+                                        type: 'bar',
+                                        data: {
+                                            labels: ['Placed', 'Shipped', 'Delivered', 'Canceled'],
+                                            datasets: [{
+                                                label: 'Order Status',
+                                                {% for order in orders %}
+                                                data: [{{order.get_order_status_counts}}],
+                                                {% endfor %}
+                                                borderWidth: 1
+                                            }]
+                                         },
+                                        options: {
+                                            scales: {
+                                                y: {
+                                                    beginAtZero: true
+                                                }
+                                            }
+                                        }
+                                    });
+                                </script>
+                        </div>
+                    </div>
+
+
+                    <div class="table-responsive">
+                        <!-- will show most recent 5 orders -->
+                        <table class="table table-bordered">
+                            <tr>
+                                <th style="text-align:center" colspan="4">Current Orders</th>
+                            </tr>
+                            <tr>
+                                <th style="text-align:center">Customer Name</th>
+                                <th style="text-align:center">Number of Products</th>
+                                <th style="text-align:center">Type</th>
+                                <th style="text-align:center">Date Ordered</th>
+                            </tr>
+                            <tr>
+                                <td>name</td>
+                                <td>#</td>
+                                <td>Pick up/Catering</td>
+                                <td>mm/dd/yyyy</td>
+                            </tr>
+                            <tr>
+                                <td>name</td>
+                                <td>#</td>
+                                <td>Pick up/Catering</td>
+                                <td>mm/dd/yyyy</td>
+                            </tr>
+                            <tr>
+                                <td>name</td>
+                                <td>#</td>
+                                <td>Pick up/Catering</td>
+                                <td>mm/dd/yyyy</td>
+                            </tr>
+                            <tr>
+                                <td>name</td>
+                                <td>#</td>
+                                <td>Pick up/Catering</td>
+                                <td>mm/dd/yyyy</td>
+                            </tr>
+                            <tr>
+                                <td>name</td>
+                                <td>#</td>
+                                <td>Pick up/Catering</td>
+                                <td>mm/dd/yyyy</td>
+                            </tr>
+                            <tr>
+                                <td>name</td>
+                                <td>#</td>
+                                <td>Pick up/Catering</td>
+                                <td>mm/dd/yyyy</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <!-- Orders -->
+                <div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
+                    <h3>Orders</h3>
+                    <hr>
+                    <!-- shows current orders in progress -->
+                    <div class="table-responsive">
+                        <div style="text-align:center" class="py-2">
+                            <h4>Orders In Progress</h4>
+                            <p>Click on <b>Customer Name</b> to sort alphabetically. First click will sort in ascending, second click will sort in descending.</p>
+                        </div>
+                        <table class="table table-bordered" id="progress">
+                            <tr>
+                                <th style="text-align:center" onclick="sortTable(0)">Customer Name</th>
+                                <th style="text-align:center">Number of Products</th>
+                                <th style="text-align:center">Type</th>
+                                <th style="text-align:center">Date Ordered</th>
+                            </tr>
+                            <tr>
+                                <td>Catherine</td>
+                                <td>4</td>
+                                <td>Pick up</td>
+                                <td>09/17/2023</td>
+                            </tr>
+                            <tr>
+                                <td>Tony</td>
+                                <td>6</td>
+                                <td>Pick up</td>
+                                <td>09/12/2023</td>
+                            </tr>
+                            <tr>
+                                <td>Barbara</td>
+                                <td>2</td>
+                                <td>Pick up</td>
+                                <td>09/6/2023</td>
+                            </tr>
+                            <tr>
+                                <td>Alan</td>
+                                <td>8</td>
+                                <td>Catering</td>
+                                <td>09/02/2023</td>
+                            </tr>
+                        </table>
+
+                        <!-- Sort Script (by name) Progress Table -->
+                        <script>
+                            function sortTable(n) {
+                                var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+                                table = document.getElementById("progress");
+                                switching = true;
+                                // Set the sorting direction to ascending:
+                                dir = "asc";
+                                /* Make a loop that will continue until
+                                   no switching has been done: */
+                                while (switching) {
+                                // Start by saying: no switching is done:
+                                    switching = false;
+                                    rows = table.rows;
+                                    /* Loop through all table rows (except the
+                                    first, which contains table headers): */
+                                    for (i = 1; i < (rows.length - 1); i++) {
+                                        // Start by saying there should be no switching:
+                                        shouldSwitch = false;
+                                        /* Get the two elements you want to compare,
+                                        one from current row and one from the next: */
+                                        x = rows[i].getElementsByTagName("TD")[n];
+                                        y = rows[i + 1].getElementsByTagName("TD")[n];
+                                        /* Check if the two rows should switch place,
+                                        based on the direction, asc or desc: */
+                                        if (dir == "asc") {
+                                            if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                                                // If so, mark as a switch and break the loop:
+                                                shouldSwitch = true;
+                                                break;
+                                            }
+                                        } else if (dir == "desc") {
+                                            if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                                                // If so, mark as a switch and break the loop:
+                                                shouldSwitch = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    if (shouldSwitch) {
+                                        /* If a switch has been marked, make the switch
+                                        and mark that a switch has been done: */
+                                        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                                        switching = true;
+                                        // Each time a switch is done, increase this count by 1:
+                                        switchcount ++;
+                                    } else {
+                                        /* If no switching has been done AND the direction is "asc",
+                                        set the direction to "desc" and run the while loop again. */
+                                        if (switchcount == 0 && dir == "asc") {
+                                            dir = "desc";
+                                            switching = true;
+                                        }
+                                    }
+                                }
+                            }
+                        </script>
+                    </div>
+                    <!-- Export for Orders in Progress -->
+                    <div class="px-2 py-2" style="text-align:right">
+                            <button class="btn btn-secondary" type="button">
+                                Export Orders in Progress to CSV
+                            </button>
+                    </div>
+
+
+
+                    <!-- shows finished orders -->
+                    <div class="table-responsive">
+                        <div style="text-align:center" class="py-2">
+                            <h4>Finished Orders</h4>
+                            <p>Click on <b>Customer Name</b> to sort alphabetically. First click will sort in ascending, second click will sort in descending.</p>
+                        </div>
+                         <table class="table table-bordered" id="finished">
+                             <tr>
+                                 <th style="text-align:center" onclick="sortTable2(0)">Customer Name</th>
+                                 <th style="text-align:center">Number of Products</th>
+                                 <th style="text-align:center">Type</th>
+                                 <th style="text-align:center">Date Ordered</th>
+                             </tr>
+                             <tr>
+                                 <td>Eric</td>
+                                 <td>2</td>
+                                 <td>Pick up</td>
+                                 <td>05/12/2023</td>
+                             </tr>
+                             <tr>
+                                 <td>Amelia</td>
+                                 <td>10</td>
+                                 <td>Catering</td>
+                                 <td>05/2/2023</td>
+                             </tr>
+                             <tr>
+                                 <td>Zane</td>
+                                 <td>1</td>
+                                 <td>Pick up</td>
+                                 <td>07/09/2023</td>
+                             </tr>
+                             <tr>
+                                 <td>Oliver</td>
+                                 <td>2</td>
+                                 <td>Pick up</td>
+                                 <td>05/28/2023</td>
+                             </tr>
+                             <tr>
+                                 <td>Patricia</td>
+                                 <td>7</td>
+                                 <td>Pick up</td>
+                                 <td>08/24/2023</td>
+                             </tr>
+                         </table>
+                        <!-- Sort Script (by name) Finished Table -->
+                        <script>
+                            function sortTable2(n) {
+                                var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+                                table = document.getElementById("finished");
+                                switching = true;
+                                // Set the sorting direction to ascending:
+                                dir = "asc";
+                                /* Make a loop that will continue until
+                                   no switching has been done: */
+                                while (switching) {
+                                // Start by saying: no switching is done:
+                                    switching = false;
+                                    rows = table.rows;
+                                    /* Loop through all table rows (except the
+                                    first, which contains table headers): */
+                                    for (i = 1; i < (rows.length - 1); i++) {
+                                        // Start by saying there should be no switching:
+                                        shouldSwitch = false;
+                                        /* Get the two elements you want to compare,
+                                        one from current row and one from the next: */
+                                        x = rows[i].getElementsByTagName("TD")[n];
+                                        y = rows[i + 1].getElementsByTagName("TD")[n];
+                                        /* Check if the two rows should switch place,
+                                        based on the direction, asc or desc: */
+                                        if (dir == "asc") {
+                                            if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                                                // If so, mark as a switch and break the loop:
+                                                shouldSwitch = true;
+                                                break;
+                                            }
+                                        } else if (dir == "desc") {
+                                            if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                                                // If so, mark as a switch and break the loop:
+                                                shouldSwitch = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    if (shouldSwitch) {
+                                        /* If a switch has been marked, make the switch
+                                        and mark that a switch has been done: */
+                                        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                                        switching = true;
+                                        // Each time a switch is done, increase this count by 1:
+                                        switchcount ++;
+                                    } else {
+                                        /* If no switching has been done AND the direction is "asc",
+                                        set the direction to "desc" and run the while loop again. */
+                                        if (switchcount == 0 && dir == "asc") {
+                                            dir = "desc";
+                                            switching = true;
+                                        }
+                                    }
+                                }
+                            }
+                        </script>
+                    </div>
+                    <!-- Export for Finished Orders -->
+                    <div class="px-2 py-2" style="text-align:right">
+                            <button class="btn btn-secondary" type="button">
+                                Export Finished Orders to CSV
+                            </button>
+                    </div>
+
+                </div>
+                <!-- Address Book -->
+                <div class="tab-pane fade" id="address" role="tabpanel" aria-labelledby="address-tab">
+                    <h3>Customer Address Book</h3>
+                    <hr>
+                    <div class="table-responsive">
+                        <div style="text-align:center" class="py-2">
+                            <p>Click by <b>Customer Name</b> to sort alphabetically. First click will sort in ascending, second click will sort in descending.</p>
+                        </div>
+
+                    <table class="table table-bordered" id="address">
+                        <tr>
+                            <th style="text-align:center" onclick="sortTable3(0)">Customer Name</th>
+                            <th style="text-align:center">Street Name</th>
+                            <th style="text-align:center">City</th>
+                            <th style="text-align:center">Zip Code</th>
+                        </tr>
+                        <tr>
+                            <td>Eric</td>
+                            <td>4739 Name Drive</td>
+                            <td>Sacramento</td>
+                            <td>8492</td>
+                        </tr>
+                        <tr>
+                            <td>Amelia</td>
+                            <td>5793 Name Street</td>
+                            <td>Elk Grove</td>
+                            <td>7529</td>
+                        </tr>
+                        <tr>
+                            <td>Zane</td>
+                            <td>8362 Name Avenue</td>
+                            <td>Sacramento</td>
+                            <td>2586</td>
+                        </tr>
+                        <tr>
+                            <td>Oliver</td>
+                            <td>9684 Name Street</td>
+                            <td>Davis</td>
+                            <td>2643</td>
+                        </tr>
+                        <tr>
+                            <td>Patricia</td>
+                            <td>1278 Name Street</td>
+                            <td>Sacramento</td>
+                            <td>9375</td>
+                        </tr>
+                        <tr>
+                            <td>Catherine</td>
+                            <td>8673 Name Street</td>
+                            <td>Elk Grove</td>
+                            <td>8674</td>
+                        </tr>
+                        <tr>
+                            <td>Tony</td>
+                            <td>6356 Name Drive</td>
+                            <td>Davis</td>
+                            <td>2124</td>
+                        </tr>
+                        <tr>
+                            <td>Barbara</td>
+                            <td>9786 Name Avenue</td>
+                            <td>Sacramento</td>
+                            <td>8492</td>
+                        </tr>
+                        <tr>
+                            <td>Alan</td>
+                            <td>3868 Name Circle</td>
+                            <td>Sacramento</td>
+                            <td>8493</td>
+                        </tr>
+                    </table>
+                    <!-- Sort Script Address Table -->
+                    <script>
+                        function sortTable3(n) {
+                            var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+                            table = document.getElementById("address");
+                            switching = true;
+                            // Set the sorting direction to ascending:
+                            dir = "asc";
+                            /* Make a loop that will continue until
+                            no switching has been done: */
+                            while (switching) {
+                                // Start by saying: no switching is done:
+                                switching = false;
+                                rows = table.rows;
+                                /* Loop through all table rows (except the
+                                first, which contains table headers): */
+                                for (i = 1; i < (rows.length - 1); i++) {
+                                // Start by saying there should be no switching:
+                                    shouldSwitch = false;
+                                    /* Get the two elements you want to compare,
+                                    one from current row and one from the next: */
+                                    x = rows[i].getElementsByTagName("TD")[n];
+                                    y = rows[i + 1].getElementsByTagName("TD")[n];
+                                    /* Check if the two rows should switch place,
+                                    based on the direction, asc or desc: */
+                                    if (dir == "asc") {
+                                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                                        // If so, mark as a switch and break the loop:
+                                            shouldSwitch = true;
+                                            break;
+                                        }
+                                    } else if (dir == "desc") {
+                                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                                        // If so, mark as a switch and break the loop:
+                                        shouldSwitch = true;
+                                        break;
+                                        }
+                                    }
+                                }
+                                if (shouldSwitch) {
+                                    /* If a switch has been marked, make the switch
+                                    and mark that a switch has been done: */
+                                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                                    switching = true;
+                                    // Each time a switch is done, increase this count by 1:
+                                    switchcount ++;
+                                } else {
+                                    /* If no switching has been done AND the direction is "asc",
+                                    set the direction to "desc" and run the while loop again. */
+                                    if (switchcount == 0 && dir == "asc") {
+                                    dir = "desc";
+                                    switching = true;
+                                    }
+                                }
+                            }
+                        }
+                    </script>
+                    </div>
                 </div>
             </div>
 
-            <div class="col py-3">
-                <h1>Report Page</h1>
 
-                <div
-                    data-chart="line"
-                    data-dataset-label="Sales"
-                    data-labels="['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']"
-                    data-dataset-data="[2, 5, 3, 7, 1, 4, 2]"
-                ></div>
-            </div>
+
         </div>
+    </div>
     </div>
 
 {% endblock %}

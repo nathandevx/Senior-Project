@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Cart errors{% endblock %}
+
+{% block contents %}
+	<div class="container-fluid text-center">
+		<h1>Cart errors</h1>
+		<p>Please return to your <a href="{{ cart.get_read_url }}">cart</a> and make adjustments. This may be done automatically once you visit your cart.</p>
+		{% if stock_limit %}
+			<p class="text-danger">One or more items in your cart have quantity values that exceed the current stock of that product.</p>
+		{% endif %}
+		{% if inactive_product %}
+			<p class="text-danger">One or more items in your cart has a product that is now inactive.</p>
+		{% endif %}
+	</div>
+{% endblock %}

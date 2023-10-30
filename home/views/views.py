@@ -1,41 +1,51 @@
-from django.conf import settings
 from django.core.mail import send_mail
-from django.shortcuts import render
-from ..forms import ContactForm
+from django.shortcuts import redirect, render
+from home.forms import ContactForm
+from home.models import Product, Configurations
+import environ
+
+env = environ.Env(
+	# set casting, default value
+	DEBUG=(bool, False)
+)
+
 
 def about(request):
-    return render(request, 'home/about.html')
-
-
-def blog(request):
-    return render(request, 'home/blog.html')
+	return render(request, 'home/about.html')
 
 
 def contact(request):
-    if request.method == 'POST':
-        form = ContactForm(request.POST)
-        if form.is_valid():
-            form.save()
-            email_subject = f'New contact {form.cleaned_data["email"]}: {form.cleaned_data["subject"]}'
-            email_message = form.cleaned_data['message']
-            send_mail(email_subject, email_message, settings.CONTACT_EMAIL, settings.ADMIN_EMAILS)
-            return render(request, 'home/success.html')
-    form = ContactForm()
-    context = {'form': form}
-    return render(request, 'home/contact.html', context)
+	config = Configurations.get_first_configuration()
+	if request.method == 'POST':
+		form = ContactForm(request.POST)
+		if form.is_valid():
+			email = form.cleaned_data['email']
+			subject = form.cleaned_data['subject']
+			message = form.cleaned_data['message']
+			#try:
+			send_mail(subject, f" \nFrom: {env('ADMIN_EMAIL')}\n\n" + message, env('FROM_EMAIL'), [env('ADMIN_EMAIL')])  # todo: change to_email
+			#messages.success(request, f'Email sent successfully.')
+			return redirect('home:home')
+			#except:
+				#return HttpResponseServerError('There was a problem sending the email. Please contact the email listed on the contact page directly.')
+	return render(request, 'home/contact.html', {"config": config})
 
 
 def home(request):
-    return render(request, 'home/home.html')
+	return render(request, 'home/home.html')
 
 
 def order(request):
-    return render(request, 'home/order.html')
+	return render(request, 'home/order.html')
 
 
 def product(request):
-    return render(request, 'home/product.html')
+	return render(request, 'home/product.html')
 
 
 def report(request):
-    return render(request, 'home/report.html')
+	return render(request, 'home/report.html')
+
+
+def cart_demo(request):
+	return render(request, 'home/addtocart.html')

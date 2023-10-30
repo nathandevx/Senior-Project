@@ -1,3 +1,4 @@
+from django import views
 from django.core import mail
 from django.urls import resolve
 from django.shortcuts import reverse

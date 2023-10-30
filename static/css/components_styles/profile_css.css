@@ -324,3 +324,20 @@ a {
 a:hover {
   text-decoration: underline;
 }
+
+.mb-1 {
+  margin-bottom: 0.25rem !important;
+}
+
+.list-inline {
+padding-left: 0;
+list-style: none;
+}
+
+.list-inline-item {
+display: inline-block;
+}
+
+.list-inline-item:not(:last-child) {
+margin-right: 0.5rem;
+}

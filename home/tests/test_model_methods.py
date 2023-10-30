@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django.core import mail
 from django.core.files import File
+from django.shortcuts import reverse
 from io import StringIO
 from home.tests.base import BaseTestCase
 from home.models import Product, ProductImage, ShippingAddress, Cart, CartItem, Order, OrderHistory, Configurations
@@ -12,12 +13,15 @@ from senior_project.utils import get_full_url
 from senior_project.constants import MONTHS
 import csv
 import environ
+import stripe
 
 
 env = environ.Env(
 	# set casting, default value
 	DEBUG=(bool, False)
 )
+
+stripe.api_key = env('STRIPE_SECRET_KEY')
 
 User = get_user_model()
 
@@ -974,24 +978,162 @@ class TestBlogModelMethods(BaseTestCase):
 		self.assertFalse(self.inactive_post1.is_superuser_or_active_post(self.user1))
 
 
+# Stripe related model methods
 class TestCheckoutModelMethods(BaseTestCase):
 	def setUp(self):
 		super().setUp()
+		self.factory = RequestFactory()
+		self._create_objects()
 
 	def _create_objects(self):
-		pass
-
-	def test_create_stripe_checkout_session(self):
-		pass
-
-	def test_handle_cart_purchase(self):
-		pass
+		self.shipping_address = ShippingAddress.objects.create(
+			address='The address',
+			city='The city',
+			state='The state',
+			country='The country',
+			postal_code='11111',
+			creator=self.superuser,
+			updater=self.superuser,
+		)
+		self.product1 = Product.objects.create(
+			name='p1',
+			description='description1',
+			price=5,
+			status=Product.ACTIVE,
+			stock=10,
+			stripe_product_id='...',
+			stripe_price_id='...',
+			creator=self.superuser,
+			updater=self.superuser,
+		)
+		self.product2 = Product.objects.create(
+			name='p2',
+			description='description2',
+			price=10,
+			status=Product.ACTIVE,
+			stock=10,
+			stripe_product_id='...',
+			stripe_price_id='...',
+			creator=self.superuser,
+			updater=self.superuser,
+		)
+		self.product1.create_stripe_product_and_price_objs()
+		self.product2.create_stripe_product_and_price_objs()
+		self.cart = Cart.objects.create(
+			status=Cart.ACTIVE,
+			shipping_address=self.shipping_address,
+			creator=self.superuser,
+			updater=self.superuser,
+		)
+		self.cartitem1 = CartItem.objects.create(
+			cart=self.cart,
+			product=self.product1,
+			original_price=0,
+			quantity=5,
+			creator=self.superuser,
+			updater=self.superuser,
+		)
+		self.cartitem2 = CartItem.objects.create(
+			cart=self.cart,
+			product=self.product1,
+			original_price=0,
+			quantity=5,
+			creator=self.superuser,
+			updater=self.superuser,
+		)
+		self.cartitem3 = CartItem.objects.create(
+			cart=self.cart,
+			product=self.product2,
+			original_price=0,
+			quantity=8,
+			creator=self.superuser,
+			updater=self.superuser,
+		)
 
 	def test_create_stripe_product_and_price_objs(self):
-		pass
+		# Create stripe product and price objects
+		self.product1.create_stripe_product_and_price_objs()
+		self.product2.create_stripe_product_and_price_objs()
+
+		# Check if stripe product ID was assigned
+		self.assertNotEquals(self.product1.stripe_product_id, '')
+		self.assertNotEquals(self.product2.stripe_product_id, '')
+
+		# Check if stripe price ID was assigned
+		self.assertNotEquals(self.product1.stripe_price_id, '')
+		self.assertNotEquals(self.product2.stripe_price_id, '')
+
+		# Attempt to retrieve stripe product
+		p1 = stripe.Product.retrieve(self.product1.stripe_product_id)
+		p2 = stripe.Product.retrieve(self.product2.stripe_product_id)
+
+		# Check if name was assigned correctly
+		self.assertEquals(p1.name, self.product1.name)
+		self.assertEquals(p2.name, self.product2.name)
+
+		# Attempt to retrieve stripe price
+		price1 = stripe.Price.retrieve(self.product1.stripe_price_id)
+		price2 = stripe.Price.retrieve(self.product2.stripe_price_id)
+
+		# Check if the price was assigned correctly
+		self.assertEquals(price1.unit_amount/100, self.product1.price)
+		self.assertEquals(price2.unit_amount/100, self.product2.price)
 
 	def test_update_stripe_product_and_price_objs(self):
-		pass
+		# Change the product name and price
+		self.product1.name = 'p11'
+		self.product2.name = 'p22'
+		self.product1.price = 100
+		self.product2.price = 200
+
+		self.product1.update_stripe_product_and_price_objs()
+		self.product2.update_stripe_product_and_price_objs()
+
+		# Attempt to retrieve stripe product
+		p1 = stripe.Product.retrieve(self.product1.stripe_product_id)
+		p2 = stripe.Product.retrieve(self.product2.stripe_product_id)
+
+		# Check if name was assigned correctly
+		self.assertEquals(self.product1.name, p1.name)
+		self.assertEquals(self.product2.name, p2.name)
+
+		# Attempt to retrieve stripe price
+		price1 = stripe.Price.retrieve(self.product1.stripe_price_id)
+		price2 = stripe.Price.retrieve(self.product2.stripe_price_id)
+
+		# Check if the price was assigned correctly
+		self.assertEquals(price1.unit_amount / 100, 100)
+		self.assertEquals(price2.unit_amount / 100, 200)
+
+	def test_create_stripe_checkout_session(self):
+		self.cart.create_stripe_checkout_session()
+		sessions = stripe.checkout.Session.list(limit=1)
+		actual_url = sessions.data[0].success_url
+		expected_url = get_full_url(reverse('home:payment-success', kwargs={'cart_uuid': self.cart.uuid}))
+		self.assertEquals(actual_url, expected_url)
+
+	def test_handle_cart_purchase(self):
+		request = self.factory.get('/fake-path/')
+		order = self.cart.create_order()
+		self.cart.handle_cart_purchase(request, order)
+		# Product 1: price=5, stock=10
+		# Product 2: price=10, stock=10
+		# CartItem 1: quantity=5, product=p1
+		# CartItem 2: quantity=5, product=p1
+		# CartItem 3: quantity=8, product=p2
+		# Product 1: total=50, stock=0
+		# Product 2: total=80, stock=2
+		# Total = 130
+		products = Product.objects.all()
+		self.assertEquals(products[0].stock, 0)
+		self.assertEquals(products[1].stock, 2)
+		self.assertEquals(order.total_price, 130)
 
 	def test_delete_product_and_set_stripe_product_as_inactive(self):
-		pass
+		initial_count = Product.objects.all().count()
+		stripe_product_id = self.product1.stripe_product_id
+		self.product1.delete_product_and_set_stripe_product_as_inactive()
+
+		stripe_product_id_status = stripe.Product.retrieve(stripe_product_id)
+		self.assertEquals(Product.objects.all().count(), initial_count-1)
+		self.assertFalse(stripe_product_id_status.active)

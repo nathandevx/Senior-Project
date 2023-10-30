@@ -1,10 +1,10 @@
-from django import views
-from django.core.mail import send_mail, mail
+from django.core import mail
 from django.urls import resolve
 from django.shortcuts import reverse
 from django.contrib.auth import get_user_model
 from django.forms.fields import Field
 from home.models import Configurations
+from home.views import views
 from home.tests.base import BaseTestCase
 from users.forms import DeleteUserForm
 from users.views import delete_user
@@ -79,6 +79,7 @@ class TestConfigurationPages(BaseTestCase):
 
 	def test_config_update(self):
 		pass
+
 
 class TestContactPage(BaseTestCase):
 	def setUp(self):

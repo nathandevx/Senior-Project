@@ -8,7 +8,7 @@ from django.db.models.functions import ExtractYear
 from django.db.models import Count, Sum, Q
 from django.contrib import messages
 from ckeditor.fields import RichTextField
-from senior_project.utils import format_datetime, get_protocol, get_domain
+from senior_project.utils import format_datetime
 from senior_project.exceptions import MoreThanOneActiveCartError, MoreThanOneCartItemError, ErrorCreatingAStripeProduct, ErrorUpdatingAStripeProduct, ErrorDeletingAStripeProduct, ErrorCreatingStripeCheckoutSession
 from senior_project.constants import MONTHS
 from senior_project.utils import get_full_url

@@ -40,6 +40,7 @@ def order(request):
 
 
 def product(request):
+	
 	return render(request, 'home/product.html')
 
 

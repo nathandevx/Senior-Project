@@ -2,13 +2,12 @@ from django.core.mail import send_mail
 from django.core.validators import RegexValidator, MinValueValidator
 from django.db import models
 from django.conf import settings
-from django.http import HttpResponseForbidden
 from django.shortcuts import reverse, render
 from django.db.models.functions import ExtractYear
 from django.db.models import Count, Sum, Q
 from django.contrib import messages
 from ckeditor.fields import RichTextField
-from senior_project.utils import format_datetime
+from senior_project.utils import format_datetime, get_protocol, get_domain
 from senior_project.exceptions import MoreThanOneActiveCartError, MoreThanOneCartItemError, ErrorCreatingAStripeProduct, ErrorUpdatingAStripeProduct, ErrorDeletingAStripeProduct, ErrorCreatingStripeCheckoutSession
 from senior_project.constants import MONTHS
 from senior_project.utils import get_full_url
@@ -133,7 +132,6 @@ class Product(TimestampCreatorMixin):
 	def save_images(self, files: list):
 		"""
 		Saves a list of images and associates them with the product.
-		@param user: the User the ProductImages will be associated with.
 		@param files: a list.
 		@return: nothing.
 		"""
@@ -494,7 +492,6 @@ class Cart(TimestampCreatorMixin):
 		Stripe needs 2 URLS for a payment to go smoothly.
 		A success URL: when the payment is successful.
 		A cancel URL: when the payment is canceled by the user.
-		@param request: the incoming request.
 		@return: a size 2 tuple containing (success_url, canceled_url)
 		"""
 		success = reverse('home:payment-success', kwargs={'cart_uuid': self.uuid})
@@ -535,7 +532,6 @@ class Cart(TimestampCreatorMixin):
 	def create_order(self):
 		"""
 		Creates an Order from a Cart.
-		@param user: the User.
 		@return: nothing.
 		"""
 		order = Order.objects.create(

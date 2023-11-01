@@ -36,17 +36,20 @@
                                     new Chart(ctx, {
                                         type: 'line',
                                         data: {
-                                            labels: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+                                            labels: {{ months|safe }},
                                             datasets: [{
-                                                label: 'Sale Numbers by Day',
-                                                data: [12, 19, 3, 5, 2, 3, 7],
-                                                borderWidth: 3
+                                                label: 'Sale Numbers by Month',
+                                                data: {{ order_counts|safe }},
+                                                borderWidth: 4
                                             }]
                                          },
                                         options: {
                                             scales: {
                                                 y: {
-                                                    beginAtZero: true
+                                                    ticks: {
+                                                        beginAtZero: true,
+                                                        callback: function(value) {if (value % 1 === 0) {return value;}}
+                                                    }
                                                 }
                                             }
                                         }
@@ -58,19 +61,20 @@
                                     new Chart(ctx2, {
                                         type: 'bar',
                                         data: {
-                                            labels: ['Placed', 'Shipped', 'Delivered', 'Canceled'],
+                                            labels: {{ order_status|safe }},
                                             datasets: [{
                                                 label: 'Order Status',
-                                                {% for order in orders %}
-                                                data: [{{order.get_order_status_counts}}],
-                                                {% endfor %}
+                                                data: {{ order_total|safe }},
                                                 borderWidth: 1
                                             }]
                                          },
                                         options: {
                                             scales: {
                                                 y: {
-                                                    beginAtZero: true
+                                                    ticks: {
+                                                        beginAtZero: true,
+                                                        callback: function(value) {if (value % 1 === 0) {return value;}}
+                                                    }
                                                 }
                                             }
                                         }

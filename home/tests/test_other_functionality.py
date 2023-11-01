@@ -3,12 +3,14 @@ from django.template import Context, Template
 from django.utils import timezone
 from django.http import HttpResponse
 from django.conf import settings
+from django.core.files import File
 from django.contrib.sites.shortcuts import get_current_site
 from home.tests.base import BaseTestCase
-from home.models import Cart, Configurations
+from home.models import Product, ProductImage, Cart, Configurations
 from blog.models import Post
 from senior_project import utils
 import datetime
+import requests
 
 
 class TestUtilityFunctions(BaseTestCase):
@@ -133,3 +135,42 @@ class TestTemplateTags(BaseTestCase):
 		else:
 			url = Configurations.get_create_url()
 			self.assertIn(url, rendered_template)
+
+
+class TestAWSFunctionality(BaseTestCase):
+	def setUp(self):
+		super().setUp()
+		self._create_objects()
+		self.image_url = self.product1_image1.image.url
+
+	def _create_objects(self):
+		self.product1 = Product.objects.create(
+			name='p1',
+			description='description1',
+			price=5,
+			status=Product.ACTIVE,
+			stock=10,
+			stripe_product_id='...',
+			stripe_price_id='...',
+			creator=self.superuser,
+			updater=self.superuser,
+		)
+		with open('static/images/for_testing/pastry1.jpeg', 'rb') as f1:
+			image1 = File(f1)
+			self.product1_image1 = ProductImage.objects.create(
+				product=self.product1,
+				image=image1,
+				creator=self.superuser,
+				updater=self.superuser,
+			)
+
+	def test_get_image(self):
+		r = requests.get(self.image_url)
+		self.assertEquals(200, r.status_code)
+		self.assertIn("amazonaws.com", self.image_url)
+
+	def test_get_image_after_product_deletion(self):
+		self.product1.delete_images()
+		self.product1.delete()
+		r = requests.get(self.image_url)
+		self.assertEquals(404, r.status_code)

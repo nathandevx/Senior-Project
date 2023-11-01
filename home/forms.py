@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from senior_project.utils import get_allowed_cities
 from senior_project.constants import PRODUCT_FORM_ERROR1, PRODUCT_FORM_ERROR2
-from home.models import Product, ProductImage, CartItem, ShippingAddress, Contact, Configurations
+from home.models import Product, ProductImage, CartItem, ShippingAddress, Contact, Configurations, Order
 
 
 class ContactForm(forms.ModelForm):
@@ -98,3 +98,24 @@ class ConfigurationForm(forms.ModelForm):
 	class Meta:
 		model = Configurations
 		fields = '__all__'
+
+
+class OrderForm(forms.ModelForm):
+	class Meta:
+		model = Order
+		fields = ['status', 'estimated_delivery_date', 'notes']
+		widgets = {
+			'estimated_delivery_date': forms.DateInput(format='%m/%d/%Y', attrs={'placeholder': 'mm/dd/yyyy'}),
+		}
+
+	def clean(self):
+		cleaned_data = super().clean()
+		status = cleaned_data.get("status")
+		estimated_delivery_date = cleaned_data.get("estimated_delivery_date")
+
+		if status == Order.CANCELED and estimated_delivery_date is not None:
+			raise ValidationError({
+				'estimated_delivery_date': "estimated_delivery_date must be empty if order is canceled."
+			})
+
+		return cleaned_data

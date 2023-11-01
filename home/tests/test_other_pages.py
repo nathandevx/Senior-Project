@@ -1,10 +1,9 @@
-from django import views
 from django.core import mail
 from django.urls import resolve
 from django.shortcuts import reverse
 from django.contrib.auth import get_user_model
 from django.forms.fields import Field
-from home.models import Configurations
+from home.models import Product, Configurations
 from home.views import views
 from home.tests.base import BaseTestCase
 from users.forms import DeleteUserForm
@@ -112,3 +111,62 @@ class TestContactPage(BaseTestCase):
 			self.assertEqual(mail.outbox[0].subject, form_data['subject'])
 			self.assertEqual(mail.outbox[0].body, form_data['message'])
 		self.assertRedirects(response, reverse('home:home'), status_code=302, target_status_code=200)
+
+
+class TestHomePage(BaseTestCase):
+	def setUp(self):
+		super().setUp()
+		self.url = Product.get_list_url()
+		self._create_objects()
+
+	def _create_objects(self):
+		self.active_product1 = Product.objects.create(
+			name='p1',
+			description='description1',
+			price=10,
+			status=Product.ACTIVE,
+			stock=2,
+			stripe_product_id='...',
+			stripe_price_id='...',
+			creator=self.superuser,
+			updater=self.superuser,
+		)
+		self.active_product2 = Product.objects.create(
+			name='p1',
+			description='description1',
+			price=20,
+			status=Product.ACTIVE,
+			stock=5,
+			stripe_product_id='...',
+			stripe_price_id='...',
+			creator=self.superuser,
+			updater=self.superuser,
+		)
+		self.inactive_product1 = Product.objects.create(
+			name='p1',
+			description='description1',
+			price=30,
+			status=Product.INACTIVE,
+			stock=10,
+			stripe_product_id='...',
+			stripe_price_id='...',
+			creator=self.superuser,
+			updater=self.superuser,
+		)
+
+	def test_get_request(self):
+		response = self.client.get(self.url)
+		context = response.context
+
+		self.assertEquals(resolve(self.url).func, views.home)
+		self.assertTemplateUsed(response, 'home/home.html')
+		self.assertEquals(response.status_code, 200)
+
+		self.assertIn('products', context)
+		self.assertIn('is_superuser', context)
+
+		self.assertEqual(len(context['products']), 2)
+		self.assertFalse(context['is_superuser'])
+
+		for product in context['products']:
+			self.assertEquals(product.status, Product.ACTIVE)

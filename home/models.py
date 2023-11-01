@@ -2,7 +2,7 @@ from django.core.mail import send_mail
 from django.core.validators import RegexValidator, MinValueValidator
 from django.db import models
 from django.conf import settings
-from django.shortcuts import reverse, render
+from django.shortcuts import reverse
 from django.db.models.functions import ExtractYear
 from django.db.models import Count, Sum, Q
 from django.contrib import messages
@@ -543,28 +543,15 @@ class Cart(TimestampCreatorMixin):
 		)
 		return order
 
-	def handle_cart_errors(self, request):
+	def has_errors(self):
 		"""
 		Uses has_out_of_stock_or_inactive_products() to check if cart has errors.
-		If cart has errors, an appropriate template is rendered.
-		@param request: the incoming request.
-		@return: render().
+		@return: a dictionary of context if errors. None if there's no errors.
 		"""
 		# Check if cart has errors
 		stock_limit, inactive_product = self.has_out_of_stock_or_inactive_products()
 		if stock_limit or inactive_product:
-			context = {'cart': self, 'stock_limit': stock_limit, 'inactive_product': inactive_product}
-			return render(request, 'home/carts/cart_errors.html', context=context)
-
-	def handle_cart_empty(self, request):
-		"""
-		Uses is_empty() to check if cart is empty.
-		If cart is empty, an appropriate template is rendered.
-		@param request: the incoming request.
-		@return: render().
-		"""
-		if self.is_empty():
-			return render(request, 'home/carts/cart_empty.html', {'product_model': Product})
+			return {'cart': self, 'stock_limit': stock_limit, 'inactive_product': inactive_product}
 
 	def not_creator_or_inactive_cart(self, user):
 		"""

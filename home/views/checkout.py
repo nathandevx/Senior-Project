@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseForbidden
-from home.models import Cart
+from home.models import Product, Cart
 from home.forms import ShippingAddressForm
 from senior_project.utils import login_required, get_allowed_cities
 import environ
@@ -21,8 +21,10 @@ def shipping_info(request):
 	access = cart.not_creator_or_inactive_cart(request.user)
 	if access:
 		return HttpResponseForbidden()
-	cart.handle_cart_errors(request)
-	cart.handle_cart_empty(request)
+	if cart.has_errors():
+		return render(request, 'home/carts/cart_errors.html', context=cart.has_errors())
+	if cart.is_empty():
+		return render(request, 'home/carts/cart_empty.html', {'product_model': Product})
 
 	if request.method == 'POST':
 		form = ShippingAddressForm(request.POST)
@@ -52,8 +54,10 @@ def proceed_to_stripe(request):
 	access = cart.not_creator_or_inactive_cart(request.user)
 	if access:
 		return HttpResponseForbidden()
-	cart.handle_cart_errors(request)
-	cart.handle_cart_empty(request)
+	if cart.has_errors():
+		return render(request, 'home/carts/cart_errors.html', context=cart.has_errors())
+	if cart.is_empty():
+		return render(request, 'home/carts/cart_empty.html', {'product_model': Product})
 
 	# Shipping address required to continue
 	if not cart.shipping_address:

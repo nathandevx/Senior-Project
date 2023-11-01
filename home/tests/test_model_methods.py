@@ -500,17 +500,6 @@ class TestCartModelMethods(BaseTestCase):
 		self.assertEquals(order.status, Order.PLACED)
 		self.assertEquals(order.creator, self.active_cart.creator)
 
-	def test_handle_cart_errors(self):
-		request = self.factory.get('/fake-path/')
-		self.cart_with_inactive_cartitems.handle_cart_errors(request)
-		self.assertTemplateUsed('home/carts/cart_errors.html')
-
-	def test_handle_cart_empty(self):
-		request = self.factory.get('/fake-path/')
-		self.cart_with_inactive_cartitems.handle_cart_empty(request)
-		self.assertTrue(self.empty_cart.is_empty())
-		self.assertTemplateUsed('home/carts/cart_errors.html')
-
 	def test_not_creator_or_inactive_cart(self):
 		# Test active cart with correct user
 		self.assertFalse(self.active_cart.not_creator_or_inactive_cart(self.active_cart.creator))

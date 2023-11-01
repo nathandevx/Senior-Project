@@ -30,19 +30,11 @@ class TestUtilityFunctions(BaseTestCase):
 		full_url = f"{protocol}://{get_current_site(request)}{url}"
 		self.assertEquals(full_url, utils.get_full_url(url))
 
-	def test_get_random_date(self):
-		"""No tests needed, only used in development."""
-		pass
-
 	def test_get_allowed_cities(self):
 		self.assertEquals(['sacramento'], utils.get_allowed_cities('sacramento'))
 		self.assertEquals(['sacramento'], utils.get_allowed_cities('sacramento,'))
 		self.assertEquals(['sacramento', 'los angeles'], utils.get_allowed_cities('sacramento, los angeles'))
 		self.assertEquals(['sacramento', 'los angeles'], utils.get_allowed_cities('sacramento,los angeles'))
-
-	def test_combine_form_dicts(self):
-		"""No tests needed, uses built-in Python code."""
-		pass
 
 	def test_get_table_data(self):
 		# todo: test this

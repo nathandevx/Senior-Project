@@ -1,4 +1,5 @@
 from pathlib import Path
+import django_heroku
 import environ
 import os
 
@@ -173,3 +174,7 @@ if DEBUG:
     USE_HTTPS = False
 else:
     USE_HTTPS = True
+    ALLOWED_HOSTS.append(env('DOMAIN'))
+
+# django-heroku
+django_heroku.settings(locals())

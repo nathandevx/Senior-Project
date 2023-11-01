@@ -1,54 +1,62 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block stylesheet %}
     <link rel="stylesheet" href="https://unpkg.com/ionicons@5.0.2/dist/css/ionicons.min.css">
     <link rel="stylesheet" href="{% static 'css/components_styles/profile_css.css' %}" type="text/css">
+{% endblock %}
 
 {% block contents %}
     <header>
         <nav>
             <div class="logo">
-                <img src="Pastry Bites Logo_Hrz.png" alt="PB Logo">
+                <a id="nav-link" href="/">
+                    <img src="/static/images/Pastry Bites Logo_Hrz.png" alt="PB Logo">
+                </a>
+                
             </div>
     
             <ul class="nav-links">
-                <li><a id="nav-link" href="#">About Us</a></li>
-                <li><a id="nav-link" href="#">Products</a></li>
-                <li><a id="nav-link" href="#">Blog</a></li>
-                <li><a id="nav-link" href="#">Contact</a></li>
+                <li><a id="nav-link" href="{% url 'home:about' %}">About Us</a></li>
+                <!-- <li><a id="nav-link" href="{% url 'home:product' %}">Products</a></li> -->
+                <li><a id="nav-link" href="{% url 'blog:post-list' %}">Blog</a></li>
+                <li><a id="nav-link" href="{% url 'home:contact' %}">Contact</a></li>
                 <li><a id="nav-link" href="#">Sign Up</a></li>
             </ul>
 
             <div class="order">
-                <button>Order Online</button>
+                <button>
+                    <a id="nav-link" href="{% url 'home:product' %}">Order Online</a>
+                </button>
+                
             </div>
         </nav>
     </header>
 
         <div class="pageName">
-            <h1>Profile Page</h1>
+            {% block title %}My Profile{% endblock %}
             <p>Enter your information:</p>
         </div>
     <div class="main">
         <div class="details">
             <div class="container">
                 <form>
-                    {% csrf_token %}
 	                {{ form }}
+                    {% csrf_token %}
                     <label for="name">First Name:</label>
-                    <input type="text" id="fname" name="fname" required>
+                    <!-- <input type="text" id="fname" name="fname" required> -->
 
                     <label for="name">Last Name:</label>
-                    <input type="text" id="lname" name="lname" required>
+                    <!-- <input type="text" id="lname" name="lname" required> -->
             
                     <label for="email">Email Address:</label>
-                    <input type="email" id="email" name="email" required>
+                    <!-- <input type="email" id="email" name="email" required> -->
                     
                     <label for="birthdate">Birthday:</label>
-                    <input type="date" id="birthdate" name="birthdate" required>
+                    <!-- <input type="date" id="birthdate" name="birthdate" required> -->
             
                     <label for="payment">Phone Number:</label>
-                    <input type="phone-number" id="payment" name="payment" required>
+                    <!-- <input type="phone-number" id="payment" name="payment" required> -->
             
             
                 </form>

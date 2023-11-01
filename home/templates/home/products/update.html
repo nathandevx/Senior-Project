@@ -1,14 +1,25 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
 
 {% block title %}Update Product{% endblock %}
 
 {% block contents %}
-<div class="container">
-    <h1 class="text-center">Update Product</h1>
-    <form method="post">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit">Update</button>
-    </form>
-</div>
+
+    <div class="container">
+        <h1 class="text-center">Product update page</h1>
+	    <p>For product: {{ product.name }}</p>
+	    <p><span class="text-danger">WARNING</span>: updating the product's images will override existing images.</p>
+	    <p>
+		    Updating the product here will also update the product on stripe <a target="_blank" href="https://dashboard.stripe.com/test/products?active=true">here</a>.
+		    This is required for stripe payments to work correctly.
+	    </p>
+	    <form method="POST" enctype="multipart/form-data">
+		    {% csrf_token %}
+		    {{ product_form.media }}
+		    {{ product_form|crispy }}
+		    {{ product_image_form|crispy }}
+		    <button type="submit" class="btn btn-primary">Update</button>
+	    </form>
+    </div>
+
 {% endblock %}

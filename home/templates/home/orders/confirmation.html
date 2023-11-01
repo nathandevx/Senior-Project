@@ -1,9 +1,77 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
 
-{% block title %}Order confirmation{% endblock %}
+{% block title %}Order Confirmation{% endblock %}
 
 {% block contents %}
-	<div class="container">
-		<h1 class="text-center">Order confirmation</h1>
-	</div>
+    <div class="container">
+        <div class="text-center mb-3">
+	        <h1>Order confirmation page</h1>
+	        <p><span class="fw-bold">Order status:</span> {{ order.status }}</p>
+	        <p><span class="fw-bold">Total price:</span> ${{ order.total_price }}</p>
+	        <p><span class="fw-bold">Shipping address:</span> {{ order.cart.shipping_address }}</p>
+	        <p>
+			    <span class="fw-bold">Delivery date:</span>
+			    {% if order.status == order_model.DELIVERED %}
+				    order delivered.
+			    {% elif order.estimated_delivery_date %}
+				    {{ order.estimated_delivery_date }}  (subject to change).
+			    {% elif order.status == order_model.CANCELED %}
+				    order canceled.
+			    {% else %}
+			        an admin will add a delivery date.
+			    {% endif %}
+		    </p>
+	        <p>See a problem? <a href="{% url 'home:contact' %}">contact us</a>.</p>
+        </div>
+		<div class="table-responsive">
+		    <table class="table table-striped table-hover">
+		        <thead class="table-dark">
+		            <tr>
+		                <th scope="col">Product</th>
+		                <th scope="col">Quantity</th>
+		                <th scope="col">Price</th>
+		            </tr>
+		        </thead>
+		        <tbody>
+			        {% for cart_item in order.cart.cartitem_set.all %}
+		                <tr>
+		                    <th scope="row"><a href="{{ cart_item.product.get_read_url }}">{{ cart_item.product }}</a></th>
+		                    <td>{{ cart_item.quantity }}</td>
+			                {% if cart_item.quantity > 1 %}
+			                    <td>${{ cart_item.original_price }} each, ${{ cart_item.get_total_original_price }} total</td>
+		                    {% else %}
+		                        <td>${{ cart_item.original_price }}</td>
+		                    {% endif %}
+		                </tr>
+		            {% endfor %}
+		        </tbody>
+		    </table>
+
+			{% if order.notes %}
+	            <h3>Order notes:</h3>
+	            <p>{{ order.notes|linebreaks }}</p>
+	        {% endif %}
+
+			{% if user.is_superuser %}
+				<hr>
+		        <p class="fw-bold">Admin viewable only:</p>
+				{% if order.has_errors %}
+					<p class="text-decoration-underline">
+						<span class="text-danger fw-bold">WARNING:</span> this order has errors.
+						It appears that a product the customer ordered is inactive and may have stock overflow.
+					</p>
+				{% endif %}
+				<p>The prices here are the original prices at the time the customer finished paying.</p>
+				<p>
+					Changing the status, estimated delivery date, or notes will result in the user being sent an email.
+				</p>
+				<form method="POST">
+				    {% csrf_token %}
+				    {{ form|crispy }}
+				    <button type="submit" class="btn btn-primary">Update</button>
+				</form>
+	        {% endif %}
+		</div>
+    </div>
 {% endblock %}

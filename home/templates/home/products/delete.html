@@ -1,12 +1,21 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
+{% block title %}Delete Product{% endblock %}
 
-{% block content %}
-    <h2>Confirm Delete</h2>
-    <p>Are you sure you want to delete the product: {{ product.name }}?</p>
-    <form method="post">
-    {% csrf_token %}
-        <button type="submit">Yes, Delete</button>
-    </form>
-    <a href="{{ product.get_read_url }}">Back to Product Details</a>
+{% block contents %}
+
+    <div class="container-fluid text-center">
+        <h1>Product delete page</h1>
+	    <p>For product: {{ product.name }}</p>
+	    <p>
+		    Deleting the product here will also delete the product on stripe <a target="_blank" href="https://dashboard.stripe.com/test/products?active=true">here</a>.
+	    </p>
+	    <form method="post">
+		    {% csrf_token %}
+		    <button type="submit" class="btn btn-danger mb-2">Delete</button>
+		</form>
+	    <br>
+	    <a href="{{ product.get_read_url }}" class="btn btn-primary">Cancel</a>
+    </div>
+
 {% endblock %}

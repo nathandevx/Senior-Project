@@ -1,13 +1,24 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
 
-{% block title %}Product create{% endblock %}
+{% block title %}Create Product{% endblock %}
 
 {% block contents %}
-    <h2>Create Product</h2>
-    <form method="post">
-      {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Create</button>
-    </form>
-    <a href="{% url 'home:home' %}">Back to Home</a>
+
+    <div class="container">
+        <h1 class="text-center">Product create page</h1>
+	    <p class="text-center">
+		    Creating a product here will also create a product on stripe <a target="_blank" href="https://dashboard.stripe.com/test/products?active=true">here</a>.
+		    This is required for stripe payments to work correctly.
+	    </p>
+	    <form method="POST" enctype="multipart/form-data">
+		    {% csrf_token %}
+		    {{ product_form.media }}
+		    {{ product_form|crispy }}
+		    {{ product_image_form|crispy }}
+		    <button type="submit" class="btn btn-success me-5">Create</button>
+		    <a href="{{ product_model.get_list_url }}" class="btn btn-primary">Cancel</a>
+	    </form>
+    </div>
+
 {% endblock %}

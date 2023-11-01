@@ -8,7 +8,7 @@ urlpatterns = [
 	path('contact/', views.contact, name='contact'),
 
 	# Products
-	path('product/', views.product, name='product'),
+	# path('product/', views.product, name='product'),
 	path('product/create/', products.product_create, name='product-create'),
 	path('product/<int:pk>/', products.product_read, name='product-read'),
 	path('product/update/<int:pk>/', products.product_update, name='product-update'),
@@ -17,8 +17,7 @@ urlpatterns = [
 	# Carts
 	path('cart/<int:pk>/', carts.cart_read, name='cart-read'),  # also acts as cart/update/
 	path('cart/delete/<int:pk>/', carts.cart_delete, name='cart-delete'),
-	path('carts/read', carts.cart_read, name='cart-read'),
-	path('cart-demo/', views.cart_demo, name='cart-demo'),
+	# path('cart-demo/', views.cart_demo, name='cart-demo'),
 
 	# Checkout
 	path('checkout/shipping-info/', checkout.shipping_info, name='shipping-info'),

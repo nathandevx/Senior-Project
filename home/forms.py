@@ -2,6 +2,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from senior_project.utils import get_allowed_cities
+from senior_project.constants import PRODUCT_FORM_ERROR1, PRODUCT_FORM_ERROR2
 from home.models import Product, ProductImage, CartItem, ShippingAddress, Contact, Configurations
 
 
@@ -31,15 +32,14 @@ class ProductForm(forms.ModelForm):
 		# The product can't be active if there is no stock
 		if stock == 0 and status == Product.ACTIVE:
 			raise ValidationError({
-				'status': "Status must be set to 'inactive' if stock is 0."
+				'status': PRODUCT_FORM_ERROR1
 			})
-
 		# stock_overflow is an optional parameter if it's 0.
 		if stock_overflow:
 			# A product cannot have stock overflow and be active
 			if stock_overflow > 0 and status == Product.ACTIVE:
 				raise ValidationError({
-					'status': "Status must be set to 'inactive' if stock overflow is greater than 0."
+					'status': PRODUCT_FORM_ERROR2
 				})
 		return cleaned_data
 
@@ -55,7 +55,7 @@ class ProductForm(forms.ModelForm):
 
 
 class ProductImageForm(forms.ModelForm):
-	image = forms.ImageField(label='images', widget = forms.ClearableFileInput(attrs={'multiple': 'multiple'})) 
+	image = forms.ImageField(label='images', widget=forms.ClearableFileInput(attrs={'multiple': 'multiple'}))
 
 	def __init__(self, *args, **kwargs):
 		# Add a custom parameter to the form that indicates if the form should require images. Default to true.
@@ -63,6 +63,7 @@ class ProductImageForm(forms.ModelForm):
 		super(ProductImageForm, self).__init__(*args, **kwargs)
 		# Set the image field required to whatever was assigned
 		self.fields['image'].required = require_images
+
 	class Meta:
 		model = ProductImage
 		fields = ['image']

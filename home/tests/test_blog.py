@@ -4,7 +4,6 @@ from home.tests.base import BaseTestCase
 from blog.models import Post
 from blog.forms import PostForm
 from blog import views
-from senior_project.utils import combine_form_dicts
 
 
 class BlogBaseTestCase(BaseTestCase):
@@ -76,7 +75,6 @@ class TestBlogCreate(BlogBaseTestCase):
 			'content': 'Content',
 			'status': Post.ACTIVE
 		}
-		form_data = combine_form_dicts(self.superuser, form_data)
 		initial_count = Post.objects.count()
 		response = self.client.post(self.url, data=form_data)
 		self.assertEquals(Post.objects.count(), initial_count + 1)
@@ -88,7 +86,6 @@ class TestBlogCreate(BlogBaseTestCase):
 			'preview_text': 'Preview text',
 			# 'content': is required
 		}
-		form_data = combine_form_dicts(self.superuser, form_data)
 		self.client.login(username=self.superuser.username, password=self.superuser_password)
 		initial_count = Post.objects.count()
 		response = self.client.post(self.url, data=form_data)
@@ -170,20 +167,18 @@ class TestBlogUpdate(BlogBaseTestCase):
 			'content': 'Content',
 			'status': Post.ACTIVE
 		}
-		form_data = combine_form_dicts(self.superuser, form_data)
 		initial_count = Post.objects.count()
 		response = self.client.post(self.url, data=form_data)
 		self.assertEquals(initial_count, initial_count)
 		self.assertRedirects(response, self.active_blog1.get_read_url(), status_code=302, target_status_code=200)
 
 	def test_post_request_invalid_data(self):
+		self.client.login(username=self.superuser.username, password=self.superuser_password)
 		form_data = {
 			'title': 'Title',
 			'preview_text': 'Preview text',
 			# 'content': is required
 		}
-		form_data = combine_form_dicts(self.superuser, form_data)
-		self.client.login(username=self.superuser.username, password=self.superuser_password)
 		initial_count = Post.objects.count()
 		response = self.client.post(self.url, data=form_data)
 		self.assertEquals(initial_count, initial_count)  # data invalid, no post should've been created

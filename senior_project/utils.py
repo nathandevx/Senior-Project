@@ -98,22 +98,6 @@ def get_allowed_cities(test_cities=None):
 	return new_cities
 
 
-def combine_form_dicts(user, form_data: dict):
-	"""
-	@param user: the user.
-	@param form_data: a dict.
-	@return: the form_data + TimeStampCreatorMixin data in dictionary format.
-	"""
-	extra_data = {
-		'creator': user,
-		'updater': user,
-		'created_at': timezone.now(),
-		'updated_at': timezone.now(),
-	}
-	# form_data + data
-	return {**form_data, **extra_data}
-
-
 def get_protocol():
 	""" Returns 'http' or 'https'. """
 	return 'https' if settings.USE_HTTPS else 'http'

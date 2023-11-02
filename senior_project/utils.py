@@ -113,7 +113,7 @@ def get_table_data(request, cls):
 	Gets a model's data that is to be displayed on /report/model_name/
 	@param request: the incoming request.
 	@param cls: the Model class. Like Product, Order, Blog, etc.
-	@return: a tuple of (a QuerySet of Blog data, string order_by,)
+	@return: a tuple of (a QuerySet of Blog data, string order_by)
 	"""
 	sort_by = request.GET.get('sort_by')
 	order_by = request.GET.get('order_by', 'desc')

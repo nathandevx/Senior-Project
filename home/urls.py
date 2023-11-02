@@ -1,5 +1,5 @@
 from django.urls import path
-from home.views import views, products, carts, checkout, orders, reports, config
+from home.views import views, products, carts, checkout, orders, reports, configuration
 
 app_name = 'home'
 urlpatterns = [
@@ -44,7 +44,7 @@ urlpatterns = [
 	path('report/api-status/', reports.report_api_status, name='report-api-status'),
 
 	# Configurations
-	path('config/create/', config.config_create, name='config-create'),
-	path('config/<int:pk>/', config.config_read, name='config-read'),
-	path('config/update/<int:pk>/', config.config_update, name='config-update'),
+	path('config/create/', configuration.config_create, name='config-create'),
+	path('config/<int:pk>/', configuration.config_read, name='config-read'),
+	path('config/update/<int:pk>/', configuration.config_update, name='config-update'),
 ]

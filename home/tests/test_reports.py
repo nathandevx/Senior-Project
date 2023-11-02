@@ -1,30 +1,75 @@
 from home.tests.base import BaseTestCase
 
 
-class TestReports(BaseTestCase):
+class ReportBaseTestCase(BaseTestCase):
 	def setUp(self):
+		super().setUp()
+
+	def _superuser_access(self, url):
+		self.client.login(username=self.superuser.username, password=self.password)
+		response = self.client.get(url)
+		return response.status_code
+
+	def _non_superuser_access(self, url):
+		self.client.login(username=self.user1.username, password=self.password)
+		response = self.client.get(url)
+		return response.status_code
+
+	def _superuser_login(self):
+		self.client.login(username=self.superuser.username, password=self.superuser_password)
+
+
+class TestReportList(ReportBaseTestCase):
+	def setUp(self):
+		super().setUp()
+
+	def test_access(self):
 		pass
 
-	def test_report_list(self):
-		"""Are the links to the other report pages listed in the template?"""
+class TestReportOrders(ReportBaseTestCase):
+	def setUp(self):
+		super().setUp()
+
+	def test_access(self):
 		pass
 
-	def test_report_orders(self):
-		"""Are the correct orders shown"""
+
+class TestReportProducts(ReportBaseTestCase):
+	def setUp(self):
+		super().setUp()
+
+	def test_access(self):
 		pass
 
-	def test_report_products(self):
-		"""Are the correct products shown"""
+
+class TestReportBlogs(ReportBaseTestCase):
+	def setUp(self):
+		super().setUp()
+
+	def test_access(self):
 		pass
 
-	def test_report_charts(self):
-		"""Is the correct data given to the charts"""
+
+class TestReportCharts(ReportBaseTestCase):
+	def setUp(self):
+		super().setUp()
+
+	def test_access(self):
 		pass
 
-	def test_report_export(self):
-		"""Is the .csv file fine"""
+
+class TestReportExport(ReportBaseTestCase):
+	def setUp(self):
+		super().setUp()
+
+	def test_access(self):
 		pass
 
-	def test_report_api_status(self):
-		"""Is the API status page rendered correctly"""
+
+class TestReportAPIStatus(ReportBaseTestCase):
+	def setUp(self):
+		super().setUp()
+
+	def test_access(self):
 		pass
+

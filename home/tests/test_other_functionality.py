@@ -5,10 +5,10 @@ from django.http import HttpResponse
 from django.conf import settings
 from django.core.files import File
 from django.contrib.sites.shortcuts import get_current_site
+from senior_project import utils
 from home.tests.base import BaseTestCase
 from home.models import Product, ProductImage, Cart, Configurations
 from blog.models import Post
-from senior_project import utils
 import datetime
 import requests
 

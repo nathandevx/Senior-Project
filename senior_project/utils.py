@@ -107,3 +107,27 @@ def get_domain():
 	""" Gets the current domain name. """
 	return Site.objects.get(pk=settings.SITE_ID)
 
+
+def get_table_data(request, cls):
+	"""
+	Gets a model's data that is to be displayed on /report/model_name/
+	@param request: the incoming request.
+	@param cls: the Model class. Like Product, Order, Blog, etc.
+	@return: a tuple of (a QuerySet of Blog data, string order_by,)
+	"""
+	sort_by = request.GET.get('sort_by')
+	order_by = request.GET.get('order_by', 'desc')
+	status_filter = request.GET.get('status')
+
+	posts = cls.objects.all()
+
+	if order_by == 'asc':
+		ordering = ''
+	else:
+		ordering = '-'
+
+	if status_filter is not None and status_filter != 'All':
+		posts = cls.objects.filter(status=status_filter)
+	elif sort_by:
+		posts = cls.objects.order_by(f'{ordering}{sort_by}')
+	return posts, order_by

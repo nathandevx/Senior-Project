@@ -26,7 +26,7 @@ urlpatterns = [
 	path('checkout/payment-cancel/', checkout.payment_cancel, name='payment-cancel'),
 
 	# Orders
-	path('order', views.order, name='order'),
+	# path('order', views.order, name='order'),
 	path('order/list/', orders.order_list, name='order-list'),
 	path('order-confirmation/<uuid:order_uuid>/', orders.order_confirmation, name='order-confirmation'),
 

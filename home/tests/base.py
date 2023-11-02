@@ -26,6 +26,7 @@ class BaseTestCase(TestCase):
 		# Create regular users
 		self.user1 = User.objects.create_user(username='User 1', email='example@example.com', password=self.password)
 		self.user1_password = self.password
+		self.user2 = User.objects.create_user(username='User 2', email='example@example.com', password=self.password)
 
 		# Create anonymous users
 		self.anonymous_user = AnonymousUser()

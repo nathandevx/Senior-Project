@@ -64,23 +64,6 @@ class TestDeleteUser(BaseTestCase):
 		self.assertEquals(response.status_code, 200)
 
 
-class TestConfigurationPages(BaseTestCase):
-	def setUp(self):
-		super().setUp()
-
-	def _create_objects(self):
-		pass
-
-	def test_config_create(self):
-		pass
-
-	def test_config_read(self):
-		pass
-
-	def test_config_update(self):
-		pass
-
-
 class TestContactPage(BaseTestCase):
 	def setUp(self):
 		super().setUp()

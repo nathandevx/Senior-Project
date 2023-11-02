@@ -116,7 +116,7 @@ class OrderForm(forms.ModelForm):
 
 		if status == Order.CANCELED and estimated_delivery_date is not None:
 			raise ValidationError({
-				'estimated_delivery_date': "estimated_delivery_date must be empty if order is canceled."
+				'estimated_delivery_date': constants.ORDER_FORM_ERROR
 			})
 
 		return cleaned_data

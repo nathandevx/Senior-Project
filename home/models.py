@@ -8,7 +8,7 @@ from django.db.models import Count, Sum, Q
 from django.contrib import messages
 from ckeditor.fields import RichTextField
 from senior_project.utils import format_datetime, get_protocol, get_domain
-from senior_project.exceptions import MoreThanOneActiveCartError, MoreThanOneCartItemError, ErrorCreatingAStripeProduct, ErrorUpdatingAStripeProduct, ErrorDeletingAStripeProduct, ErrorCreatingStripeCheckoutSession
+from senior_project.exceptions import MoreThanOneActiveCartError, MoreThanOneCartItemError, ErrorCreatingAStripeProduct, ErrorUpdatingAStripeProduct, ErrorDeletingAStripeProduct, ErrorCreatingStripeCheckoutSession, MultipleOrdersForCart
 from senior_project.constants import MONTHS
 from senior_project.utils import get_full_url
 from decimal import Decimal
@@ -394,6 +394,9 @@ class Cart(TimestampCreatorMixin):
 	def get_delete_url(self):
 		return reverse('home:cart-delete', kwargs={'pk': self.pk})
 
+	def get_payment_success_url(self):
+		return reverse('home:payment-success', kwargs={'cart_uuid': self.uuid})
+
 	def is_active(self):
 		return self.status == Cart.ACTIVE
 
@@ -552,6 +555,22 @@ class Cart(TimestampCreatorMixin):
 		stock_limit, inactive_product = self.has_out_of_stock_or_inactive_products()
 		if stock_limit or inactive_product:
 			return {'cart': self, 'stock_limit': stock_limit, 'inactive_product': inactive_product}
+
+	def has_order(self):
+		order_count = Order.objects.filter(cart=self).count()
+		if order_count == 0:
+			return False
+		else:
+			return True
+
+	def get_order(self):
+		orders = Order.objects.filter(cart=self)
+		if orders.count() == 1:
+			return orders.first()
+		elif orders.count() == 0:
+			return None
+		else:  # Order greater, ... or less than 1?
+			raise MultipleOrdersForCart()
 
 	def not_creator_or_inactive_cart(self, user):
 		"""

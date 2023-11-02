@@ -76,6 +76,8 @@ def payment_success(request, cart_uuid):
 	access = cart.not_creator_or_inactive_cart(request.user)
 	if access:
 		return HttpResponseForbidden()
+	if cart.has_order():  # they already ordered, don't let them order again
+		return HttpResponseForbidden()
 	order = cart.create_order()
 	cart.handle_cart_purchase(request, order)
 	cart.set_original_price_for_all_cart_items()

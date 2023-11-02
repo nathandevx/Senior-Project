@@ -47,3 +47,8 @@ class ErrorCreatingStripeCheckoutSession(Exception):
 	When an error occurs when creating a stripe checkout session.
 	"""
 	pass
+
+
+class MultipleOrdersForCart(Exception):
+	"""A cart has multiple orders associated to it. It should only have 1 order at most associated with it."""
+	pass

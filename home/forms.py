@@ -2,7 +2,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from senior_project.utils import get_allowed_cities
-from senior_project.constants import PRODUCT_FORM_ERROR1, PRODUCT_FORM_ERROR2
+from senior_project import constants
 from home.models import Product, ProductImage, CartItem, ShippingAddress, Contact, Configurations, Order
 
 
@@ -32,14 +32,14 @@ class ProductForm(forms.ModelForm):
 		# The product can't be active if there is no stock
 		if stock == 0 and status == Product.ACTIVE:
 			raise ValidationError({
-				'status': PRODUCT_FORM_ERROR1
+				'status': constants.PRODUCT_FORM_ERROR1
 			})
 		# stock_overflow is an optional parameter if it's 0.
 		if stock_overflow:
 			# A product cannot have stock overflow and be active
 			if stock_overflow > 0 and status == Product.ACTIVE:
 				raise ValidationError({
-					'status': PRODUCT_FORM_ERROR2
+					'status': constants.PRODUCT_FORM_ERROR2
 				})
 		return cleaned_data
 
@@ -82,6 +82,7 @@ class CartItemForm(forms.ModelForm):
 		model = CartItem
 		fields = ['quantity']
 
+
 class ShippingAddressForm(forms.ModelForm):
 	class Meta:
 		model = ShippingAddress
@@ -90,7 +91,7 @@ class ShippingAddressForm(forms.ModelForm):
 	def clean_city(self):
 		city = self.cleaned_data.get('city')
 		if city.lower() not in get_allowed_cities():
-			raise ValidationError(f"We only deliver to the following cities: {', '.join(get_allowed_cities())}")
+			raise ValidationError(constants.SHIPPING_ADDRESS_FORM_ERROR)
 		return city
 
 

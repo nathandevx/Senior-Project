@@ -35,6 +35,7 @@ urlpatterns = [
 	path('report/list/', reports.report_list, name='report-list'),
 	path('report/orders/', reports.report_orders, name='report-orders'),
 	path('report/products/', reports.report_products, name='report-products'),
+	path('report/blogs/', reports.report_blogs, name='report-blogs'),
 	path('report/charts/', reports.report_charts, name='report-charts'),
 	path('report/order-total/update-chart-data/', reports.update_total_orders_chart_data, name='report-update-total-orders-chart-data'),
 	path('report/user-total/update-user-data/', reports.update_total_users_chart_data, name='report-update-total-users-chart-data'),

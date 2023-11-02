@@ -1,7 +1,7 @@
 from django.core.mail import send_mail
 from django.shortcuts import redirect, render
 from home.forms import ContactForm
-from home.models import Product, Configurations
+from home.models import Product, Configurations, Order
 import environ
 
 env = environ.Env(
@@ -46,7 +46,12 @@ def product(request):
 
 
 def report(request):
-	return render(request, 'home/report.html')
+	months, order_counts = Order.get_order_counts_by_month_for_year(2023)
+
+	status_counts = Order.get_order_status_counts()
+	order_status = list(status_counts.values_list('status', flat=True))
+	order_total = list(status_counts.values_list('total', flat=True))
+	return render(request, 'home/report.html', {'months': months, 'order_counts': order_counts, 'order_status': order_status, 'order_total': order_total})
 
 
 def cart_demo(request):

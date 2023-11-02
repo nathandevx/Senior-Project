@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from senior_project.utils import superuser_required
-from home.models import Order
+from senior_project.utils import superuser_required, get_table_data
+from home.models import Product, Order
+from blog.models import Post
 
 
 @superuser_required
@@ -11,12 +12,20 @@ def report_list(request):
 
 @superuser_required
 def report_orders(request):
-	return render(request, 'home/reports/orders.html')
+	data = get_table_data(request, Order)
+	return render(request, 'home/reports/orders.html', {'orders': data[0], 'order_by': data[1], 'order_model': Order})
 
 
 @superuser_required
 def report_products(request):
-	return render(request, 'home/reports/products.html')
+	data = get_table_data(request, Product)
+	return render(request, 'home/reports/products.html', {'products': data[0], 'order_by': data[1], 'product_model': Product})
+
+
+@superuser_required
+def report_blogs(request):
+	data = get_table_data(request, Post)
+	return render(request, 'home/reports/blogs.html', {'posts': data[0], 'order_by': data[1], 'post_model': Post})
 
 
 @superuser_required

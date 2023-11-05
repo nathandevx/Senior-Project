@@ -16,7 +16,7 @@ class Post(TimestampCreatorMixin):
 	ACTIVE = 'Active'
 	INACTIVE = 'Inactive'
 	title = models.CharField(default='', max_length=100)
-	preview_text = models.TextField(default='', max_length=200)
+	preview_text = models.TextField(default='', max_length=500)
 	content = RichTextField(default='')
 	status = models.CharField(default=INACTIVE, max_length=50, choices=[(ACTIVE, ACTIVE), (INACTIVE, INACTIVE)])
 

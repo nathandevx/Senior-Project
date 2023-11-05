@@ -7,8 +7,8 @@ from home.models import Product, ProductImage, ShippingAddress, Cart, CartItem, 
 from blog.models import Post
 from senior_project.exceptions import CommandNotAllowedInProduction
 from senior_project.utils import get_random_date
+from senior_project import constants
 import random
-import uuid
 import warnings
 
 warnings.filterwarnings("ignore")
@@ -29,6 +29,8 @@ class Command(BaseCommand):
 	@staticmethod
 	def create_random_user():
 		user = User.objects.create_user(
+			first_name=faker.first_name(),
+			last_name=faker.last_name(),
 			username=faker.user_name(),
 			email=faker.email(),
 			password=faker.password(),
@@ -37,19 +39,21 @@ class Command(BaseCommand):
 		return user
 
 	@staticmethod
-	def create_random_product(creator):
+	def create_random_product(creator, i):
 		product = Product.objects.create(
-			name=faker.word(),
-			description=faker.sentence(),
-			price=random.uniform(10, 200),
+			name=f"P{i+1}",
+			description=constants.LOREM_20,
+			price=random.uniform(10, 100),
 			estimated_delivery_date=get_random_date(),
 			status=random.choice([Product.ACTIVE, Product.INACTIVE]),
-			stock=random.randint(1, 5),
-			stripe_product_id=str(uuid.uuid4()),
-			stripe_price_id=str(uuid.uuid4()),
+			stock=random.randint(1, 20),
 			creator=creator,
-			updater=creator
+			updater=creator,
 		)
+		product.created_at = get_random_date()
+		product.updated_at = get_random_date()
+		product.save()
+		product.create_stripe_product_and_price_objs()
 		return product
 
 	@staticmethod
@@ -59,9 +63,11 @@ class Command(BaseCommand):
 				product=product,
 				image=File(image_file),
 				creator=creator,
-				updater=creator
+				updater=creator,
 			)
-
+			product_image.created_at = get_random_date()
+			product_image.updated_at = get_random_date()
+			product_image.save()
 		return product_image
 
 	@staticmethod
@@ -73,8 +79,11 @@ class Command(BaseCommand):
 			country=faker.country(),
 			postal_code=random.randint(10000, 99999),
 			creator=creator,
-			updater=creator
+			updater=creator,
 		)
+		address.created_at = get_random_date()
+		address.updated_at = get_random_date()
+		address.save()
 		return address
 
 	@staticmethod
@@ -85,6 +94,9 @@ class Command(BaseCommand):
 			creator=creator,
 			updater=creator
 		)
+		cart.created_at = get_random_date()
+		cart.updated_at = get_random_date()
+		cart.save()
 		return cart
 
 	@staticmethod
@@ -95,11 +107,15 @@ class Command(BaseCommand):
 			quantity=random.randint(1, 20),
 			original_price=product.price,
 			creator=creator,
-			updater=creator
+			updater=creator,
 		)
+		cart_item.created_at = get_random_date()
+		cart_item.updated_at = get_random_date()
+		cart_item.save()
 		return cart_item
 
-	def create_random_order(self, cart, creator):
+	@staticmethod
+	def create_random_order(cart, creator):
 		order = Order.objects.create(
 			cart=cart,
 			total_price=cart.get_total_cart_price(),
@@ -107,19 +123,24 @@ class Command(BaseCommand):
 			creator=creator,
 			updater=creator,
 		)
+		order.created_at = get_random_date()
+		order.updated_at = get_random_date()
+		order.save()
 		return order
 
 	@staticmethod
-	def create_random_blog_posts(creator):
+	def create_random_blog_posts(creator, i):
 		post = Post.objects.create(
-			title=faker.word(),
-			preview_text=faker.sentence(),
-			content=faker.sentence(),
-			status=Post.ACTIVE,
+			title=f"Blog {i+1}",
+			preview_text=constants.LOREM_50,
+			content=constants.LOREM_500,
+			status=random.choice([Post.ACTIVE, Post.INACTIVE]),
 			creator=creator,
 			updater=creator,
-			created_at=get_random_date()
 		)
+		post.created_at = get_random_date()
+		post.updated_at = get_random_date()
+		post.save()
 		return post
 
 	def add_arguments(self, parser):
@@ -135,7 +156,7 @@ class Command(BaseCommand):
 
 		# Make products
 		for i, _ in enumerate(range(count*2)):
-			product = self.create_random_product(superuser)
+			product = self.create_random_product(superuser, i)
 			self.create_random_product_image(product, superuser)
 			self.stdout.write(f"{i+1}/{count*2} count of product objects created.")
 
@@ -145,14 +166,12 @@ class Command(BaseCommand):
 			user = self.create_random_user()
 			address = self.create_random_shipping_address(user)
 			cart = self.create_random_cart(user, address)
-			self.create_random_blog_posts(user)
+			self.create_random_blog_posts(user, i)
 
 			# Make cart items
 			for _ in range(random.randrange(4)):  # 0-3 (not including 4)
 				self.create_random_cart_item(cart, random.choice(all_products), user)
-			order = self.create_random_order(cart, user)
-			order.created_at = get_random_date()
-			order.save()
+			self.create_random_order(cart, user)
 			self.stdout.write(f"{i+1}/{count} count of other objects created.")
 
 		self.stdout.write("Objects created.")

@@ -1,4 +1,3 @@
-from django.contrib.sites.shortcuts import get_current_site
 from django.conf import settings
 from django.http import HttpResponseForbidden
 from django.utils import timezone

@@ -8,11 +8,11 @@
     <div class="container">
         <h1 class="text-center">Your configurations</h1>
 	    <p>Update your configuration <a href="{{ config.get_update_url }}">here</a></p>
-        <p>Phone number: {{ config.phone_number }}</p>
-		<p>Email: {{ config.email }}</p>
-		<p>Address: {{ config.address }}</p>
-		<p>Facebook_url: {{ config.facebook_url }}</p>
-		<p>Instagram_url: {{ config.instagram_url }}</p>
+        <p><span class="fw-bold">Phone number</span>: {{ config.phone_number }}</p>
+		<p><span class="fw-bold">Email</span>: {{ config.email }}</p>
+		<p><span class="fw-bold">Address</span>: {{ config.address }}</p>
+		<p><span class="fw-bold">Facebook_url</span>: {{ config.facebook_url }}</p>
+		<p><span class="fw-bold">Instagram_url</span>: {{ config.instagram_url }}</p>
     </div>
 
 {% endblock %}

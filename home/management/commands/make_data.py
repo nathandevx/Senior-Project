@@ -10,6 +10,7 @@ from senior_project.utils import get_random_date
 import random
 import uuid
 import warnings
+
 warnings.filterwarnings("ignore")
 
 
@@ -98,15 +99,13 @@ class Command(BaseCommand):
 		)
 		return cart_item
 
-	@staticmethod
-	def create_random_order(cart, creator):
+	def create_random_order(self, cart, creator):
 		order = Order.objects.create(
 			cart=cart,
 			total_price=cart.get_total_cart_price(),
 			status=random.choice([Order.PLACED, Order.SHIPPED, Order.DELIVERED, Order.CANCELED]),
 			creator=creator,
 			updater=creator,
-			created_at=get_random_date(),
 		)
 		return order
 
@@ -151,7 +150,9 @@ class Command(BaseCommand):
 			# Make cart items
 			for _ in range(random.randrange(4)):  # 0-3 (not including 4)
 				self.create_random_cart_item(cart, random.choice(all_products), user)
-			self.create_random_order(cart, user)
+			order = self.create_random_order(cart, user)
+			order.created_at = get_random_date()
+			order.save()
 			self.stdout.write(f"{i+1}/{count} count of other objects created.")
 
 		self.stdout.write("Objects created.")

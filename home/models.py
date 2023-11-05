@@ -7,10 +7,9 @@ from django.db.models.functions import ExtractYear
 from django.db.models import Count, Sum, Q
 from django.contrib import messages
 from ckeditor.fields import RichTextField
-from senior_project.utils import format_datetime, get_protocol, get_domain
+from senior_project.utils import format_datetime, get_protocol, get_domain, get_full_url
 from senior_project.exceptions import MoreThanOneActiveCartError, MoreThanOneCartItemError, ErrorCreatingAStripeProduct, ErrorUpdatingAStripeProduct, ErrorDeletingAStripeProduct, ErrorCreatingStripeCheckoutSession, MultipleOrdersForCart
 from senior_project.constants import MONTHS
-from senior_project.utils import get_full_url
 from decimal import Decimal
 import uuid
 import stripe
@@ -799,7 +798,7 @@ class Order(TimestampCreatorMixin):
 		send_mail(subject, html_message, from_email, recipient_list, html_message=html_message)
 
 	@classmethod
-	def get_order_counts_by_month_for_year(cls, year):
+	def get_year_months_total_orders(cls, year):
 		"""
 		@param year: The year.
 		@return: A tuple of 2 lists. The first list represents the months in a year. The second year is the total orders
@@ -820,7 +819,7 @@ class Order(TimestampCreatorMixin):
 		return orders
 
 	@classmethod
-	def get_order_status_counts(cls):
+	def get_order_statuses(cls):
 		"""
 		@return: a QuerySet of order statuses and counts.
 			Ex: QuerySet [{'status': 'Canceled', 'total': 2}, {'status': 'Delivered', 'total': 1}]
@@ -875,7 +874,7 @@ class OrderHistory(models.Model):
 class Configurations(models.Model):
 	phone_number = models.CharField(max_length=15, blank=True, null=True, help_text="Displayed on contact page")
 	email = models.EmailField(blank=True, null=True, help_text="Displayed on contact page")
-	address = models.CharField(max_length=200, blank=True, null=True, help_text="Where customers will pick up their orders")
+	address = models.CharField(max_length=200, blank=True, null=True, help_text="If this is not empty, it will show up on the contact page.")
 	facebook_url = models.URLField(blank=True, null=True, help_text="Displayed on about page")
 	instagram_url = models.URLField(blank=True, null=True, help_text="Displayed on about page")
 

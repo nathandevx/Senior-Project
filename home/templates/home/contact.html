@@ -6,15 +6,20 @@
 
     <div class="container mt-3">
 	    <h2>Contact Us</h2>
-	    <p>Our Business Email: {{ config.email }}</p>
+	    {% if config.email %}
+		    <p><span class="fw-bold">Business Email</span>: {{ config.email }}</p>
+	    {% endif %}
 	    {% if config.phone_number %}
-		    <p>Our phone number: {{ config.phone_number }}</p>
+		    <p><span class="fw-bold">Phone number</span>: {{ config.phone_number }}</p>
+	    {% endif %}
+	    {% if config.address %}
+		    <p><span class="fw-bold">Address</span>: {{ config.address }}</p>
 	    {% endif %}
         {% if config.facebook_url %}
-		    <p><a href="{{ config.facebook_url }}" target="_blank">Facebook account</a></p>
+		    <p><a href="{{ config.facebook_url }}" target="_blank">Facebook page</a></p>
 		{% endif %}
 		{% if config.instagram_url %}
-		    <p><a href="{{ config.instagram_url }}" target="_blank">Instagram account</a></p>
+		    <p><a href="{{ config.instagram_url }}" target="_blank">Instagram page</a></p>
 		{% endif %}
 
 	    <form method="post" class="mt-3">

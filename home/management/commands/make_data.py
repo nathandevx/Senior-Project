@@ -131,7 +131,7 @@ class Command(BaseCommand):
 	@staticmethod
 	def create_random_blog_posts(creator, i):
 		post = Post.objects.create(
-			title=f"Blog {i+1}",
+			title=f"B{i+1}",
 			preview_text=constants.LOREM_50,
 			content=constants.LOREM_500,
 			status=random.choice([Post.ACTIVE, Post.INACTIVE]),

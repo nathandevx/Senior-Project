@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Unable to delete account.{% endblock %}
+
+{% block contents %}
+
+    <div class="container">
+        <h1 class="text-center">Unable to delete account</h1>
+        <p class="text-center"><span class="text-danger fw-bold">WARNING</span>: deleting your admin account will result in disastrous consequences.</p>
+	    <p>It is possible to delete your account through the admin page if you would still like to.</p>
+	    <p>The consequences of deleting your account include (but are not limited to): </p>
+        <p>The deletion of <span class="fw-bold">ALL</span> products and blog posts.</p>
+        <p>The deletion of all products will result in the product no longer appearing in a customer's order.</p>
+    </div>
+
+{% endblock %}

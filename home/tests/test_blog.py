@@ -77,8 +77,9 @@ class TestBlogCreate(BlogBaseTestCase):
 		}
 		initial_count = Post.objects.count()
 		response = self.client.post(self.url, data=form_data)
+		new_post = Post.objects.latest('id')
 		self.assertEquals(Post.objects.count(), initial_count + 1)
-		self.assertRedirects(response, Post.get_list_url(), status_code=302, target_status_code=200)
+		self.assertRedirects(response, new_post.get_read_url(), status_code=302, target_status_code=200)
 
 	def test_post_request_invalid_data(self):
 		form_data = {

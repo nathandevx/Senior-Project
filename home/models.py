@@ -128,6 +128,10 @@ class Product(TimestampCreatorMixin):
 		images = self.productimage_set.all()
 		return images
 
+	def get_first_image_url(self):
+		if self.productimage_set.first():
+			return self.productimage_set.first().image.url
+
 	def save_images(self, files: list):
 		"""
 		Saves a list of images and associates them with the product.
@@ -155,7 +159,7 @@ class Product(TimestampCreatorMixin):
 		"""
 		@return: a QuerySet of products with status=ACTIVE.
 		"""
-		products = cls.objects.filter(status=cls.ACTIVE)
+		products = cls.objects.filter(status=cls.ACTIVE).order_by('-updated_at')
 		return products
 
 	def create_stripe_product_and_price_objs(self):

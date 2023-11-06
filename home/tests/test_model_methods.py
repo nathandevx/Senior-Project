@@ -800,17 +800,17 @@ class TestOrderModelMethods(BaseTestCase):
 			self.assertEqual(mail.outbox[0].subject, 'Order Confirmation')
 			self.assertIn(mail.outbox[0].body, '<html><head></head><body><h2>Thanks for your order!</h2><p>Order confirmation page')
 
-	def test_get_order_counts_by_month_for_year(self):
-		months, months_order_totals = Order.get_order_counts_by_month_for_year(self.order1.created_at.year)
+	def test_get_year_months_total_orders(self):
+		months, months_order_totals = Order.get_year_months_total_orders(self.order1.created_at.year)
 		self.assertEquals(months, MONTHS)
 		self.assertIn(5, months_order_totals)
 
 	def test_get_years_with_orders(self):
 		self.assertEquals(Order.get_years_with_orders().first(), self.order1.created_at.year)
 
-	def test_get_order_status_counts(self):
+	def test_get_order_statuses(self):
 		expected_list = [{'status': 'Canceled', 'total': 2}, {'status': 'Delivered', 'total': 1}, {'status': 'Placed', 'total': 1}, {'status': 'Shipped', 'total': 1}]
-		self.assertEquals(list(Order.get_order_status_counts()), expected_list)
+		self.assertEquals(list(Order.get_order_statuses()), expected_list)
 
 
 class TestOrderHistoryModelMethods(BaseTestCase):

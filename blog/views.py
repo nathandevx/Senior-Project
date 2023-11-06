@@ -22,7 +22,7 @@ def post_create(request):
 			post.save()
 
 			messages.success(request, f'Successfully created post: {post.title}')
-			return redirect(Post.get_list_url())
+			return redirect(post.get_read_url())
 	else:
 		form = PostForm()
 	return render(request, 'blog/create.html', {'form': form, 'post_model': Post})

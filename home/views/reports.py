@@ -1,8 +1,16 @@
 from django.shortcuts import render
+from django.core.mail import send_mail
 from django.http import HttpResponse
-from senior_project.utils import superuser_required, get_table_data
-from home.models import Product, Order
-from blog.models import Post
+from senior_project.utils import superuser_required
+from home.models import Order
+import boto3
+import stripe
+import environ
+
+env = environ.Env(
+	# set casting, default value
+	DEBUG=(bool, False)
+)
 
 
 @superuser_required
@@ -12,20 +20,12 @@ def report_list(request):
 
 @superuser_required
 def report_orders(request):
-	data = get_table_data(request, Order)
-	return render(request, 'home/reports/orders.html', {'orders': data[0], 'order_by': data[1], 'order_model': Order})
+	return render(request, 'home/reports/orders.html')
 
 
 @superuser_required
 def report_products(request):
-	data = get_table_data(request, Product)
-	return render(request, 'home/reports/products.html', {'products': data[0], 'order_by': data[1], 'product_model': Product})
-
-
-@superuser_required
-def report_blogs(request):
-	data = get_table_data(request, Post)
-	return render(request, 'home/reports/blogs.html', {'posts': data[0], 'order_by': data[1], 'post_model': Post})
+	return render(request, 'home/reports/products.html')
 
 
 @superuser_required
@@ -59,4 +59,40 @@ def report_export_download(request):
 
 @superuser_required
 def report_api_status(request):
-	return render(request, 'home/reports/api_status.html')
+	context = {
+		'aws': False,
+		'stripe': False,
+		'sendgrid': False,
+	}
+
+	# Check AWS S3
+	try:
+		s3 = boto3.client('s3')
+		# Here you can do a simple operation like listing the buckets
+		s3.list_buckets()
+		context['aws'] = True
+	except Exception as e:
+		print(f"Error with AWS S3: {e}")
+
+	# Check Stripe
+	try:
+		# Retrieve balance (a simple call to check if API is up and running)
+		stripe.Balance.retrieve()
+		context['stripe'] = True
+	except Exception as e:
+		print(f"Error with Stripe: {e}")
+
+	# Check SendGrid
+	try:
+		send_mail(
+			'SendGrid SMTP Test',
+			'Testing SendGrid SMTP as requested.',
+			env('FROM_EMAIL'),
+			[env('ADMIN_EMAIL')],
+			fail_silently=False,
+		)  # todo these email
+		context['sendgrid'] = True
+	except Exception as e:
+		print(f"Error with SendGrid: {e}")
+
+	return render(request, 'home/reports/api_status.html', context)

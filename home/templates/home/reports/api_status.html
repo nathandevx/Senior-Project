@@ -1,9 +1,41 @@
 {% extends 'base.html' %}
 
-{% block title %}Report - API status{% endblock %}
+{% block title %}Report - API Status{% endblock %}
 
 {% block contents %}
-	<div class="container">
-		<h1 class="text-center">API Statuses</h1>
-	</div>
+
+    <div class="container-fluid text-center">
+        <h1>API status page</h1>
+	    <p>This page tests the following APIs by performing simple operations and seeing if those operations fail.</p>
+	    <p>
+		    AWS is checked by attempting to grab the available buckets,
+		    stripe is checked by attempting to grab the account balance, and
+		    SendGrid is checked by attempting to send a test email to the admin.
+	    </p>
+        <p>
+	        AWS:
+	        {% if aws %}
+		        <span class="text-success">Working</span>
+	        {% else %}
+		        <span class="text-danger">Not working</span>
+	        {% endif %}
+        </p>
+        <p>
+	        Stripe:
+	        {% if stripe %}
+		        <span class="text-success">Working</span>
+	        {% else %}
+		        <span class="text-danger">Not working</span>
+	        {% endif %}
+        </p>
+        <p>
+	        SendGrid:
+	        {% if sendgrid %}
+		        <span class="text-success">Working</span>
+	        {% else %}
+		        <span class="text-danger">Not working</span>
+	        {% endif %}
+        </p>
+    </div>
+
 {% endblock %}

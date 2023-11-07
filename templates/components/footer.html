@@ -1,7 +1,30 @@
 {% load tags %}
+<!-- styles for social icons -->
+<style>
+	.social-icons {
+    text-align:center;
+    padding: 20px;
+  }
+  
+  .social-icons a {
+    font-size: 34px;
+    margin: 0 10px; /* Adjust the spacing between icons */
+  }
+</style>
+<!-- End of styles -->
 
 <div class="container">
 	<footer class="py-3 my-4m">
+
+		<!-- Added a div for socials -->
+		<div class="social-icons">
+            <p class="text-center text-muted">Follow us on our social media!</p>
+                    <a href="https://www.facebook.com"><ion-icon name="logo-facebook"></ion-icon></a>
+                    <a href="https://www.twitter.com"><ion-icon name="logo-twitter"></ion-icon></a>
+                    <a href="https://www.instagram.com"><ion-icon name="logo-instagram"></ion-icon></a>
+        </div>
+		<!-- End of socials div -->
+
 		<ul class="nav justify-content-center border-bottom pb-3 mb-3">
 			<li class="nav-item"><a href="{% url 'home:contact' %}" class="nav-link px-2 text-muted">Contact</a></li>
 			<li class="nav-item"><a href="{% url 'home:about' %}" class="nav-link px-2 text-muted">About</a></li>
@@ -12,4 +35,6 @@
 		</ul>
 		<p class="text-center text-muted">© Pastry Bites</p>
 	</footer>
+	<!-- Script for the icons -->
+	<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
 </div>

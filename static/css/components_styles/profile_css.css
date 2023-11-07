@@ -177,21 +177,6 @@ nav {
   background-color: #ff791f;
 }
 
-
-/* Styles for the social media icons */
-.social-icons {
-  text-align: center;
-  background-color: #333;
-  padding: 20px;
-}
-
-.social-icons a {
-  text-decoration: none;
-  color: #fff;
-  font-size: 24px;
-  margin: 0 10px; /* Adjust the spacing between icons */
-}
-
 form {
   display:flex;
   font-size: larger;
@@ -230,7 +215,7 @@ button:hover {
   background-color: #7F8C8D;
 }
 
-p, #footer-message {
+p {
   font-size: 15px;
   margin-bottom: 10px;
   color: var(--white);

@@ -11,7 +11,10 @@ User = get_user_model()
 
 @login_required
 def profile(request):
-    return render(request, 'users/profile.html')
+    user_data = request.user
+
+    return render(request, 'users/profile.html', {'user_data': user_data})
+    # return render(request, 'users/profile.html')
 
 
 def delete_user(request):

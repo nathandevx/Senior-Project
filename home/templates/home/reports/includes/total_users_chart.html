@@ -1,0 +1,56 @@
+	<div>
+		<canvas id="total_users_chart"></canvas>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+	<script type="text/javascript">
+		let user_chart;
+
+		// Instantiate the Chart
+		const total_users_chart = document.getElementById('total_users_chart').getContext('2d');
+		user_chart = new Chart(total_users_chart, {
+			type: 'line',
+			data: {
+				labels: {{ user_months|safe }},
+				datasets: [{
+			        backgroundColor: "rgba(0,0,0,1.0)",
+					borderColor: "rgba(0,0,0,0.1)",
+					data: {{ user_data|safe }}
+				}]
+			},
+			options: {
+	            responsive: true,
+				maintainAspectRatio: false,
+				plugins: {
+					legend: {
+						display: false  // remove legend
+					}
+				}
+			}
+		});
+
+		// Event listener
+		const baseUserURL = "{% url 'home:report-update-total-users-chart-data' %}"
+		document.getElementById('totalUserYearSelector').addEventListener('change', function(){
+		    const selectedYear = this.value;
+			const fullURL = `${baseUserURL}?users_year=${selectedYear}`
+
+		    // Use Fetch API to get data for the selected year and update the chart
+		    fetch(fullURL)
+		    .then(response => response.json())
+		    .then(data => {
+		        updateUserChart(data);  // Function to handle updating the chart data
+		    })
+		    .catch(error => {
+		        console.error('There was an error fetching the data', error);
+		    });
+		});
+
+		function updateUserChart(data) {
+		    // Update the chart's data and re-render it
+		    user_chart.data.users_labels = data.users_labels;
+		    user_chart.data.datasets[0].data = data.users_values;
+		    user_chart.update();
+		}
+	</script>

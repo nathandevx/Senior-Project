@@ -1,0 +1,37 @@
+	<div>
+		<canvas id="order_status_chart" width="400" height="300"></canvas>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+	<script type="text/javascript">
+		const orderStatusData = JSON.parse('{{ order_statuses|escapejs }}');
+        const colors = [
+		  '#FF6384',
+		  '#36A2EB',
+		  '#FFCE56',
+		  '#4BC0C0',
+		];
+
+	    var order_status_chart = document.getElementById('order_status_chart').getContext('2d');
+	    var labels = orderStatusData.map(function(item) {
+	        return item.status;
+	    });
+	    var data = orderStatusData.map(function(item) {
+	        return item.total;
+	    });
+
+	    var chart = new Chart(order_status_chart, {
+	        type: 'pie',
+	        data: {
+	            labels: labels,
+	            datasets: [{
+	                data: data,
+	                backgroundColor: colors,
+	            }]
+	        },
+            options: {
+                maintainAspectRatio: false,
+            }
+	    });
+	</script>

@@ -1,0 +1,56 @@
+	<div>
+		<canvas id="order_chart"></canvas>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+	<script type="text/javascript">
+		let order_chart;
+
+		// Instantiate the Chart
+		const ctx = document.getElementById('order_chart').getContext('2d');
+		order_chart = new Chart(ctx, {
+			type: 'line',
+			data: {
+				labels: {{ order_months|safe }},
+				datasets: [{
+			        backgroundColor: "rgba(0,0,0,1.0)",
+					borderColor: "rgba(0,0,0,0.1)",
+					data: {{ order_data|safe }}
+				}]
+			},
+			options: {
+	            responsive: true,
+				maintainAspectRatio: false,
+				plugins: {
+					legend: {
+						display: false  // remove legend
+					}
+				}
+			}
+		});
+
+		// Event listener
+		const baseOrderURL = "{% url 'home:report-update-total-orders-chart-data' %}"
+		document.getElementById('yearSelector').addEventListener('change', function(){
+		    const selectedYear = this.value;
+			const fullURL = `${baseOrderURL}?orders_year=${selectedYear}`
+
+		    // Use Fetch API to get data for the selected year and update the chart
+		    fetch(fullURL)
+		    .then(response => response.json())
+		    .then(data => {
+		        updateOrderChart(data);  // Function to handle updating the chart data
+		    })
+		    .catch(error => {
+		        console.error('There was an error fetching the data', error);
+		    });
+		});
+
+		function updateOrderChart(data) {
+		    // Update the chart's data and re-render it
+		    order_chart.data.orders_labels = data.orders_labels;
+		    order_chart.data.datasets[0].data = data.orders_values;
+		    order_chart.update();
+		}
+	</script>

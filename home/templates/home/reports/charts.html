@@ -1,9 +1,71 @@
 {% extends 'base.html' %}
 
-{% block title %}Report - charts{% endblock %}
+{% block title %}Report Charts{% endblock %}
 
 {% block contents %}
-	<div class="container">
-		<h1 class="text-center">Charts</h1>
-	</div>
+
+    <div class="container-fluid text-center">
+        <h1>Report Charts</h1>
+	    <p>The year will not be an option in the dropdown selection if no orders/users were made during that year.</p>
+		<div class="row">
+			<div class="col-md-6 mb-3">
+				<div class="d-flex justify-content-center align-items-center mb-2">
+					<label for="totalUserYearSelector" class="me-5">User Chart Year Selector:</label>
+					<select id="totalUserYearSelector" class="form-select w-25">
+						<option value="{{ current_year }}">{{ current_year }}</option>
+						<option value="---">---</option>
+						{% for year in years_with_users %}
+							<option value="{{ year }}">{{ year }}</option>
+						{% endfor %}
+					</select>
+				</div>
+				<div class="card">
+					<div class="card-header fw-semibold">User chart</div>
+					<div class="card-body">
+						{% include 'home/reports/includes/total_users_chart.html' %}
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6 mb-3">
+				<div class="d-flex justify-content-center align-items-center mb-2">
+					<label for="yearSelector" class="me-5">Order Chart Year Selector:</label>
+					<select id="yearSelector" class="form-select w-25">
+						<option value="{{ current_year }}">{{ current_year }}</option>
+						<option value="---">---</option>
+						{% for year in years_with_orders %}
+							<option value="{{ year }}">{{ year }}</option>
+						{% endfor %}
+					</select>
+				</div>
+				<div class="card">
+					<div class="card-header fw-semibold">Order chart</div>
+					<div class="card-body">
+						{% include 'home/reports/includes/total_orders_chart.html' %}
+					</div>
+				</div>
+			</div>
+		</div>
+
+        <div class="row">
+	        <div class="col-md-6 mb-3">
+				<div class="card">
+					<div class="card-header fw-semibold">Order status chart</div>
+					<div class="card-body">
+						{% include 'home/reports/includes/order_status_chart.html' %}
+					</div>
+				</div>
+			</div>
+
+            <div class="col-md-6 mb-3">
+				<div class="card">
+					<div class="card-header fw-semibold">Top 10 selling products</div>
+					<div class="card-body">
+						{% include 'home/reports/includes/top_selling_products_chart.html' %}
+					</div>
+				</div>
+			</div>
+        </div>
+
+    </div>
+
 {% endblock %}

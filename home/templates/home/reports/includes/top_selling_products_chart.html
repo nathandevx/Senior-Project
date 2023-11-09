@@ -1,0 +1,30 @@
+	<div>
+		<canvas id="top_products_chart" width="400" height="300"></canvas>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+	<script type="text/javascript">
+		let top_products_chart = document.getElementById('top_products_chart').getContext('2d');
+		new Chart(top_products_chart, {
+		    type: 'bar',
+		    data: {
+		        labels: {{ product_names|safe }},
+		        datasets: [{
+		            label: 'Number of Orders',
+		            data: {{ product_order_counts|safe }},
+		            backgroundColor: 'rgba(75, 192, 192, 0.2)',   // color of the bars
+		            borderColor: 'rgba(75, 192, 192, 1)',       // color of the bar borders
+		            borderWidth: 1
+		        }]
+		    },
+		    options: {
+		        scales: {
+		            y: {
+		                beginAtZero: true
+		            }
+		        },
+			    maintainAspectRatio: false,
+		    }
+		});
+	</script>

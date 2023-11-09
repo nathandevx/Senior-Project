@@ -1,8 +1,14 @@
 from django.shortcuts import render
+from django.utils import timezone
 from django.core.mail import send_mail
-from django.http import HttpResponse
-from senior_project.utils import superuser_required
-from home.models import Order
+from django.db.models.functions import TruncDate
+from django.db.models import Count
+from django.http import HttpResponse, JsonResponse
+from django.contrib.auth import get_user_model
+from senior_project.utils import superuser_required, get_table_data
+from home.models import Product, Order
+from blog.models import Post
+import json
 import boto3
 import stripe
 import environ
@@ -12,6 +18,8 @@ env = environ.Env(
 	DEBUG=(bool, False)
 )
 
+User = get_user_model()
+
 
 @superuser_required
 def report_list(request):
@@ -20,27 +28,91 @@ def report_list(request):
 
 @superuser_required
 def report_orders(request):
-	return render(request, 'home/reports/orders.html')
+	data = get_table_data(request, Order)
+	return render(request, 'home/reports/orders.html', {'orders': data[0], 'order_by': data[1], 'order_model': Order})
 
 
 @superuser_required
 def report_products(request):
-	return render(request, 'home/reports/products.html')
+	data = get_table_data(request, Product)
+	return render(request, 'home/reports/products.html', {'products': data[0], 'order_by': data[1], 'product_model': Product})
+
+
+@superuser_required
+def report_blogs(request):
+	data = get_table_data(request, Post)
+	return render(request, 'home/reports/blogs.html', {'posts': data[0], 'order_by': data[1], 'post_model': Post})
 
 
 @superuser_required
 def report_charts(request):
-	return render(request, 'home/reports/charts.html')
+	current_year = timezone.now().year
+
+	orders_by_date = Order.objects.annotate(date_only=TruncDate('created_at')).values('date_only').annotate(
+		order_count=Count('id')).order_by('date_only')
+
+	# dates = [obj['date_only'] for obj in orders_by_date]
+	dates = [order['date_only'].strftime('%Y-%m-%d') for order in orders_by_date]
+	order_counts = [obj['order_count'] for obj in orders_by_date]
+
+	# Total users data
+	users = User.get_total_year_users(current_year)
+	years_with_users = User.get_years_with_users()
+
+	# Total orders data
+	orders = Order.get_year_months_total_orders(current_year)
+	years_with_orders = Order.get_years_with_orders()
+
+	# Order status data
+	order_statuses = list(Order.get_order_statuses())
+	order_statuses_serialized = json.dumps(order_statuses)
+
+	# Top selling products data
+	product_names, product_order_counts = Product.get_top_10_selling_products()
+
+	context = {
+		'dates': dates,
+		'order_counts': order_counts,
+		'user_months': users[0],
+		'user_data': users[1],
+		'order_months': orders[0],
+		'order_data': orders[1],
+		'years_with_orders': years_with_orders,
+		'years_with_users': years_with_users,
+		'current_year': current_year,
+		'order_statuses': order_statuses_serialized,
+		'product_names': product_names,
+		'product_order_counts': product_order_counts,
+	}
+	return render(request, 'home/reports/charts.html', context)
 
 
 @superuser_required
 def update_total_orders_chart_data(request):
-	return HttpResponse("Got orders data")
+	year = request.GET.get('orders_year')
+	if year == '---':
+		months = None
+		months_order_totals = None
+	else:
+		months, months_order_totals = Order.get_year_months_total_orders(year)
+	return JsonResponse({
+		'orders_labels': months,
+		'orders_values': months_order_totals,
+	})
 
 
 @superuser_required
 def update_total_users_chart_data(request):
-	return HttpResponse("Got users data")
+	year = request.GET.get('users_year')
+	if year == '---':
+		months = None
+		months_user_totals = None
+	else:
+		months, months_user_totals = User.get_total_year_users(year)
+	return JsonResponse({
+		'users_labels': months,
+		'users_values': months_user_totals,
+	})
 
 
 @superuser_required
@@ -55,7 +127,6 @@ def report_export_download(request):
 	response['Content-Disposition'] = 'attachment; filename="report.tsv"'
 	Order.get_export_data(response)
 	return response
-
 
 @superuser_required
 def report_api_status(request):

@@ -112,7 +112,7 @@ class TestShippingAddress(CheckoutBaseTestCase):
 		self.product1.add_product_to_cart(self.user1, cart, 5)
 		form_data = {
 			'address': 'address1',
-			'city': 'd',
+			'city': 'sacramento',
 			'state': 'state1',
 			'country': 'country1',
 			'postal_code': 11111,

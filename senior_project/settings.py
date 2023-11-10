@@ -175,5 +175,6 @@ if DEBUG:
 else:
     USE_HTTPS = True
     ALLOWED_HOSTS.append(env('DOMAIN'))
-    # django-heroku
-    django_heroku.settings(locals())
+
+# django-heroku
+django_heroku.settings(locals())

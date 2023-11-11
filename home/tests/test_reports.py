@@ -300,3 +300,46 @@ class TestReportAPIStatus(ReportBaseTestCase):
 		self.assertEquals(resolve(self.url).func, reports.report_api_status)
 		self.assertTemplateUsed(r, 'home/reports/api_status.html')
 		self.assertEquals(r.status_code, 200)
+
+
+class TestTableDataUtilFunction(BaseTestCase):
+	def setUp(self):
+		super().setUp()
+		self.factory = RequestFactory()
+
+	def _create_products(self, count: int = 1):
+		products = {}
+		for i in range(0, count):
+			product = Product.objects.create(
+				name=f'p{i+1}',
+				description='description',
+				price=10 * i+1,
+				status=Product.ACTIVE if i % 2 == 0 else Product.INACTIVE,
+				stock=10 * i+1,
+				stripe_product_id='...',
+				stripe_price_id='...',
+				creator=self.superuser,
+				updater=self.superuser,
+			)
+			products[f'product{i+1}'] = product, product.pk
+		return products
+
+	def test_no_filters(self):
+		self.client.login(username=self.superuser.username, password=self.password)
+		self._create_products(2)
+		request = self.factory.get('/dummy-url/')
+		products, order_by = get_table_data(request, Product)
+
+		self.assertEqual(len(products), 2)
+		self.assertEqual(order_by, 'desc')  # Default order_by
+
+	def test_with_filters(self):
+		self.client.login(username=self.superuser.username, password=self.password)
+		self._create_products(3)
+		request = self.factory.get('/dummy-url/', {"status": Product.ACTIVE, "order_by": "asc"})
+		products, order_by = get_table_data(request, Product)
+
+		self.assertEqual(len(products), 2)
+		self.assertEqual(products[0].name, "p1")
+		self.assertEqual(products[1].name, "p3")
+		self.assertEqual(order_by, 'asc')

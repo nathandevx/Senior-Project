@@ -1,12 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
-* {
+/* * {
     box-sizing: border-box;
 
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
-}
+} */
 
 :root {
     --blue: #287bff;
@@ -27,8 +27,6 @@
 body {
     margin: 10;
     padding: 10;
-    /*display:flex;*/
-    /* background: linear-gradient(45deg, rgb(239, 255, 137), rgb(176, 254, 255)); */
     background: var(--white);
     font-family: Arial, sans-serif;
     min-height:100vh;
@@ -40,51 +38,44 @@ body {
   width: 100%;
 }
 
-.details .container {
+.details .container { /*Form*/
   position:relative;
   display:table;
   min-height: 500px;
   background: var(--white);
-  /* background: linear-gradient(45deg, rgb(239, 255, 137), rgb(176, 254, 255)); */
 
-  padding: 20px;
+  padding: 120px;
   box-shadow: 30px 7px 25px rgba(0,0,0,0.08);
   border-radius: 20px;
 }
 
-.container-fluid {
-  padding: 20px;
-  padding-bottom: 10px;
+.container-fluid { /*Form*/
   background-color: #f7f7f7;
   border: 1px solid #ddd;
   border-radius: 5px;
 }
 
 .main {
-  /* margin: 20px; */
-
-  /* width: calc(100% - 300px); */
-  /* left: 300px; */
   min-height: 100vh;
-  /*background-color: var(--tan);*/
   transition: 0.5s;
 }
 
-header {
+/* header {
   background-color:#ffffff92;
   color: #fff;
   text-align: center;
   padding: 10px 0;
-}
+} */
 
 .pageName {
-  background-color: #d2d8db;
+  background-color: rgba(255, 255, 255, 0);
+  font-size: 50px;
   color: white;
   text-align: center;
-  padding: 20px;
+  padding: 50px;
 }
 
-nav {
+/* nav {
   font-family: 'Ubuntu', sans-serif;
   font-size: 120%;
   display: flex;
@@ -96,15 +87,15 @@ nav {
 
 .logo {
   position:sticky;
-  /* width: 115px; */
+
   margin-left:-80px;
   transition: all .5s;
-  cursor: pointer; /* Change cursor on hover */
+  cursor: pointer; 
 }
 
 
 .logo img {
-  max-width: 300px; /* Set the maximum width of the logo */
+  max-width: 300px; 
   border-style: none;
 }
 .nav-links {
@@ -122,10 +113,6 @@ nav {
   cursor: pointer; 
   position: relative;
 }
-
-/* .nav-links li:hover {
-  background-color: #00eeff; /* Change background color on hover 
-} */
 
 .nav-links a {
   text-decoration: none;
@@ -146,12 +133,12 @@ nav {
 }
 
 .nav-links li:hover::before {
-  transform: scaleX(1); /* Expand the underline on hover */
+  transform: scaleX(1);
 }
 
 #nav-link:hover {
   text-decoration: none;
-}
+} */
 
 .order {
   display: flex;
@@ -187,8 +174,8 @@ form {
 
 label {
   margin-top: 10px;
-  font-family: 'Dancing Script', sans-serif;
-  /* font-family: 'Ubuntu'; */
+  /* font-family: 'Dancing Script', sans-serif; */
+  font-family: 'Ubuntu';
 
   font-size: 21px;
   color: gray;

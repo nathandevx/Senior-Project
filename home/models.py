@@ -600,7 +600,7 @@ class Cart(TimestampCreatorMixin):
 			if item.is_product_inactive():
 				order.has_errors = True
 				order.save()
-				# send_mail("Order has error", "Look at it.", env('FROM_EMAIL'), [env('ADMIN_EMAIL')])  # todo: change to_email and uncomment it
+				send_mail("Order ERROR", f"An order has been made with an error, it has a product that is inactive. Order ID: {order.pk}", env('ADMIN_EMAIL'), [env('ADMIN_EMAIL')])
 				messages.warning(request, f"'{product.name}' is an inactive product. Contact us regarding this issue. An admin has been notified.")
 
 			# If item quantity > stock
@@ -611,7 +611,7 @@ class Cart(TimestampCreatorMixin):
 				product.stock_overflow = item.quantity - product.stock
 				product.status = Product.INACTIVE
 				product.save()
-				# send_mail("Order has error", "Look at it.", env('FROM_EMAIL'), [env('ADMIN_EMAIL')])  # todo: change to_email and uncomment it
+				send_mail("Order ERROR", f"An order has been made with an error, the amount of a product ordered is greater than what is in stock. Order ID: {order.pk}", env('ADMIN_EMAIL'), [env('ADMIN_EMAIL')])
 				messages.warning(request, f"The quantity for '{product.name}' exceeds available stock! Contact us regarding this issue. An admin has been notified.")
 
 			# If item quantity <= stock
@@ -776,7 +776,7 @@ class Order(TimestampCreatorMixin):
 		"""
 		subject = 'Order Confirmation'
 		from_email = env('FROM_EMAIL')
-		recipient_list = [env('ADMIN_EMAIL')]  # todo: change to_email
+		recipient_list = [self.creator.email]
 		order_confirmation_url = get_full_url(self.get_read_url())
 		html_message = \
 			f"""

@@ -29,7 +29,7 @@ def order_confirmation(request, order_uuid):
 				order.updater = request.user
 				order.save()
 				url = get_full_url(order.get_read_url())
-				send_mail(f"Updates to your order", f"Changes have been made to your order, view them here -> {url}", env('FROM_EMAIL'), [env('ADMIN_EMAIL')])  # todo change the env emails
+				send_mail(f"Updates to your order", f"Changes have been made to your order, view them here -> {url}", env('ADMIN_EMAIL'), [order.creator.email])
 				return redirect(order.get_read_url())
 		else:
 			form = OrderForm(instance=order)

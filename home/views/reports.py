@@ -158,10 +158,10 @@ def report_api_status(request):
 		send_mail(
 			'SendGrid SMTP Test',
 			'Testing SendGrid SMTP as requested.',
-			env('FROM_EMAIL'),
+			env('ADMIN_EMAIL'),
 			[env('ADMIN_EMAIL')],
 			fail_silently=False,
-		)  # todo these email
+		)
 		context['sendgrid'] = True
 	except Exception as e:
 		print(f"Error with SendGrid: {e}")

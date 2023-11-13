@@ -23,12 +23,8 @@ def contact(request):
 			email = form.cleaned_data['email']
 			subject = form.cleaned_data['subject']
 			message = form.cleaned_data['message']
-			#try:
-			send_mail(subject, f" \nFrom: {env('ADMIN_EMAIL')}\n\n" + message, env('FROM_EMAIL'), [env('ADMIN_EMAIL')])  # todo: change to_email
-			#messages.success(request, f'Email sent successfully.')
+			send_mail("Contact form: " + subject, f" \nFrom: {email}\n\n" + message, env('ADMIN_EMAIL'), [env('ADMIN_EMAIL')])
 			return redirect('home:home')
-			#except:
-				#return HttpResponseServerError('There was a problem sending the email. Please contact the email listed on the contact page directly.')
 	return render(request, 'home/contact.html', {"config": config})
 
 

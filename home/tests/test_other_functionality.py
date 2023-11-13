@@ -36,10 +36,6 @@ class TestUtilityFunctions(BaseTestCase):
 		self.assertEquals(['sacramento', 'los angeles'], utils.get_allowed_cities('sacramento, los angeles'))
 		self.assertEquals(['sacramento', 'los angeles'], utils.get_allowed_cities('sacramento,los angeles'))
 
-	def test_get_table_data(self):
-		# todo: test this
-		pass
-
 
 class TestDecorators(BaseTestCase):
 	def setUp(self):

@@ -1,6 +1,7 @@
 body {
-    /* To prevent navbar from overlapping content, Go to Google Dev Tools and check the padding */
-    padding-top: 80px;
-    /*font-family: 'Roboto Slab', serif;*/
-    font-size: 1.1rem;
+    padding: 0px;
+    padding-top: 81px;
+    /* background: linear-gradient(45deg, rgb(179, 246, 255), rgba(176, 255, 254, 0.54)); */
+    /* background: linear-gradient(25deg, rgb(255, 176, 250), rgb(80, 243, 255)); */
+    background: linear-gradient(-25deg, rgb(116, 255, 204), rgb(136, 233, 255));
 }

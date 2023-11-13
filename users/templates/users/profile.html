@@ -7,32 +7,9 @@
 {% endblock %}
 
 {% block contents %}
-    <header>
-        <nav>
-            <div class="logo">
-                <a id="nav-link" href="/">
-                    <img src="/static/images/Pastry Bites Logo_Hrz.png" alt="PB Logo">
-                </a>
-                
-            </div>
-    
-            <ul class="nav-links">
-                <li><a id="nav-link" href="{% url 'home:about' %}">About Us</a></li>
-                <li><a id="nav-link" href="{% url 'blog:post-list' %}">Blog</a></li>
-                <li><a id="nav-link" href="{% url 'home:contact' %}">Contact</a></li>
-            </ul>
-
-            <div class="order">
-                <button>
-                    <a id="nav-link" href="{% url 'home:home' %}">Order Online</a>
-                </button>
-                
-            </div>
-        </nav>
-    </header>
 
         <div class="pageName">
-            {% block title %}My Account{% endblock %}
+            {% block title %}Account Details{% endblock %}
         </div>
     <div class="main">
         <div class="details">
@@ -48,9 +25,6 @@
             
                     <label for="email">Email Address:</label>
                     <input type="email" id="email" name="email" required value="{{ user_data.email }}">
-                    
-                    <label for="birthdate">Birthday:</label>
-                    <!-- <input type="date" id="birthdate" name="birthdate" required> -->
             
                     <label for="payment">Phone Number:</label>
                     <!-- <input type="phone-number" id="payment" name="payment" required> -->

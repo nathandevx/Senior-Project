@@ -61,6 +61,12 @@
     max-width: 100%;
     vertical-align: top;
   }
+
+.brand-logo img {
+  max-width: 30%;
+  vertical-align: top;
+  margin: 10px;
+}
   
   #main #mainBanner {
     margin-bottom: 0;

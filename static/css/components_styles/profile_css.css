@@ -27,7 +27,6 @@
 body {
     margin: 10;
     padding: 10;
-    background: var(--white);
     font-family: Arial, sans-serif;
     min-height:100vh;
     overflow-x: hidden;
@@ -40,7 +39,7 @@ body {
 
 .details .container { /*Form*/
   position:relative;
-  display:table;
+  display:grid;
   min-height: 500px;
   background: var(--white);
 
@@ -60,17 +59,10 @@ body {
   transition: 0.5s;
 }
 
-/* header {
-  background-color:#ffffff92;
-  color: #fff;
-  text-align: center;
-  padding: 10px 0;
-} */
-
 .pageName {
   background-color: rgba(255, 255, 255, 0);
   font-size: 50px;
-  color: white;
+  color: black;
   text-align: center;
   padding: 50px;
 }
@@ -93,10 +85,10 @@ label {
 }
 
 input {
-  padding: 5px;
-  border-radius: 50px;
-  margin: 5px 0 20px 0;
-
+  border-radius: 0%;
+margin: 10px 0 20px 0;
+width: 150%;
+padding: 5px;
 }
 
 .submit-button {

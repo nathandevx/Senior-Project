@@ -1,6 +1,6 @@
 # Pastry Bites: Pastry Ordering Website
 
-![Project logo](static/images/README/logo.jpg)
+![Project logo](static/images/README/logo.jpeg)
 
 ## Quick Links
 - [Introduction](#introduction)
@@ -11,12 +11,6 @@
 - [Testing](#testing)
 - [Developer Instructions](#developer-instructions)
 - [Project Images](#project-images)
-  - [JIRA roadmap (part of it)](#jira-roadmap-part-of-it)
-  - [Sign up page](#sign-up-page)
-  - [Login page](#login-page)
-  - [Profile page](#profile-page)
-  - [Manage registered emails page](#manage-registered-emails)
-  - [Admin page](#admin-page)
 
 ## Introduction
 - Sacramento State CSC [190](https://catalog.csus.edu/search/?P=CSC%20190)-[191](https://catalog.csus.edu/search/?P=CSC%20191) Senior Project.
@@ -61,12 +55,28 @@
 - **Heroku**: For deploying and hosting the web application.
 
 ## Testing
-- When the web application is finished, it will have tests for user account creation, checkout page, payments, order tracking, emails, etc.
-- We will use Django's builtin tester for unit tests and selenium for integration tests.
+- We used Django's builtin tester for unit and integration tests.
+- In order to run the tests yourself, you'll need a .env that contains the necessary environment variables used in the project. If you're the admin, you can find a link to this file in the System Test Report document under the artifacts section.
+- Follow the following steps to test the application: 
+  - We recommend using Windows 10. We primarily used Windows 10 for running our tests and the development of the website. 
+  - **Install Python**: download the latest version of Python (or preferably v3.10) from the [official website](https://www.python.org/downloads/). During the installation process, check the option "Add Python to PATH" to make Python accessible from the command line.
+  - **Install Git**: download it at their [official website](https://git-scm.com/downloads).
+  - **Download (clone) the project**
+    - Open the command prompt and navigate to the folder you want to download the project. 
+    - Run “git clone https://github.com/CSC190SeniorProject/SeniorProject” without the quotes.
+  - Alternatively, you can download the project as a ZIP file from the [repository page](https://github.com/CSC190SeniorProject/SeniorProject). Click the green code button, then click “Download ZIP”
+  - **Preparing the project**
+    - Navigate to the project folder via the terminal by running "cd SeniorProject". You should be in the directory that the "README.md" file is in.
+    - Setting up the Python virtual environment
+      - Create it by running "python -m venv venv".
+      - Activate it by running "venv\Scripts\activate".
+    - Install the dependencies by running "pip install -r requirements.txt"
+    - Set up the database by running "python manage.py migrate"
+  - The project is now set up. Read the “Artifacts” section to learn about running the tests. 
 
 ## Deployment
-- The application will be deployed using Heroku. It will be accessible to anyone with a link.
-- For now, see the [developer instructions](#developer-instructions) on how to run the application on your local machine.
+- We used Heroku to deploy the application. You can view the deployed application at [pastry-bites-e07af1213853.herokuapp.com](https://pastry-bites-e07af1213853.herokuapp.com/) or at [pastrybitescafe.com](https://pastrybitescafe.com/).
+- If you'd like to run the application on your location machine, see the [developer instructions](#developer-instructions).
 
 ## Developer Instructions
 - This guide is meant for installing and running the site on Windows OS but with minor tweaks it should work on other OS's like Mac and Linux.
@@ -93,15 +103,34 @@
 ### Sign up page
 ![sign up page](static/images/README/register_page.PNG)
 
-### Login page
-![login page](static/images/README/login_page.PNG)
-
-### Profile page
-![profile page](static/images/README/profile_page.PNG)
-
-### Manage registered emails
-![manage registered emails page](static/images/README/manage_emails_page.PNG)
-
 ### Admin page
 ![admin page](static/images/README/admin_page.PNG)
+
+### Product page
+- The user can view the product and add it to their cart.
+![product page](static/images/README/product_page.PNG)
+
+### Cart page
+- The user's shopping cart.
+![cart page](static/images/README/cart_page.PNG)
+
+### Shipping address page
+- When a user clicks checkout on their cart page, they are redirected to this page to enter their address.
+![shipping address page](static/images/README/shipping_address_page.PNG)
+
+### Stripe checkout page
+- A user is redirected to this page to pay for their order.
+![stripe checkout page](static/images/README/stripe_checkout_page.PNG)
+
+### Order page
+- This page shows the user what they ordered, an estimated date of delivery, and the total price of their order.
+![order page](static/images/README/order_page.PNG)
+
+### Orders table
+- This page is only accessible by the admin. They can see all the orders they've received and filter them by date, status, total price, etc.
+![orders table](static/images/README/report_order_table.PNG)
+
+### Charts
+- This page is only accessible by the admin. They can see how many orders were placed in a given year, top 10 selling products, etc.
+![charts](static/images/README/report_chart_page.PNG)
 

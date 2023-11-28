@@ -1,33 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
-/* * {
-    box-sizing: border-box;
-
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-} */
 
 :root {
-    --blue: #287bff;
     --white: #fff;
-    --grey: #f5f5f5;
-    --black1: #1a1a1a;
-    --black2: #999;
-    --black3: #a6323200;
-    --purple: rgb(109, 44, 249);
-    /*
-    --tan: #F2E6D9;
-    --tan2: #f8dab9;
-    */
-    --new_blue: #63cbed;
-    --new_color: #ffcf76;
 }
 
 body {
     margin: 10;
     padding: 10;
-    font-family: Arial, sans-serif;
     min-height:100vh;
     overflow-x: hidden;
 }
@@ -37,7 +16,7 @@ body {
   width: 100%;
 }
 
-.details .container { /*Form*/
+.details .container { 
   position:relative;
   display:grid;
   min-height: 500px;
@@ -48,14 +27,13 @@ body {
   border-radius: 20px;
 }
 
-.container-fluid { /*Form*/
+.container-fluid { 
   background-color: #f7f7f7;
-  border: 1px solid #ddd;
+  /* border: 1px solid #ddd; */
   border-radius: 5px;
 }
 
 .main {
-  min-height: 100vh;
   transition: 0.5s;
 }
 
@@ -77,32 +55,15 @@ form {
 
 label {
   margin-top: 10px;
-  /* font-family: 'Dancing Script', sans-serif; */
-  font-family: 'Ubuntu';
-
   font-size: 21px;
   color: gray;
 }
 
 input {
   border-radius: 0%;
-margin: 10px 0 20px 0;
-width: 150%;
-padding: 5px;
-}
-
-.submit-button {
-  background-color: #B2BEC3;
-  color: white;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-  transition: all 0.3s ease-in-out;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #7F8C8D;
+  margin: 10px 0 20px 0;
+  width: 150%;
+  padding: 5px;
 }
 
 p {

@@ -7,7 +7,6 @@
 {% endblock %}
 
 {% block contents %}
-
         <div class="pageName">
             {% block title %}Account Details{% endblock %}
         </div>
@@ -17,21 +16,11 @@
                 <form>
 	                {{ form }}
                     {% csrf_token %}
-                    <!-- <label for="name">First Name:</label>
-                    <input type="text" id="fname" name="fname" required>
 
-                    <label for="name">Last Name:</label>
-                    <input type="text" id="lname" name="lname" required> -->
-            
                     <label for="email">Email Address:</label>
                     <input type="email" id="email" name="email" required value="{{ user_data.email }}">
             
-                    <!-- <label for="payment">Phone Number:</label>
-                    <input type="phone-number" id="payment" name="payment" required> -->
-            
-            
                 </form>
-                <button class="submit-button" type="submit">Update Information</button>
                 <div class="container-fluid text-center">
 
                     <p><a href="{% url 'account_change_password' %}">Change password</a></p>

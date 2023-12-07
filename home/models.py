@@ -775,7 +775,7 @@ class Order(TimestampCreatorMixin):
 		@return: nothing, just sends an email.
 		"""
 		subject = 'Order Confirmation'
-		from_email = env('FROM_EMAIL')
+		from_email = env('ADMIN_EMAIL')
 		recipient_list = [self.creator.email]
 		order_confirmation_url = get_full_url(self.get_read_url())
 		html_message = \

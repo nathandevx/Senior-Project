@@ -7,20 +7,20 @@
 		{% if orders %}
 			<h1 class="text-center">Past orders</h1>
 		    <div class="table-responsive">
-				<table class="table table-hover text-center">
-					<thead>
+				<table class="table table-striped table-hover">
+					<thead class="table-dark">
 						<tr>
-							<th><h5>#</h5></th>
-							<th><h5>Order link</h5></th>
-							<th><h5>Date</h5></th>
-							<th><h5>Total</h5></th>
-							<th><h5>Status</h5></th>
+		                    <th scope="col">#</th>
+		                    <th scope="col">Order link</th>
+		                    <th scope="col">Date</th>
+		                    <th scope="col">Total</th>
+		                    <th scope="col">Status</th>
 						</tr>
 					</thead>
 					<tbody>
 					    {% for order in orders %}
 							<tr>
-								<td>{{ order.pk}}</td>
+								<th scope="row">{{ order.pk}}</th>
 								<td><a href="{{ order.get_read_url }}">Link</a></td>
 								<td>{{ order.created_at }}</td>
 								<td>${{ order.total_price }}</td>

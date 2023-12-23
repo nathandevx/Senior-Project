@@ -4,81 +4,43 @@
 {% block title %}Pastry Bites{% endblock %}
 
 {% block contents %}
-<style>
-    .brand-logo img {
-  max-width: 30%;
-  vertical-align: top;
-  margin: 10px;
-}
-</style>
-    <header>
-        <div id="navbarHeader" class="collapse bg-dark">
-            <div class="container">
-                <div class="row">
-                    <div class="col-sm-8 col-md-7 py-4">
-                        <!-- Start: h4 about --><h4 class="text-white">About</h4>
-                        <!-- End: h4 about -->
-                        <!-- Start: paragraph --><p class="text-muted"> Cigdem Askin’s fledgling home-based business is sure to thrill your taste buds. Pastry Bites in El Dorado Hills offers local delivery of baklava. Village Life photo by Sel Richard.</p>
-                        <!-- End: paragraph -->
-                    </div>
-                    <div class="col-sm-4 offset-md-1 py-4">
-                        <!-- Start: h4 contact --><h4 class="text-white">Contact</h4>
-                        <!-- End: h4 contact -->
-                        <!-- Start: lists unordered --><ul class="list-unstyled">
-
-
-</ul>
-                        <!-- End: lists unordered -->
-                    </div>
-                </div>
-            </div>
-        </div>
-{#        <div class="navbar navbar-dark bg-dark shadow-sm">#}
-{#            <div class="container d-flex justify-content-between"><a class="navbar-brand d-flex align-items-center" href="#"><i class="fa fa-camera"></i><strong>&nbsp;Album</strong></a><button class="btn navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarHeader" aria-controls="navbarHeader"#}
-{#                    aria-expanded="false" aria-label="Toggle navigation"><i class="fa fa-navicon"></i></button></div>#}
-{#        </div>#}
-    </header>
-    <main role="main">
-        <section class="jumbotron text-center">
-            <div class="container">
-                <!-- <h1>PASTRY BITES</h1> -->
-                <a class="brand-logo" href="/">
-                    <img src="/static/images/PB Round.png" alt="PB Logo">
-                </a>
-                <p class="lead text-muted"><br>"Treat yourself to a slice of heaven with our heavenly baklava, baked fresh and served with love. - Cigdem Askin"<br></p>
-
-            </div>
-        </section>
+    <div class="container">
+		<h1 class="text-center">PastryBites: University Senior Project</h1>
+		<p>
+			This project was developed as our final year project at Sacramento State University.
+			We were given a client to work with, and we created this website for them to market their bakery items.
+			You can see our GitHub organization page <a href="https://github.com/CSC190SeniorProject/SeniorProject">here</a>.
+			<br>
+			<br>
+			After the course concluded, I (Nathan) made several updates to the project to enable the demonstration of the site.
+			You can view my GitHub repo <a href="https://github.com/nathandevx/SP">here</a>.
+		</p>
+        <div class="row">
 		{% if user.is_superuser %}
 		    <p class="text-center"><span class="fw-bold">Admin viewable only:</span> <a href="{% url 'home:product-create' %}">Create a product</a></p>
 		{% endif %}
-        <div class="album py-5 bg-light">
-            <div class="container">
-                <div class="row">
-                {% if products %}
-	                {% for product in products %}
-	                    <div class="col-md-4">
-	                        <div class="card mb-4 shadow-sm"><img alt="Product image" class="bd-placeholder-img" width="100%" height="225" src="{{ product.get_first_image_url }}">
-	                            <div class="card-body">
-	                                <p class="card-text">{{ product.name }}</p>
-	                                <p class="card-text">{{ product.description }}</p>
-	                                <div class="d-flex justify-content-between align-items-center">
-	                                    <!-- Start: view | edit button --><div class="btn-group">
-									    <a class="btn btn-sm btn-outline-secondary" href="{{ product.get_read_url }}">View</a>
-		                                {% if is_superuser %}
-										    <a class="btn btn-sm btn-outline-secondary" href="{{ product.get_update_url }}">Edit</a>
-		                                {% endif %}
-									</div>
-	                                    <!-- End: view | edit button --><small>$ {{ product.price }}</small></div>
-	                            </div>
-	                        </div>
-	                    </div>
-	                {% endfor %}
-                {% else %}
-	                <h1 class="text-center">No products</h1>
-                {% endif %}
+        {% if products %}
+            {% for product in products %}
+                <div class="col-md-4">
+                    <div class="card mb-4 shadow-sm"><img alt="Product image" class="bd-placeholder-img" width="100%" height="225" src="{{ product.get_first_image_url }}">
+                        <div class="card-body">
+                            <p class="card-text">{{ product.name }}</p>
+                            <p class="card-text">{{ product.description }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <!-- Start: view | edit button --><div class="btn-group">
+							    <a class="btn btn-sm btn-outline-secondary" href="{{ product.get_read_url }}">View</a>
+                                {% if is_superuser %}
+								    <a class="btn btn-sm btn-outline-secondary" href="{{ product.get_update_url }}">Edit</a>
+                                {% endif %}
+							</div>
+                                <!-- End: view | edit button --><small>$ {{ product.price }}</small></div>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            {% endfor %}
+        {% else %}
+            <h2 class="text-center">No products found.</h2>
+        {% endif %}
         </div>
-    </main>
+    </div>
 {% endblock %}

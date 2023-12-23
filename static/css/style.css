@@ -1,7 +1,39 @@
 body {
-    padding: 0px;
-    padding-top: 81px;
-    /* background: linear-gradient(45deg, rgb(179, 246, 255), rgba(176, 255, 254, 0.54)); */
-    /* background: linear-gradient(25deg, rgb(255, 176, 250), rgb(80, 243, 255)); */
-    background: linear-gradient(-25deg, rgb(116, 255, 204), rgb(136, 233, 255));
+    /* To prevent navbar from overlapping content, Go to Google Dev Tools and check the padding */
+    padding-top: 80px;
+    /*font-family: 'Roboto Slab', serif;*/
+    font-size: 1.1rem;
 }
+
+.width {
+    width: 80%;
+}
+
+.form-width {
+    width: 90%;
+}
+
+.form-title {
+    margin-bottom: 1rem;
+}
+
+.breadcrumb {
+    background-color: #e9ecef;
+    border-radius: .25rem;
+    padding: .8rem;
+}
+
+.my-card {
+    border: solid black 1px;
+}
+
+.card-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.no-link-style {
+    color: inherit;
+    text-decoration: none;
+}
+

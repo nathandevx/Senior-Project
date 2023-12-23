@@ -39,6 +39,10 @@ class User(AbstractUser):
 	def get_users_shipping_addresses(self):
 		return ShippingAddress.objects.filter(creator=self)
 
+	# Gets the last shipping address the user entered.
+	def get_last_shipping_address(self):
+		return ShippingAddress.objects.filter(creator=self).order_by('-created_at').first()
+
 	def has_order(self):
 		"""Returns true if a user has an order, false otherwise """
 		return Order.objects.filter(creator=self).count() > 0

@@ -7,7 +7,7 @@ from django.core.files import File
 from django.contrib.sites.shortcuts import get_current_site
 from senior_project import utils
 from home.tests.base import BaseTestCase
-from home.models import Product, ProductImage, Cart, Configurations
+from home.models import Product, ProductImage, Cart
 from blog.models import Post
 import datetime
 import requests
@@ -104,25 +104,6 @@ class TestTemplateTags(BaseTestCase):
 
 		# Assert that the template contains the url
 		self.assertIn(expected_url, rendered_template)
-
-	def test_configuration_tag(self):
-		# Create a fake request
-		request = self.factory.get('/fake-path/')
-		request.user = self.user1
-
-		# Creates a fake template that uses the tag
-		template = Template('{% load tags %} {% config_url %}')
-
-		# Renders the template with the given context.
-		rendered_template = template.render(Context({'request': request}))
-
-		# Check if the url is right
-		if Configurations.config_exists():
-			url = Configurations.get_first_configuration().get_read_url()
-			self.assertIn(url, rendered_template)
-		else:
-			url = Configurations.get_create_url()
-			self.assertIn(url, rendered_template)
 
 
 class TestAWSFunctionality(BaseTestCase):

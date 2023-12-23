@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from senior_project.utils import get_allowed_cities
 from senior_project import constants
-from home.models import Product, ProductImage, CartItem, ShippingAddress, Contact, Configurations, Order
+from home.models import Product, ProductImage, CartItem, ShippingAddress, Contact, Order
 
 
 class ContactForm(forms.ModelForm):
@@ -93,12 +93,6 @@ class ShippingAddressForm(forms.ModelForm):
 		if city.lower() not in get_allowed_cities():
 			raise ValidationError(constants.SHIPPING_ADDRESS_FORM_ERROR)
 		return city
-
-
-class ConfigurationForm(forms.ModelForm):
-	class Meta:
-		model = Configurations
-		fields = '__all__'
 
 
 class OrderForm(forms.ModelForm):

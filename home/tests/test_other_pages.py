@@ -3,7 +3,7 @@ from django.urls import resolve
 from django.shortcuts import reverse
 from django.contrib.auth import get_user_model
 from django.forms.fields import Field
-from home.models import Product, Configurations
+from home.models import Product
 from home.views import views
 from home.tests.base import BaseTestCase
 from users.forms import DeleteUserForm
@@ -76,9 +76,6 @@ class TestContactPage(BaseTestCase):
 		self.assertEquals(resolve(self.url).func, views.contact)
 		self.assertTemplateUsed(response, 'home/contact.html')
 		self.assertEquals(response.status_code, 200)
-
-		self.assertIn('config', context)
-		self.assertEquals(context['config'], Configurations.get_first_configuration() or None)  # the config can be empty
 
 	def test_post_request(self):
 		"""They submit the form. Tests if sending an email causes problems."""

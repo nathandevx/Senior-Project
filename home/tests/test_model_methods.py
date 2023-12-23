@@ -6,7 +6,7 @@ from django.core.files import File
 from django.shortcuts import reverse
 from io import StringIO
 from home.tests.base import BaseTestCase
-from home.models import Product, ProductImage, ShippingAddress, Cart, CartItem, Order, OrderHistory, Configurations
+from home.models import Product, ProductImage, ShippingAddress, Cart, CartItem, Order, OrderHistory
 from blog.models import Post
 from senior_project.exceptions import MoreThanOneActiveCartError, MoreThanOneCartItemError
 from senior_project.utils import get_full_url
@@ -858,42 +858,6 @@ class TestOrderHistoryModelMethods(BaseTestCase):
 	def test_create_order_history_objs(self):
 		OrderHistory.create_order_history_objs(Order.objects.all())
 		self.assertEquals(OrderHistory.objects.count(), 2)
-
-
-class TestConfigurationModelMethods(BaseTestCase):
-	def setUp(self):
-		super().setUp()
-		self._create_objects()
-
-	def _create_objects(self):
-		self.config1 = Configurations.objects.create(
-			phone_number='11111',
-			email='example@example.com',
-			address='1234 street',
-			facebook_url='https://facebook.com',
-			instagram_url='https://instagram.com',
-		)
-
-	def test_get_create_url(self):
-		returned_url = Configurations.get_create_url()
-		expected_url = f'/config/create/'
-		self.assertEquals(returned_url, expected_url)
-
-	def test_get_read_url(self):
-		returned_url = self.config1.get_read_url()
-		expected_url = f'/config/{self.config1.pk}/'
-		self.assertEquals(returned_url, expected_url)
-
-	def test_get_update_url(self):
-		returned_url = self.config1.get_update_url()
-		expected_url = f'/config/update/{self.config1.pk}/'
-		self.assertEquals(returned_url, expected_url)
-
-	def test_get_first_configuration(self):
-		self.assertEquals(Configurations.get_first_configuration(), self.config1)
-
-	def test_config_exists(self):
-		self.assertTrue(Configurations.config_exists())
 
 
 class TestBlogModelMethods(BaseTestCase):

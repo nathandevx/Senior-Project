@@ -1,8 +1,7 @@
 from django.core.mail import send_mail
 from django.shortcuts import redirect, render
-from senior_project.utils import superuser_required
 from home.forms import ContactForm
-from home.models import Product, Configurations, Order
+from home.models import Product
 import environ
 
 env = environ.Env(
@@ -12,7 +11,6 @@ env = environ.Env(
 
 
 def contact(request):
-	config = Configurations.get_first_configuration()
 	if request.method == 'POST':
 		form = ContactForm(request.POST)
 		if form.is_valid():
@@ -21,7 +19,7 @@ def contact(request):
 			message = form.cleaned_data['message']
 			send_mail("Contact form: " + subject, f" \nFrom: {email}\n\n" + message, env('ADMIN_EMAIL'), [env('ADMIN_EMAIL')])
 			return redirect('home:home')
-	return render(request, 'home/contact.html', {"config": config})
+	return render(request, 'home/contact.html')
 
 
 def home(request):

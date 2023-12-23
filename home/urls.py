@@ -7,7 +7,6 @@ urlpatterns = [
 	path('contact/', views.contact, name='contact'),
 
 	# Products
-	# path('product/', views.product, name='product'),
 	path('product/create/', products.product_create, name='product-create'),
 	path('product/<int:pk>/', products.product_read, name='product-read'),
 	path('product/update/<int:pk>/', products.product_update, name='product-update'),
@@ -16,7 +15,6 @@ urlpatterns = [
 	# Carts
 	path('cart/<int:pk>/', carts.cart_read, name='cart-read'),  # also acts as cart/update/
 	path('cart/delete/<int:pk>/', carts.cart_delete, name='cart-delete'),
-	# path('cart-demo/', views.cart_demo, name='cart-demo'),
 
 	# Checkout
 	path('checkout/shipping-info/', checkout.shipping_info, name='shipping-info'),
@@ -25,12 +23,10 @@ urlpatterns = [
 	path('checkout/payment-cancel/', checkout.payment_cancel, name='payment-cancel'),
 
 	# Orders
-	# path('order', views.order, name='order'),
 	path('order/list/', orders.order_list, name='order-list'),
 	path('order-confirmation/<uuid:order_uuid>/', orders.order_confirmation, name='order-confirmation'),
 
 	# Reports
-	# path('report/', views.report, name='report'),
 	path('report/list/', reports.report_list, name='report-list'),
 	path('report/orders/', reports.report_orders, name='report-orders'),
 	path('report/products/', reports.report_products, name='report-products'),

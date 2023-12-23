@@ -1,5 +1,6 @@
 from django.core.mail import send_mail
 from django.shortcuts import redirect, render
+from senior_project.utils import login_required
 from home.forms import ContactForm
 from home.models import Product
 import environ
@@ -10,6 +11,7 @@ env = environ.Env(
 )
 
 
+@login_required
 def contact(request):
 	if request.method == 'POST':
 		form = ContactForm(request.POST)

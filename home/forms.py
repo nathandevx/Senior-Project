@@ -3,13 +3,13 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from senior_project.utils import get_allowed_cities
 from senior_project import constants
-from home.models import Product, ProductImage, CartItem, ShippingAddress, Contact, Order
+from home.models import Product, ProductImage, CartItem, ShippingAddress, Order
 
 
-class ContactForm(forms.ModelForm):
-	class Meta:
-		model = Contact
-		fields = '__all__'
+class ContactForm(forms.Form):
+	email = forms.EmailField()
+	subject = forms.CharField(max_length=255)
+	message = forms.CharField(widget=forms.Textarea)
 
 
 class ProductForm(forms.ModelForm):
@@ -91,6 +91,7 @@ class ShippingAddressForm(forms.ModelForm):
 	def clean_city(self):
 		city = self.cleaned_data.get('city')
 		if city.lower() not in get_allowed_cities():
+			print(get_allowed_cities())
 			raise ValidationError(constants.SHIPPING_ADDRESS_FORM_ERROR)
 		return city
 

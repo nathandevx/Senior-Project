@@ -93,7 +93,7 @@ def get_allowed_cities(test_cities=None):
 	new_cities = []
 	for city in cities:
 		if city not in ['', ',', ' ']:
-			new_cities.append(city.strip())
+			new_cities.append(city.strip().lower())
 	return new_cities
 
 

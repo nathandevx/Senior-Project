@@ -28,8 +28,7 @@ def contact(request):
 
 def home(request):
 	products = Product.get_active_products()
-	is_superuser = request.user.is_superuser
-	return render(request, 'home/home.html', {'products': products, 'is_superuser': is_superuser})
+	return render(request, 'home/home.html', {'products': products})
 
 
 def product(request):

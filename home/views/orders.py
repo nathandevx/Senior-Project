@@ -21,7 +21,7 @@ def order_list(request):
 @login_required
 def order_confirmation(request, order_uuid):
 	order = Order.objects.get(uuid=order_uuid)
-	if (order.creator == request.user) or request.user.is_superuser:
+	if (order.creator == request.user) or request.user.in_admin_group():
 		if request.method == 'POST':
 			form = OrderForm(request.POST, instance=order)
 			if form.is_valid():

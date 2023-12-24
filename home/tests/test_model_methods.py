@@ -924,11 +924,11 @@ class TestBlogModelMethods(BaseTestCase):
 		self.assertEquals(Post.get_active_posts().count(), 2)
 
 	def test_is_superuser_or_active_post(self):
-		self.assertTrue(self.post1.is_superuser_or_active_post(self.superuser))
-		self.assertTrue(self.inactive_post1.is_superuser_or_active_post(self.superuser))
+		self.assertTrue(self.post1.is_admin_or_active_post(self.superuser))
+		self.assertTrue(self.inactive_post1.is_admin_or_active_post(self.superuser))
 
-		self.assertTrue(self.post1.is_superuser_or_active_post(self.user1))
-		self.assertFalse(self.inactive_post1.is_superuser_or_active_post(self.user1))
+		self.assertTrue(self.post1.is_admin_or_active_post(self.user1))
+		self.assertFalse(self.inactive_post1.is_admin_or_active_post(self.user1))
 
 
 # Stripe related model methods

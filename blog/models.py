@@ -44,8 +44,8 @@ class Post(TimestampCreatorMixin):
 	def get_active_posts(cls):
 		return cls.objects.filter(status=cls.ACTIVE)
 
-	def is_superuser_or_active_post(self, user):
-		return user.is_superuser or self.status == Post.ACTIVE
+	def is_admin_or_active_post(self, user):
+		return user.in_admin_group() or self.status == Post.ACTIVE
 
 	class Meta:
 		verbose_name = 'Post'

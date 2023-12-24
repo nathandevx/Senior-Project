@@ -38,7 +38,7 @@ def product_read(request, pk):
 	product = get_object_or_404(Product, pk=pk)
 
 	# Only superusers should be able to view inactive products
-	if product.is_inactive() and not request.user.is_superuser:
+	if product.is_inactive() and not request.user.in_admin_group():
 		return HttpResponseForbidden()
 
 	if request.method == 'POST':

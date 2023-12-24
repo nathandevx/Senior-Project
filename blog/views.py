@@ -30,7 +30,7 @@ def post_create(request):
 
 def post_read(request, pk):
 	post = Post.objects.get(pk=pk)
-	if not post.is_superuser_or_active_post(request.user):
+	if not post.is_admin_or_active_post(request.user):
 		return HttpResponseForbidden()
 	return render(request, 'blog/read.html', {'post': post, 'post_model': Post})
 

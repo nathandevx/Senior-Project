@@ -56,7 +56,7 @@ def superuser_required(func):
 	"""
 	@wraps(func)
 	def check_superuser(request, *args, **kwargs):
-		if not request.user.is_superuser:
+		if not request.user.is_superuser or not request.user.in_admin_group():
 			return HttpResponseForbidden()
 		return func(request, *args, **kwargs)
 	return check_superuser

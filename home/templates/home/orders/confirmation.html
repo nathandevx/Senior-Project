@@ -53,7 +53,7 @@
 	            <p>{{ order.notes|linebreaks }}</p>
 	        {% endif %}
 
-			{% if user.is_superuser %}
+			{% if user.in_admin_group %}
 				<hr>
 		        <p class="fw-bold">Admin viewable only:</p>
 				{% if order.has_errors %}

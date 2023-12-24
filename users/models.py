@@ -1,4 +1,4 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Group
 from django.db.models.functions import ExtractYear
 from django.shortcuts import reverse
 from senior_project.constants import MONTHS
@@ -46,3 +46,6 @@ class User(AbstractUser):
 	def has_order(self):
 		"""Returns true if a user has an order, false otherwise """
 		return Order.objects.filter(creator=self).count() > 0
+
+	def in_admin_group(self):
+		return self.groups.filter(name="ADMIN").exists()

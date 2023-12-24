@@ -16,7 +16,7 @@
 			You can view my GitHub repo <a href="https://github.com/nathandevx/SP">here</a>.
 		</p>
         <div class="row">
-		{% if user.is_superuser %}
+		{% if user.in_admin_group %}
 		    <p class="text-center"><span class="fw-bold">Admin viewable only:</span> <a href="{% url 'home:product-create' %}">Create a product</a></p>
 		{% endif %}
         {% if products %}

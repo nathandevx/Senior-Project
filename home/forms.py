@@ -48,14 +48,14 @@ class ProductForm(forms.ModelForm):
 		fields = ['name', 'description', 'extra_description', 'price', 'estimated_delivery_date', 'status', 'stock', 'stock_overflow']
 		widgets = {
 			# Accept multiple image file uploads
-			'image': forms.ClearableFileInput(attrs={'allow_multiple_selected': True}),
+			# 'image': forms.ClearableFileInput(attrs={'allow_multiple_selected': True}),
 			# Define how the date should be formatted, and add a HTML placeholder
 			'estimated_delivery_date': forms.DateInput(format='%m/%d/%Y', attrs={'placeholder': 'mm/dd/yyyy'}),
 		}
 
 
 class ProductImageForm(forms.ModelForm):
-	image = forms.ImageField(label='images', widget=forms.ClearableFileInput(attrs={'allow_multiple_selected': 'multiple'}))
+	image = forms.ImageField(label='images', widget=forms.ClearableFileInput(attrs={'multiple': 'multiple'}))
 
 	def __init__(self, *args, **kwargs):
 		# Add a custom parameter to the form that indicates if the form should require images. Default to true.

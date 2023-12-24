@@ -18,7 +18,7 @@ stripe.api_key = env('STRIPE_SECRET_KEY')
 def shipping_info(request):
 	cart = Cart.get_active_cart_or_create_new_cart(request.user)
 	access = cart.not_creator_or_inactive_cart(request.user)
-	shipping_address = request.user.get_last_shipping_address()
+	last_shipping_address = request.user.get_last_shipping_address()
 	if access:
 		return HttpResponseForbidden()
 	if cart.has_errors():
@@ -29,16 +29,16 @@ def shipping_info(request):
 	if request.method == 'POST':
 		form = ShippingAddressForm(request.POST)
 		if form.is_valid():
-			saved_form = form.save(commit=False)
-			saved_form.creator = request.user
-			saved_form.updater = request.user
-			saved_form.save()
+			shipping_address = form.save(commit=False)
+			shipping_address.creator = request.user
+			shipping_address.updater = request.user
+			shipping_address.save()
 
 			# Update the cart's shipping address
 			cart.set_shipping_address(shipping_address)
 			return redirect('home:proceed-to-stripe')
 	else:
-		form = ShippingAddressForm(instance=shipping_address)
+		form = ShippingAddressForm(instance=last_shipping_address)
 
 	context = {
 		'form': form,

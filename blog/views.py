@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.http import HttpResponseForbidden
-from senior_project.utils import superuser_required
+from senior_project.utils import superuser_or_admin_required
 from blog.forms import PostForm
 from blog.models import Post
 
@@ -11,7 +11,7 @@ def post_list(request):
 	return render(request, 'blog/list.html', {'posts': posts, 'post_model': Post})
 
 
-@superuser_required
+@superuser_or_admin_required
 def post_create(request):
 	if request.method == 'POST':
 		form = PostForm(request.POST)
@@ -35,7 +35,7 @@ def post_read(request, pk):
 	return render(request, 'blog/read.html', {'post': post, 'post_model': Post})
 
 
-@superuser_required
+@superuser_or_admin_required
 def post_update(request, pk):
 	post = get_object_or_404(Post, pk=pk)
 
@@ -53,7 +53,7 @@ def post_update(request, pk):
 	return render(request, 'blog/update.html', {'form': form, 'post': post, 'post_model': Post})
 
 
-@superuser_required
+@superuser_or_admin_required
 def post_delete(request, pk):
 	post = get_object_or_404(Post, pk=pk)
 	if request.method == 'POST':

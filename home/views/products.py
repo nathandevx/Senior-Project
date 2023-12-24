@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404, reverse
 from django.contrib import messages
 from django.http import HttpResponseForbidden
-from senior_project.utils import superuser_required
+from senior_project.utils import superuser_or_admin_required
 from home.models import Product, Cart
 from home.forms import ProductForm, ProductImageForm, QuantityForm
 
 
-@superuser_required
+@superuser_or_admin_required
 def product_create(request):
 	if request.method == 'POST':
 		product_form = ProductForm(request.POST)
@@ -59,7 +59,7 @@ def product_read(request, pk):
 	return render(request, 'home/products/read.html', {'product': product, 'form': form})
 
 
-@superuser_required
+@superuser_or_admin_required
 def product_update(request, pk):
 	product = get_object_or_404(Product, pk=pk)
 
@@ -97,7 +97,7 @@ def product_update(request, pk):
 	return render(request, 'home/products/update.html', context)
 
 
-@superuser_required
+@superuser_or_admin_required
 def product_delete(request, pk):
 	product = get_object_or_404(Product, pk=pk)
 	if request.method == "POST":

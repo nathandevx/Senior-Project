@@ -43,7 +43,7 @@ class TestDecorators(BaseTestCase):
 		self.factory = RequestFactory()
 
 	@staticmethod
-	@ utils.superuser_required
+	@ utils.superuser_or_admin_required
 	def _dummy_superuser_required_view(request):
 		return HttpResponse()
 

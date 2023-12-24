@@ -49,10 +49,10 @@ def get_random_date():
 	return random_date
 
 
-def superuser_required(func):
+def superuser_or_admin_required(func):
 	"""
-	Checks if the user is a superuser.
-	@return: HTTP 403 if the user is not a superuser, nothing otherwise.
+	Checks if the user is a superuser or in the ADMIN group.
+	@return: HTTP 403 if the user is not a superuser or ADMIN, nothing otherwise.
 	"""
 	@wraps(func)
 	def check_superuser(request, *args, **kwargs):

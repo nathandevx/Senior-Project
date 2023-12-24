@@ -27,13 +27,10 @@
                             <p class="card-text">{{ product.name }}</p>
                             <p class="card-text">{{ product.description }}</p>
                             <div class="d-flex justify-content-between align-items-center">
-                                <!-- Start: view | edit button --><div class="btn-group">
-							    <a class="btn btn-sm btn-outline-secondary" href="{{ product.get_read_url }}">View</a>
-                                {% if is_superuser %}
-								    <a class="btn btn-sm btn-outline-secondary" href="{{ product.get_update_url }}">Edit</a>
-                                {% endif %}
+                                <div class="btn-group">
+							    <a class="btn btn-primary" href="{{ product.get_read_url }}">View</a>
 							</div>
-                                <!-- End: view | edit button --><small>$ {{ product.price }}</small></div>
+                                <small>${{ product.price }}</small></div>
                         </div>
                     </div>
                 </div>

@@ -4,13 +4,62 @@
 
 {% block contents %}
 
-    <div class="container-fluid text-center">
-        <h1>Payment</h1>
-	    <p>You will be redirected to checkout.stripe.com to process your payment securely when you click continue.</p>
-		<form method="POST">
-			{% csrf_token %}
-			<button type="submit" id="checkout-button" class="btn btn-primary">Continue</button>
-		</form>
+    <div class="container">
+        <div class="text-center">
+		    <h1>Payment</h1>
+		    <p>You will be redirected to <span class="text-decoration-underline">checkout.stripe.com</span> to process your payment securely when you click continue.</p>
+		    <p><span class="fw-bold">Note</span>: the Stripe API (which is used for payments) is in test mode. <span class="fw-bold">You will not be charged</span>.</p>
+			<form method="POST">
+				{% csrf_token %}
+				<button type="submit" id="checkout-button" class="btn btn-primary">Continue</button>
+			</form>
+        </div>
+	    <p class="fw-bold">Dummy payment credentials: </p>
+{#	    <ul>#}
+{#		    <li><span class="fw-bold">Email</span>: example@example.com</li>#}
+{#		    <ul>#}
+{#		        <li>You may be asked to "confirm it's you" by entering a 6 digit code. You can just enter 123456. The form will then be autofilled.</li>#}
+{#		    </ul>#}
+{#		    <li><span class="fw-bold">Credit card number</span>: 4242 4242 4242 4242</li>#}
+{#		    <li><span class="fw-bold">Expiration</span>: 11/33</li>#}
+{#		    <li><span class="fw-bold">CVC</span>: 123</li>#}
+{#		    <li><span class="fw-bold">Cardholder name</span>: Nathan</li>#}
+{#			<li><span class="fw-bold">Country</span>: United States</li>#}
+{#		    <li><span class="fw-bold">Zip</span>: 12345</li>#}
+{#	    </ul>#}
+
+		<ul>
+		    <li><span class="fw-bold">Email</span></li>
+			    <ul>
+			        <li>example@example.com</li>
+			        <li>You may be asked to "confirm it's you" by entering a 6 digit code. You can just enter 123456. The form will then be autofilled.</li>
+			    </ul>
+		    <li><span class="fw-bold">Credit card number</span></li>
+			    <ul>
+			        <li>4242 4242 4242 4242</li>
+			    </ul>
+			<li><span class="fw-bold">Expiration</span></li>
+				<ul>
+			        <li>11/33</li>
+			    </ul>
+
+		    <li><span class="fw-bold">CVC</span></li>
+				<ul>
+			        <li>123</li>
+			    </ul>
+		    <li><span class="fw-bold">Cardholder name</span></li>
+				<ul>
+			        <li>Nathan</li>
+			    </ul>
+			<li><span class="fw-bold">Country</span></li>
+				<ul>
+			        <li>United States</li>
+			    </ul>
+		    <li><span class="fw-bold">Zip</span></li>
+				<ul>
+			        <li>12345</li>
+			    </ul>
+	    </ul>
     </div>
 
 {% endblock %}

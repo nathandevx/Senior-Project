@@ -1,6 +1,6 @@
 from django.core.mail import send_mail
-from django.shortcuts import redirect, render
-from senior_project.utils import login_required
+from django.shortcuts import redirect, render, reverse
+from django.contrib import messages
 from home.forms import ContactForm
 from home.models import Product
 import environ
@@ -11,8 +11,10 @@ env = environ.Env(
 )
 
 
-@login_required
 def contact(request):
+	if not request.user.is_authenticated:
+		messages.info(request, 'Login to use the contact form.')
+		return redirect(reverse('account_login'))
 	if request.method == 'POST':
 		form = ContactForm(request.POST)
 		if form.is_valid():

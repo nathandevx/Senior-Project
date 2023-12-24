@@ -2,7 +2,8 @@
 {% load static %}
 
 {% block contents %}
-    <div class="container-fluid text-center">
+    <div class="container text-center">
+        <h1>Profile page</h1>
         <p><a href="{% url 'account_change_password' %}">Change password</a></p>
         <p><a href="{% url 'home:order-list' %}">View past orders</a></p>
         <p><a href="{% url 'users:delete-user' %}">Delete account</a></p>

@@ -91,7 +91,6 @@ class ShippingAddressForm(forms.ModelForm):
 	def clean_city(self):
 		city = self.cleaned_data.get('city')
 		if city.lower() not in get_allowed_cities():
-			print(get_allowed_cities())
 			raise ValidationError(constants.SHIPPING_ADDRESS_FORM_ERROR)
 		return city
 

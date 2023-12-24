@@ -143,7 +143,7 @@ def report_api_status(request):
 		s3.list_buckets()
 		context['aws'] = True
 	except Exception as e:
-		print(f"Error with AWS S3: {e}")
+		pass
 
 	# Check Stripe
 	try:
@@ -151,7 +151,7 @@ def report_api_status(request):
 		stripe.Balance.retrieve()
 		context['stripe'] = True
 	except Exception as e:
-		print(f"Error with Stripe: {e}")
+		pass
 
 	# Check SendGrid
 	try:
@@ -164,6 +164,6 @@ def report_api_status(request):
 		)
 		context['sendgrid'] = True
 	except Exception as e:
-		print(f"Error with SendGrid: {e}")
+		pass
 
 	return render(request, 'home/reports/api_status.html', context)

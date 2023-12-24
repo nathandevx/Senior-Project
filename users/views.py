@@ -1,20 +1,27 @@
 from django.contrib import messages
 from django.http import HttpResponseForbidden
 from django.shortcuts import render, redirect, reverse
-from django.contrib.auth import logout, get_user_model
-from senior_project.utils import login_required
+from django.contrib.auth import logout, get_user_model, authenticate, login
+from allauth.account.views import LoginView
+from senior_project.utils import login_required, get_dummy_user, logout_required, get_num_available_dummy_users
 from home.models import Order, OrderHistory
 from users.forms import DeleteUserForm
 
 User = get_user_model()
 
 
+# Customizing django-allauth LoginView
+class CustomLoginView(LoginView):
+    def get_context_data(self, **kwargs):
+        context = super(CustomLoginView, self).get_context_data(**kwargs)
+        context['num_available_admin_users'] = get_num_available_dummy_users('ADMIN')
+        context['num_available_customer_users'] = get_num_available_dummy_users('CUSTOMER')
+        return context
+
+
 @login_required
 def profile(request):
-    user_data = request.user
-
-    return render(request, 'users/profile.html', {'user_data': user_data})
-    # return render(request, 'users/profile.html')
+    return render(request, 'users/profile.html')
 
 
 def delete_user(request):
@@ -39,3 +46,23 @@ def delete_user(request):
     else:
         form = DeleteUserForm()
     return render(request, 'users/delete_account.html', {'form': form})
+
+
+# Used on login page to login the user as an admin
+@logout_required
+def login_as_admin(request):
+    user = get_dummy_user("ADMIN")
+    user.backend = 'django.contrib.auth.backends.ModelBackend'
+    login(request, user)
+    messages.info(request, f'You logged in as {user.username}. You may be logged out in an hour.')
+    return redirect('home:home')
+
+
+# Used on login page to login the user as a customer
+@logout_required
+def login_as_customer(request):
+    user = get_dummy_user("CUSTOMER")
+    user.backend = 'django.contrib.auth.backends.ModelBackend'
+    login(request, user)
+    messages.info(request, f'You logged in as {user.username}. You may be logged out in an hour.')
+    return redirect('home:home')

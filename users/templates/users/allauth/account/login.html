@@ -10,8 +10,20 @@
 	<h1>Login</h1>
 	<p>You can click one of the buttons below and be logged in automatically as an administrator or customer.</p>
 	<p>Please be aware that the database will automatically reset to its default settings every 30 minutes. Any items in your cart, newly registered accounts, and all other recent modifications will be automatically deleted or reset.</p>
-	<button class="btn btn-primary me-5">Login as an Administrator</button>
-	<button class="btn btn-primary">Login as a Customer</button>
+	{% if num_available_admin_users == 0 %}
+		<a href="#" class="btn btn-primary disabled">Login as an Administrator</a>
+	{% else %}
+		<a href="{% url 'users:login-as-admin' %}" class="btn btn-primary">Login as an Administrator</a>
+	{% endif %}
+	<span class="ms-3">{{ num_available_admin_users }}/5 in use</span>
+	<br>
+	<br>
+	{% if num_available_customer_users == 0 %}
+		<a href="#" class="btn btn-primary disabled">Login as a Customer</a>
+	{% else %}
+		<a href="{% url 'users:login-as-customer' %}" class="btn btn-primary">Login as a Customer</a>
+	{% endif %}
+	<span class="ms-5">{{ num_available_customer_users }}/5 in use</span>
 	<br>
 	<br>
 	<hr class="thick-hr">

@@ -1,17 +1,13 @@
 from django.conf import settings
+from django.core.mail import send_mail
 from django.http import HttpResponseForbidden
 from django.utils import timezone
+from django.contrib.auth.models import Group
 from django.contrib.sites.models import Site
 from functools import wraps
-from datetime import date
+from datetime import date, timedelta
+from senior_project.env_settings import env
 import random
-import environ
-
-
-env = environ.Env(
-	# set casting, default value
-	DEBUG=(bool, False)
-)
 
 
 def format_datetime(datetime_obj):
@@ -79,6 +75,17 @@ def login_required(func):
 	return check_login
 
 
+def logout_required(function):
+	@wraps(function)
+	def wrap(request, *args, **kwargs):
+		if request.user.is_authenticated:
+			# Redirect to some page (e.g., homepage)
+			return HttpResponseForbidden()
+		else:
+			return function(request, *args, **kwargs)
+	return wrap
+
+
 def get_allowed_cities(test_cities=None):
 	"""
 	Gets the ALLOWED_CITIES and puts them into a comma separated list.
@@ -130,3 +137,42 @@ def get_table_data(request, cls):
 	elif sort_by:
 		posts = cls.objects.order_by(f'{ordering}{sort_by}')
 	return posts, order_by
+
+
+# Gets the time for 1 hour ago
+def get_one_hour_ago():
+	return timezone.now() - timedelta(hours=1)
+
+
+def get_num_available_dummy_users(group: str):
+	group = Group.objects.get(name=group)
+	users = group.user_set.filter(last_login__lte=get_one_hour_ago()).order_by('last_login')
+	return users.count()
+
+
+def get_dummy_user(group: str):
+	"""
+	Returns a dummy user.
+	Arranges the users based on their most recent login and attempts to get the user who logged in the longest time ago.
+	If the user who logged in the longest time ago last logged in an hour ago, then it will return None.
+	:param group: ADMIN or CUSTOMER
+	:return: None or a User object.
+	"""
+	group = Group.objects.get(name=group)
+	users = group.user_set.filter(last_login__lte=get_one_hour_ago()).order_by('last_login')
+	if users:
+		return users.first()
+	else:  # there are no users that were last logged in over an hour ago
+		return None
+
+
+def email_num_dummy_users():
+	"""
+	Sends an email to the admin if the number of dummy users in use (ADMIN or CUSTOMER groups) is greater than 1.
+	"""
+	num_admins_in_use = get_num_available_dummy_users("ADMIN")
+	num_customers_in_use = get_num_available_dummy_users("CUSTOMER")
+	if (num_admins_in_use > 2) or (num_customers_in_use > 2):
+		send_mail("SP: Demo Users", f"{num_admins_in_use} of admins are in use. {num_customers_in_use} of customers are in use.", env('ADMIN_EMAIL'), [env('ADMIN_EMAIL')])
+
+

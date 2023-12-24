@@ -38,3 +38,10 @@ body {
     text-decoration: none;
 }
 
+.thick-hr {
+    height: 3px;
+    background-color: black;
+    border: none;
+    opacity: 100%;
+}
+

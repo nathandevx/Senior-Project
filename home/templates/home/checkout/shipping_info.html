@@ -14,7 +14,7 @@
 	    <form method="POST" enctype="multipart/form-data">
 		    {% csrf_token %}
 		    {{ form|crispy }}
-		    <button type="submit" class="btn btn-primary">Continue</button>
+		    <button type="submit" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="bottom" title="You will not be charged, dummy payment info will be provided.">Continue</button>
 	    </form>
     </div>
 

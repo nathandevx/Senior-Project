@@ -50,7 +50,7 @@
                 <form method="post" class="mt-4">
 	                {% csrf_token %}
 	                {{ form|crispy }}
-                    <button type="submit" class="btn btn-primary">Add to Cart</button>
+                    <button type="submit" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="bottom" title="You will not be charged, dummy payment info will be provided.">Add to Cart</button>
                 </form>
             </div>
         </div>

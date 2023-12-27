@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.core.mail import send_mail
 from django.http import HttpResponseForbidden
 from senior_project.utils import login_required, get_full_url
@@ -20,7 +20,7 @@ def order_list(request):
 
 @login_required
 def order_confirmation(request, order_uuid):
-	order = Order.objects.get(uuid=order_uuid)
+	order = get_object_or_404(Order, uuid=order_uuid)
 	if (order.creator == request.user) or request.user.in_admin_group():
 		if request.method == 'POST':
 			form = OrderForm(request.POST, instance=order)

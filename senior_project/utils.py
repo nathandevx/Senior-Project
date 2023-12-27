@@ -34,7 +34,7 @@ def get_full_url(url):
 
 def get_random_date():
 	"""
-	Gets a random date. Only used for testing, such as in make_data.py.
+	Gets a random date. Only used for testing, such as in make_random_data.py.
 	@return: a random date.
 	"""
 	random_month = random.randint(1, 12)

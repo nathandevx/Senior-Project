@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.http import HttpResponseForbidden
-from django.shortcuts import render, redirect, reverse
-from django.contrib.auth import logout, get_user_model, authenticate, login
+from django.shortcuts import render, redirect, reverse, get_object_or_404
+from django.contrib.auth import logout, get_user_model, login
 from allauth.account.views import LoginView
 from senior_project.utils import login_required, get_dummy_user, logout_required, get_num_available_dummy_users
 from home.models import Order, OrderHistory
@@ -21,6 +21,8 @@ class CustomLoginView(LoginView):
 
 @login_required
 def profile(request):
+    admins = User.objects.filter(groups__name='ADMIN', is_superuser=False)
+    print(type(admins[4]))
     return render(request, 'users/profile.html')
 
 
@@ -34,7 +36,7 @@ def delete_user(request):
 
         if form.is_valid():
             if request.POST["delete_checkbox"]:
-                user = User.objects.get(username=request.user)
+                user = get_object_or_404(User, username=request.user)
                 if user is not None:
                     OrderHistory.create_order_history_objs(Order.get_users_orders(user))
                     user.delete()  # delete the user account.

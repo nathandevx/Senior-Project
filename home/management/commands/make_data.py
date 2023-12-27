@@ -191,7 +191,7 @@ class Command(BaseCommand):
 				creator=PRODUCT['creator'][i],
 				updater=PRODUCT['updater'][i],
 			)
-			# product.create_stripe_product_and_price_objs()
+			product.create_stripe_product_and_price_objs()
 			products.append(product)
 		self.stdout.write("Products created.")
 		return products

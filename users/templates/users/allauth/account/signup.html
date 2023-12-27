@@ -8,7 +8,7 @@
 {% block content %}
 	<h1>Create an account</h1>
 	<p>{% blocktrans %}Already have an account? <a href="{{ login_url }}">Login</a>.{% endblocktrans %}</p>
-	<p>You can use <a href="https://temp-mail.org/en/" target="_blank">Temp-mail.org</a> to get a temporary email address.</p>
+	<p>You can use <a href="https://temp-mail.org/en/" target="_blank">Temp-mail.org</a> to get a free temporary email address.</p>
 	<form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
 		{% csrf_token %}
 		{{ form|crispy }}

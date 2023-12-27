@@ -1,11 +1,9 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
 from django.core.files import File
-from django.conf import settings
 from faker import Faker
 from home.models import Product, ProductImage, ShippingAddress, Cart, CartItem, Order
 from blog.models import Post
-from senior_project.exceptions import CommandNotAllowedInProduction
 from senior_project.utils import get_random_date
 from senior_project import constants
 import random

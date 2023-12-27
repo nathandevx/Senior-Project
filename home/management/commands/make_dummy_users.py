@@ -17,7 +17,7 @@ class Command(BaseCommand):
 	def make_groups(self):
 		Group.objects.create(name="ADMIN")
 		Group.objects.create(name="CUSTOMER")
-		self.stdout.write(self.style.SUCCESS("Admin and Customer groups created"))
+		self.stdout.write("Admin and Customer groups created")
 
 	def make_admins(self):
 		admin1 = User.objects.create_user(first_name="Lando", last_name="Calrissian", username=env('ADMIN_USERNAME1'), email=env('DUMMY_EMAIL'), password=env('ADMIN_PASSWORD1'))
@@ -48,7 +48,7 @@ class Command(BaseCommand):
 		admin_group = Group.objects.get(name="ADMIN")
 		admin_group.user_set.add(admin1, admin2, admin3, admin4, admin5)
 
-		self.stdout.write(self.style.SUCCESS("5 admin users created."))
+		self.stdout.write("5 admin users created.")
 
 	def make_customers(self):
 		# first name, last name, username,
@@ -80,12 +80,12 @@ class Command(BaseCommand):
 		customer_group = Group.objects.get(name="CUSTOMER")
 		customer_group.user_set.add(customer1, customer2, customer3, customer4, customer5)
 
-		self.stdout.write(self.style.SUCCESS("5 customer users created."))
+		self.stdout.write("5 customer users created.")
 
 	def add_superuser_to_admin_group(self):
 		admin_group = Group.objects.get(name="ADMIN")
 		admin_group.user_set.add(User.objects.get(username="Admin", email=env("ADMIN_EMAIL")))
-		self.stdout.write(self.style.SUCCESS("Superuser added to Admin group."))
+		self.stdout.write("Superuser added to Admin group.")
 
 	def handle(self, *args, **options):
 		self.make_groups()

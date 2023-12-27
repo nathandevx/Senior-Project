@@ -4,7 +4,7 @@
 {% block title %}{{ product.name }}{% endblock %}
 
 {% block contents %}
-    <div class="container my-5">
+    <div class="container my-md-3">
         <div class="row">
 
             {# Product images #}
@@ -39,7 +39,7 @@
 
 	        {# Product description #}
             <div class="col-md-6">
-                <h2>{{ product.name }}</h2>
+                <h2 class="mt-2">{{ product.name }}</h2>
                 <p class="text-muted">${{ product.price }}</p>
                 <p class="text-muted">Stock: {{ product.stock }}</p>
                 {% if product.estimated_delivery_date %}
@@ -56,8 +56,7 @@
         </div>
         <div>
 			{% if user.in_admin_group %}
-			    <br>
-			    <br>
+				<hr>
 			    <p class="fw-bold">Admin viewable only:</p>
 			    <p>Stripe product ID: {{ product.stripe_product_id }}</p>
 			    <p>Stripe price ID: {{ product.stripe_price_id }}</p>
@@ -68,9 +67,10 @@
 			        |
 			        <a href="{{ product.get_delete_url }}" class="text-danger">delete</a>
 			    </p>
+				<hr>
 			{% endif %}
         </div>
-
+	    <br>
         {{ product.extra_description|safe }}
     </div>
 {% endblock %}

@@ -4,7 +4,7 @@
 
 {% block contents %}
 	<div class="container">
-		<h1 class="text-center">{{ post.title }}</h1>
+		<h1 class="text-center mt-2">{{ post.title }}</h1>
 		{% if user.in_admin_group %}
 			    <p><span class="fw-bold">Admin viewable only:</span> <a href="{{ post.get_update_url }}">update</a> | <a href="{{ post.get_delete_url }}" class="text-danger">delete</a></p>
 		{% endif %}

@@ -45,3 +45,10 @@ body {
     opacity: 100%;
 }
 
+.less-thick-hr {
+    height: 2px;
+    background-color: black;
+    border: none;
+    opacity: 100%;
+}
+

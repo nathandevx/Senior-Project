@@ -159,7 +159,7 @@ class Product(TimestampCreatorMixin):
 		"""
 		@return: a QuerySet of products with status=ACTIVE.
 		"""
-		products = cls.objects.filter(status=cls.ACTIVE).order_by('-updated_at')
+		products = cls.objects.filter(status=cls.ACTIVE)
 		return products
 
 	def create_stripe_product_and_price_objs(self):

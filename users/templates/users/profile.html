@@ -4,10 +4,10 @@
 {% block contents %}
     <div class="container text-center">
         <h1>Profile page</h1>
-        <p><a href="{% url 'account_change_password' %}">Change password</a></p>
         <p><a href="{% url 'home:order-list' %}">View past orders</a></p>
+	    <br>
         <p><a href="{% url 'users:delete-user' %}">Delete account</a></p>
+        <p><a href="{% url 'account_change_password' %}">Change password</a></p>
         <p><a href="{% url 'account_email' %}">Manage your email addresses</a></p>
-        <p><a href="{% url 'account_reset_password' %}">Forgot password</a></p>
     </div>
 {% endblock %}

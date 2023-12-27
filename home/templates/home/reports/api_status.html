@@ -4,8 +4,8 @@
 
 {% block contents %}
 
-    <div class="container-fluid text-center">
-        <h1>API status page</h1>
+    <div class="container">
+        <h1 class="text-center">API status page</h1>
 	    <p>This page tests the following APIs by performing simple operations and seeing if those operations fail.</p>
 	    <p>
 		    AWS is checked by attempting to grab the available buckets,
@@ -13,7 +13,7 @@
 		    SendGrid is checked by attempting to send a test email to the admin.
 	    </p>
         <p>
-	        AWS:
+	        <span class="fw-bold">AWS</span>:
 	        {% if aws %}
 		        <span class="text-success">Working</span>
 	        {% else %}
@@ -21,7 +21,7 @@
 	        {% endif %}
         </p>
         <p>
-	        Stripe:
+	        <span class="fw-bold">Stripe</span>:
 	        {% if stripe %}
 		        <span class="text-success">Working</span>
 	        {% else %}
@@ -29,7 +29,7 @@
 	        {% endif %}
         </p>
         <p>
-	        SendGrid:
+	        <span class="fw-bold">SendGrid</span>:
 	        {% if sendgrid %}
 		        <span class="text-success">Working</span>
 	        {% else %}

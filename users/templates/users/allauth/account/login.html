@@ -9,13 +9,13 @@
 {% block content %}
 	<h1>Login</h1>
 	<p>You can click one of the buttons below and be logged in automatically as an administrator or customer.</p>
-	<p>Please be aware that the database will automatically reset to its default settings every 30 minutes. Any items in your cart, newly registered accounts, and all other recent modifications will be automatically deleted or reset.</p>
+	<p>Please be aware that the database will automatically reset to its default settings <span class="text-decoration-underline">every day at 10pm PST / 7am UTC</span>. Any items in your cart, newly registered accounts, and all other recent modifications will be automatically deleted or reset.</p>
 	{% if num_available_admin_users == 0 %}
 		<a href="#" class="btn btn-primary disabled">Login as an Administrator</a>
 	{% else %}
 		<a href="{% url 'users:login-as-admin' %}" class="btn btn-primary">Login as an Administrator</a>
 	{% endif %}
-	<span class="ms-3">{{ num_available_admin_users }}/5 in use</span>
+	<span class="ms-3">{{ num_available_admin_users }}/5 available</span>
 	<br>
 	<br>
 	{% if num_available_customer_users == 0 %}
@@ -23,7 +23,7 @@
 	{% else %}
 		<a href="{% url 'users:login-as-customer' %}" class="btn btn-primary">Login as a Customer</a>
 	{% endif %}
-	<span class="ms-5">{{ num_available_customer_users }}/5 in use</span>
+	<span class="ms-5">{{ num_available_customer_users }}/5 available</span>
 	<br>
 	<br>
 	<hr class="thick-hr">
@@ -54,7 +54,9 @@
 		{% if redirect_field_value %}
 			<input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
 		{% endif %}
-		<a href="{{ signup_url }}">Create an account</a> | <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+		<a href="{{ signup_url }}">Create an account</a>
+		| <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a> |
+		<a href="https://temp-mail.org/en/" target="_blank">Temporary Email</a>
 		<button class="primaryAction btn btn-primary mt-3 d-block" type="submit">{% trans "Login" %}</button>
 	</form>
 	<br>

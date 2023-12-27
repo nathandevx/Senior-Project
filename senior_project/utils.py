@@ -146,7 +146,7 @@ def get_one_hour_ago():
 
 def get_num_available_dummy_users(group: str):
 	group = Group.objects.get(name=group)
-	users = group.user_set.filter(last_login__lte=get_one_hour_ago()).order_by('last_login')
+	users = group.user_set.filter(last_login__lte=get_one_hour_ago(), is_superuser=False).order_by('last_login')
 	return users.count()
 
 

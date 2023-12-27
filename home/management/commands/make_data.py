@@ -60,10 +60,10 @@ PRODUCT = {
 		"<h1>About Baklava</h1><p>Baklava is a sweet dessert pastry known for its layers of thin, flaky phyllo dough filled with chopped nuts and sweetened with syrup or honey. This indulgent treat is a beloved part of Middle Eastern and Mediterranean cuisine, appreciated for its delightful combination of textures and flavors.</p><h2>The History of Baklava</h2><p>Baklava's origins can be traced back to ancient Assyria, where a similar pastry was enjoyed as a treat by royalty. Over time, it spread through the Middle East and Mediterranean regions, each culture adding its unique touch to the recipe. Today, baklava is a symbol of celebration and hospitality.</p><h3>Baklava Ingredients</h3><p>Baklava is made from a handful of key ingredients, including phyllo dough, nuts (typically almonds, walnuts, or pistachios), butter, sugar, and a sweet syrup made from honey or sugar. The layering of phyllo dough and nuts creates its distinctive texture and taste, while the syrup adds a sweet and sticky finish.</p><p>Baklava is a dessert that delights the senses with its crisp layers, nutty richness, and sweet syrup. It's often garnished with ground pistachios or cinnamon, adding an extra layer of flavor. Here is a list of key ingredients:</p><ul><li>Phyllo dough</li><li>Nuts (e.g., almonds, walnuts, pistachios)</li><li>Butter</li><li>Sugar</li><li>Honey or sugar syrup</li></ul><p>Baklava is a dessert that showcases the artistry of layering and is a wonderful treat for special occasions or as a sweet ending to a delicious meal.</p>",
 	],
 	"price": [10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-	"estimated_delivery_date": [datetime(2024, 1, 15, 0, 0), datetime(2024, 1, 20, 0, 0), datetime(2024, 1, 28, 0, 0),
-								datetime(2024, 2, 2, 0, 0), datetime(2024, 2, 5, 0, 0), datetime(2024, 2, 23, 0, 0),
-								datetime(2024, 2, 25, 0, 0), datetime(2024, 3, 12, 0, 0), datetime(2024, 3, 21, 0, 0),
-								datetime(2024, 3, 24, 0, 0)],
+	"estimated_delivery_date": [datetime(2050, 1, 15, 0, 0), datetime(2054, 1, 20, 0, 0), datetime(2057, 1, 28, 0, 0),
+								datetime(2051, 2, 2, 0, 0), datetime(2055, 2, 5, 0, 0), datetime(2058, 2, 23, 0, 0),
+								datetime(2052, 2, 25, 0, 0), datetime(2056, 3, 12, 0, 0), datetime(2059, 3, 21, 0, 0),
+								datetime(2053, 3, 24, 0, 0)],
 	"status": [Product.ACTIVE, Product.ACTIVE, Product.ACTIVE, Product.ACTIVE, Product.ACTIVE, Product.ACTIVE, Product.ACTIVE, Product.ACTIVE, Product.ACTIVE, Product.ACTIVE],
 	"stock": [50, 45, 40, 35, 30, 25, 20, 15, 10, 5],
 	"creator": [ADMIN1, ADMIN1, ADMIN2, ADMIN2, ADMIN3, ADMIN3, ADMIN4, ADMIN4, ADMIN5, ADMIN5],
@@ -306,7 +306,7 @@ class Command(BaseCommand):
 			Order.objects.create(
 				cart=cart,
 				total_price=cart.get_total_cart_price(),
-				status=random.choice(statuses[i]),
+				status=statuses[i],
 				creator=cart.creator,
 				updater=cart.updater,
 			)

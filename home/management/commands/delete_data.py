@@ -13,13 +13,12 @@ class Command(BaseCommand):
 	help = 'Deletes data for the following models; Post, Product, ProductImage, ShippingAddress, Cart, CartItem, Order, Contact, OrderHistory, Groups, Users (not superusers)'
 
 	def handle(self, *args, **options):
-		if not settings.DEBUG:  # command should not be run in production
-			raise CommandNotAllowedInProduction("delete_data custom django command is not allowed to be ran in production.")
-
 		self.stdout.write("Deleting objects: Post, Product, ProductImage, ShippingAddress, Cart, CartItem, Order, Contact, OrderHistory, Groups, Users (not superusers)")
 		Post.objects.all().delete()
-		Product.objects.all().delete()
-		ProductImage.objects.all().delete()
+		# Delete ProductImages and Products
+		for product in Product.objects.all():
+			product.delete_images()
+			product.delete()
 		ShippingAddress.objects.all().delete()
 		Cart.objects.all().delete()
 		CartItem.objects.all().delete()

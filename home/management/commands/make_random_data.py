@@ -58,7 +58,7 @@ class Command(BaseCommand):
 
 	@staticmethod
 	def create_random_product_image(product, creator):
-		with open('static/images/pastry1.jpeg', 'rb') as image_file:
+		with open('static/images/dummy_image1.jpg', 'rb') as image_file:
 			product_image = ProductImage.objects.create(
 				product=product,
 				image=File(image_file),

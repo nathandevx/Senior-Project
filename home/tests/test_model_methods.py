@@ -83,7 +83,7 @@ class TestProductModelMethods(BaseTestCase):
 		)
 
 	def _create_product_images(self):
-		with open('static/images/for_testing/pastry1.jpeg', 'rb') as f1:
+		with open('static/images/for_testing/dummy_image1.jpg', 'rb') as f1:
 			image1 = File(f1)
 			self.product1_image1 = ProductImage.objects.create(
 				product=self.product1,
@@ -91,7 +91,7 @@ class TestProductModelMethods(BaseTestCase):
 				creator=self.superuser,
 				updater=self.superuser,
 			)
-		with open('static/images/for_testing/pastry2.jpeg', 'rb') as f2:
+		with open('static/images/for_testing/dummy_image2.jpg', 'rb') as f2:
 			image2 = File(f2)
 			self.product1_image2 = ProductImage.objects.create(
 				product=self.product1,
@@ -236,8 +236,8 @@ class TestProductModelMethods(BaseTestCase):
 	def test_save_and_delete_images(self):
 		# Test save_images()
 		initial_image_count = self.product2.get_images().count()
-		with open('static/images/for_testing/pastry1.jpeg', 'rb') as f1, \
-				open('static/images/for_testing/pastry2.jpeg', 'rb') as f2:
+		with open('static/images/for_testing/dummy_image1.jpg', 'rb') as f1, \
+				open('static/images/for_testing/dummy_image2.jpg', 'rb') as f2:
 			image1 = File(f1)
 			image2 = File(f2)
 			self.product2.save_images([image1, image2])

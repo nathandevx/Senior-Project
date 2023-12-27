@@ -30,7 +30,3 @@ def home(request):
 	products = Product.get_active_products()
 	return render(request, 'home/home.html', {'products': products})
 
-
-def product(request):
-	return render(request, 'home/product.html')
-

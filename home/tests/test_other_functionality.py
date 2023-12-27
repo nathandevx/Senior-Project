@@ -124,7 +124,7 @@ class TestAWSFunctionality(BaseTestCase):
 			creator=self.superuser,
 			updater=self.superuser,
 		)
-		with open('static/images/for_testing/pastry1.jpeg', 'rb') as f1:
+		with open('static/images/for_testing/dummy_image1.jpg', 'rb') as f1:
 			image1 = File(f1)
 			self.product1_image1 = ProductImage.objects.create(
 				product=self.product1,

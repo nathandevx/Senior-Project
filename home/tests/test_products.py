@@ -71,7 +71,7 @@ class TestProductCreate(ProductBaseTestCase):
 		self.client.login(username=self.superuser.username, password=self.password)
 		initial_product_count = Product.objects.count()
 		initial_product_image_count = ProductImage.objects.count()
-		with open('static/images/for_testing/pastry1.jpeg', 'rb') as file:
+		with open('static/images/for_testing/dummy_image1.jpg', 'rb') as file:
 			form_data = {
 				'name': 'valid p1',
 				'price': 10,
@@ -90,7 +90,7 @@ class TestProductCreate(ProductBaseTestCase):
 		self.client.login(username=self.superuser.username, password=self.password)
 		initial_product_count = Product.objects.count()
 		initial_product_image_count = ProductImage.objects.count()
-		with open('static/images/for_testing/pastry1.jpeg', 'rb') as file:
+		with open('static/images/for_testing/dummy_image1.jpg', 'rb') as file:
 			form_data = {
 				'name': 'valid p1',
 				'price': 10,
@@ -215,7 +215,7 @@ class TestProductUpdate(ProductBaseTestCase):
 		self.client.login(username=self.superuser.username, password=self.password)
 		initial_product_count = Product.objects.count()
 		initial_product_image_count = ProductImage.objects.count()
-		with open('static/images/for_testing/pastry1.jpeg', 'rb') as file:
+		with open('static/images/for_testing/dummy_image1.jpg', 'rb') as file:
 			form_data = {
 				'name': 'valid p1',
 				'price': 10,

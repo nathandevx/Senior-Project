@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.mail import send_mail
 from django.http import HttpResponseForbidden
+from django.contrib import messages
 from senior_project.utils import login_required, get_full_url
 from home.models import Order
 from home.forms import OrderForm
@@ -30,6 +31,7 @@ def order_confirmation(request, order_uuid):
 				order.save()
 				url = get_full_url(order.get_read_url())
 				send_mail(f"Updates to your order", f"Changes have been made to your order, view them here -> {url}", env('ADMIN_EMAIL'), [order.creator.email])
+				messages.info(request, "An email notification was sent to update the customer about their order changes.")
 				return redirect(order.get_read_url())
 		else:
 			form = OrderForm(instance=order)

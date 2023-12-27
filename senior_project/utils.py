@@ -173,5 +173,5 @@ def email_num_dummy_users():
 	if settings.DEBUG is False:  # if in production
 		num_admins_in_use = get_num_available_dummy_users("ADMIN")
 		num_customers_in_use = get_num_available_dummy_users("CUSTOMER")
-		if (num_admins_in_use > 2) or (num_customers_in_use > 2):
-			send_mail("SP: Demo Users", f"{num_admins_in_use} of admins are in use. {num_customers_in_use} of customers are in use.", env('ADMIN_EMAIL'), [env('ADMIN_EMAIL')])
+		if num_admins_in_use <= 2 or num_customers_in_use <= 2:
+			send_mail("SP: Demo Users", f"{num_admins_in_use}/5 admins are available. {num_customers_in_use}/5 customers are available.", env('ADMIN_EMAIL'), [env('ADMIN_EMAIL')])

@@ -22,7 +22,7 @@ def order_list(request):
 @login_required
 def order_confirmation(request, order_uuid):
 	order = get_object_or_404(Order, uuid=order_uuid)
-	if (order.creator == request.user) or request.user.in_admin_group():
+	if (order.creator == request.user) or (request.user.is_authenticated and request.user.in_admin_group()):
 		if request.method == 'POST':
 			form = OrderForm(request.POST, instance=order)
 			if form.is_valid():

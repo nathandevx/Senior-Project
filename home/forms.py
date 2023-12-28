@@ -58,8 +58,8 @@ class ProductImageForm(forms.ModelForm):
 	image = forms.ImageField(label='images', widget=forms.ClearableFileInput(attrs={'multiple': 'multiple'}))
 
 	def __init__(self, *args, **kwargs):
-		# Add a custom parameter to the form that indicates if the form should require images. Default to true.
-		require_images = kwargs.pop('require_images', True)
+		# Add a custom parameter to the form that indicates if the form should require images. Default to False.
+		require_images = kwargs.pop('require_images', False)
 		super(ProductImageForm, self).__init__(*args, **kwargs)
 		# Set the image field required to whatever was assigned
 		self.fields['image'].required = require_images

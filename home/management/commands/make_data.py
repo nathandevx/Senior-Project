@@ -194,7 +194,7 @@ class Command(BaseCommand):
 			)
 			product.created_at = date(2024, 1, i+1)
 			product.save()
-			# product.create_stripe_product_and_price_objs()
+			product.create_stripe_product_and_price_objs()
 			products.append(product)
 		self.stdout.write("Products created.")
 		return products

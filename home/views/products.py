@@ -38,25 +38,25 @@ def product_read(request, pk):
 	product = get_object_or_404(Product, pk=pk)
 
 	# Only superusers should be able to view inactive products
-	if product.is_inactive() and not request.user.in_admin_group():
-		return HttpResponseForbidden()
+	if product.is_active() or (request.user.is_authenticated and request.user.in_admin_group()):
+		if request.method == 'POST':
+			# If user is not logged in, tell them they need an account and redirect them to signup page
+			if not request.user.is_authenticated:
+				messages.warning(request, 'Login to add items to your cart and make a (pretend) purchase.')
+				return redirect(reverse('account_login'))
 
-	if request.method == 'POST':
-		# If user is not logged in, tell them they need an account and redirect them to signup page
-		if not request.user.is_authenticated:
-			messages.warning(request, 'Login to add items to your cart and make a (pretend) purchase.')
-			return redirect(reverse('account_login'))
-
-		# Handle add to cart button
-		form = QuantityForm(request.POST)
-		if form.is_valid():
-			quantity = form.cleaned_data['quantity']
-			cart = Cart.get_active_cart_or_create_new_cart(request.user)
-			product.add_product_to_cart(request.user, cart, quantity)
-			return redirect(cart.get_read_url())
+			# Handle add to cart button
+			form = QuantityForm(request.POST)
+			if form.is_valid():
+				quantity = form.cleaned_data['quantity']
+				cart = Cart.get_active_cart_or_create_new_cart(request.user)
+				product.add_product_to_cart(request.user, cart, quantity)
+				return redirect(cart.get_read_url())
+		else:
+			form = QuantityForm()
+		return render(request, 'home/products/read.html', {'product': product, 'form': form})
 	else:
-		form = QuantityForm()
-	return render(request, 'home/products/read.html', {'product': product, 'form': form})
+		return HttpResponseForbidden()
 
 
 @superuser_or_admin_required
@@ -65,7 +65,7 @@ def product_update(request, pk):
 
 	if request.method == 'POST':
 		product_form = ProductForm(request.POST, request.FILES, instance=product)
-		product_image_form = ProductImageForm(request.POST, request.FILES, require_images=False)
+		product_image_form = ProductImageForm(request.POST, request.FILES)
 
 		if product_form.is_valid() and product_image_form.is_valid():
 			# Product form

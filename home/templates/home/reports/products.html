@@ -21,12 +21,12 @@
 							    </select>
 			                </th>
 			                <th scope="col"><a href="?sort_by=stock&order_by={% if order_by == 'desc' %}asc{% else %}desc{% endif %}">Stock</a></th>
-			                <th scope="col"><a href="?sort_by=stock_overflow&order_by={% if order_by == 'desc' %}asc{% else %}desc{% endif %}">Stock overflow</a></th>
+{#			                <th scope="col"><a href="?sort_by=stock_overflow&order_by={% if order_by == 'desc' %}asc{% else %}desc{% endif %}">Stock overflow</a></th>#}
 			                <th scope="col"><a href="?sort_by=price&order_by={% if order_by == 'desc' %}asc{% else %}desc{% endif %}">Price</a></th>
 			                <th scope="col"><a href="?sort_by=estimated_delivery_date&order_by={% if order_by == 'desc' %}asc{% else %}desc{% endif %}">Delivery date</a></th>
 				            <th scope="col">Associated Orders</th>
-			                <th scope="col">Stripe Product ID</th>
-			                <th scope="col">Stripe Price ID</th>
+{#			                <th scope="col">Stripe Product ID</th>#}
+{#			                <th scope="col">Stripe Price ID</th>#}
 			            </tr>
 			        </thead>
 			        <tbody>
@@ -36,7 +36,7 @@
 			                    <td><a href="{{ product.get_read_url }}">{{ product.name }}</a></td>
 			                    <td>{{ product.status }}</td>
 			                    <td>{{ product.stock }}</td>
-			                    <td>{{ product.stock_overflow }}</td>
+{#			                    <td>{{ product.stock_overflow }}</td>#}
 			                    <td>${{ product.price }}</td>
 			                    <td>{{ product.estimated_delivery_date }}</td>
 				                <td>
@@ -52,8 +52,8 @@
 						                None
 					                {% endif %}
 				                </td>
-				                <td>{{ product.stripe_product_id }}</td>
-				                <td>{{ product.stripe_price_id }}</td>
+{#				                <td>{{ product.stripe_product_id }}</td>#}
+{#				                <td>{{ product.stripe_price_id }}</td>#}
 			                </tr>
 			            {% endfor %}
 			        </tbody>

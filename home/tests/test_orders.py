@@ -105,7 +105,7 @@ class TestOrderConfirmation(OrderBaseTestCase):
 		context = response.context
 
 		self.assertEquals(resolve(self.user_1_url).func, orders.order_confirmation)
-		self.assertTemplateUsed(response, 'home/orders/confirmation.html')
+		self.assertTemplateUsed(response, 'home/orders/read.html')
 		self.assertEquals(response.status_code, 200)
 
 		self.assertIn('order', context)

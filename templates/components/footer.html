@@ -5,8 +5,11 @@
 			{% if user.is_superuser or user.is_staff %}
 				<li class="nav-item"><a href="{% url 'admin:index' %}" class="nav-link px-2 text-muted">Admin</a></li>
 			{% endif %}
-			<li class="nav-item"><a href="{% url 'home:contact' %}" class="nav-link px-2 text-muted">Contact</a></li>
+			{% if user.is_authenticated %}
+				<li class="nav-item"><a href="{% url 'users:profile' %}" class="nav-link px-2 text-muted">Profile</a></li>
+			{% endif %}
 			<li class="nav-item"><a href="{% url 'blog:post-list' %}" class="nav-link px-2 text-muted">Blog</a></li>
+			<li class="nav-item"><a href="{% url 'home:contact' %}" class="nav-link px-2 text-muted">Contact</a></li>
 		</ul>
 		<p class="text-center text-muted">© Team 404 Found</p>
 	</footer>

@@ -23,13 +23,13 @@ class CustomLoginView(LoginView):
 
 @login_required
 def profile(request):
-    return render(request, 'users/profile.html', {"is_demo_account": request.user.is_demo_account})
+    return render(request, 'users/profile.html', {"is_demo_account": request.user.is_demo_account()})
 
 
 def delete_user(request):
     if request.user.is_superuser:
         return render(request, 'home/cant_delete_account.html')
-    if request.user.is_anonymous or not request.user.is_authenticated or request.user.is_demo_account:
+    if request.user.is_anonymous or not request.user.is_authenticated or request.user.is_demo_account():
         return HttpResponseForbidden()
     if request.method == 'POST':
         form = DeleteUserForm(request.POST)
@@ -57,7 +57,7 @@ def login_as_admin(request):
     user.backend = 'django.contrib.auth.backends.ModelBackend'
     login(request, user)
     messages.info(request, f'You logged in as {user.username}. You may be logged out in an hour.')
-    return redirect('home:home')
+    return redirect('home:report-list')
 
 
 # Used on login page to login the user as a customer
@@ -73,7 +73,7 @@ def login_as_customer(request):
 # Overrides django-allauth PasswordChangeView to not allow demo accounts to access it
 @login_required
 def custom_password_change(request, *args, **kwargs):
-    if request.user.is_demo_account:
+    if request.user.is_demo_account():
         return HttpResponseForbidden()
     return PasswordChangeView.as_view()(request, *args, **kwargs)
 
@@ -81,7 +81,7 @@ def custom_password_change(request, *args, **kwargs):
 # Overrides django-allauth EmailView to not allow demo accounts to access it
 @login_required
 def custom_email_change(request, *args, **kwargs):
-    if request.user.is_demo_account:
+    if request.user.is_demo_account():
         return HttpResponseForbidden()
     return EmailView.as_view()(request, *args, **kwargs)
 
@@ -89,7 +89,7 @@ def custom_email_change(request, *args, **kwargs):
 # Overrides django-allauth PasswordResetView to not allow demo accounts to access it
 @login_required
 def custom_password_reset(request, *args, **kwargs):
-    if request.user.is_demo_account:
+    if request.user.is_demo_account():
         return HttpResponseForbidden()
     return PasswordResetView.as_view()(request, *args, **kwargs)
 

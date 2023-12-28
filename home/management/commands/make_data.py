@@ -4,8 +4,9 @@ from django.core.files import File
 from faker import Faker
 from home.models import Product, ProductImage, ShippingAddress, Cart, CartItem, Order
 from blog.models import Post
-from datetime import datetime
+from datetime import datetime, date
 import warnings
+
 
 warnings.filterwarnings("ignore")
 
@@ -191,7 +192,9 @@ class Command(BaseCommand):
 				creator=PRODUCT['creator'][i],
 				updater=PRODUCT['updater'][i],
 			)
-			product.create_stripe_product_and_price_objs()
+			product.created_at = date(2024, 1, i+1)
+			product.save()
+			# product.create_stripe_product_and_price_objs()
 			products.append(product)
 		self.stdout.write("Products created.")
 		return products

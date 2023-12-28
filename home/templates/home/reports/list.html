@@ -6,10 +6,11 @@
 
     <div class="container-fluid text-center">
         <h1>Reports</h1>
+	    <p>This is a page that only admin users can access. Click the links to see charts, tables, export data, etc.</p>
+        <p><a href="{% url 'home:report-charts' %}">Charts</a></p>
         <p><a href="{% url 'home:report-orders' %}">Orders Table</a></p>
         <p><a href="{% url 'home:report-products' %}">Products Table</a></p>
         <p><a href="{% url 'home:report-blogs' %}">Blog Post Table</a></p>
-        <p><a href="{% url 'home:report-charts' %}">Charts</a></p>
         <p><a href="{% url 'home:report-export' %}">Export order data</a></p>
         <p><a href="{% url 'home:report-api-status' %}">API status</a></p>
     </div>

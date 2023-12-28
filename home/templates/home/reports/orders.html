@@ -22,13 +22,13 @@
 							        <option value="?status={{ order_model.CANCELED }}">{{ order_model.CANCELED }}</option>
 							    </select>
 			                </th>
-			                <th scope="col"><a href="?sort_by=has_errors&order_by={% if order_by == 'desc' %}asc{% else %}desc{% endif %}">Has errors</a></th>
+{#			                <th scope="col"><a href="?sort_by=has_errors&order_by={% if order_by == 'desc' %}asc{% else %}desc{% endif %}">Has errors</a></th>#}
+			                <th scope="col">Order link</th>
 			                <th scope="col">Delivery date</th>
 			                <th scope="col"><a href="?sort_by=total_price&order_by={% if order_by == 'desc' %}asc{% else %}desc{% endif %}">Total price</a></th>
-			                <th scope="col">Order link</th>
 			                <th scope="col">User email</th>
-			                <th scope="col">Shipping address</th>
-			                <th scope="col">Ordered products</th>
+{#			                <th scope="col">Shipping address</th>#}
+{#			                <th scope="col">Ordered products</th>#}
 			            </tr>
 			        </thead>
 			        <tbody>
@@ -37,25 +37,25 @@
 			                    <th scope="row">{{ forloop.counter }}</th>
 			                    <td>{{ order.created_at_formatted }}</td>
 			                    <td>{{ order.status }}</td>
-			                    <td>{% if order.has_errors %}Yes{% else %}No{% endif %}</td>
+{#			                    <td>{% if order.has_errors %}Yes{% else %}No{% endif %}</td>#}
+			                    <td><a href="{{ order.get_read_url }}">Link</a></td>
 			                    <td>{{ order.estimated_delivery_date }}</td>
 			                    <td>${{ order.total_price }}</td>
-			                    <td><a href="{{ order.get_read_url }}">Link</a></td>
 			                    <td>{{ order.creator.email }}</td>
-			                    <td>{{ order.cart.shipping_address }}</td>
-			                    <td>
-			                        {% if order.cart.get_cartitems %}
-					                    {% for cart_item in order.cart.get_cartitems %}
-						                    {% if forloop.last %}
-						                        {{ cart_item }} ({{ cart_item.quantity }})
-						                    {% else %}
-							                    {{ cart_item }} ({{ cart_item.quantity }}) |
-						                    {% endif %}
-					                    {% endfor %}
-				                    {% else %}
-				                        None
-			                        {% endif %}
-			                    </td>
+{#			                    <td>{{ order.cart.shipping_address }}</td>#}
+{#			                    <td>#}
+{#			                        {% if order.cart.get_cartitems %}#}
+{#					                    {% for cart_item in order.cart.get_cartitems %}#}
+{#						                    {% if forloop.last %}#}
+{#						                        {{ cart_item }} ({{ cart_item.quantity }})#}
+{#						                    {% else %}#}
+{#							                    {{ cart_item }} ({{ cart_item.quantity }}) |#}
+{#						                    {% endif %}#}
+{#					                    {% endfor %}#}
+{#				                    {% else %}#}
+{#				                        None#}
+{#			                        {% endif %}#}
+{#			                    </td>#}
 			                </tr>
 			            {% endfor %}
 			        </tbody>

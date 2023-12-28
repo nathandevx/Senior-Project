@@ -51,7 +51,7 @@ class User(AbstractUser):
 		return self.groups.filter(name="ADMIN").exists()
 
 	def is_demo_account(self):
-		if not self.is_superuser:
+		if self.is_superuser is False:
 			in_groups = self.groups.filter(name__in=['ADMIN', 'CUSTOMER']).exists()
 			return in_groups
 		else:

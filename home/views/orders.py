@@ -31,7 +31,7 @@ def order_confirmation(request, order_uuid):
 				order.save()
 				url = get_full_url(order.get_read_url())
 				send_mail(f"Updates to your order", f"Changes have been made to your order, view them here -> {url}", env('ADMIN_EMAIL'), [order.creator.email])
-				messages.info(request, "An email notification was sent to update the customer about their order changes.")
+				messages.info(request, "An email was sent to update the customer about their order changes.")
 				return redirect(order.get_read_url())
 		else:
 			form = OrderForm(instance=order)
@@ -41,6 +41,6 @@ def order_confirmation(request, order_uuid):
 			'order_model': Order,
 			'form': form,
 		}
-		return render(request, 'home/orders/confirmation.html', context)
+		return render(request, 'home/orders/read.html', context)
 	else:
 		return HttpResponseForbidden()

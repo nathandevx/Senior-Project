@@ -44,7 +44,7 @@ def product_read(request, pk):
 	if request.method == 'POST':
 		# If user is not logged in, tell them they need an account and redirect them to signup page
 		if not request.user.is_authenticated:
-			messages.info(request, 'Login to add items to your cart and make a purchase.')
+			messages.warning(request, 'Login to add items to your cart and make a (pretend) purchase.')
 			return redirect(reverse('account_login'))
 
 		# Handle add to cart button

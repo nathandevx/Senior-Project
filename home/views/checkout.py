@@ -85,7 +85,7 @@ def payment_success(request, cart_uuid):
 	order.send_order_confirmation_email()
 	cart.set_cart_as_inactive(request.user)
 	Cart.get_active_cart_or_create_new_cart(request.user)
-	if request.user.is_demo_account:
+	if request.user.is_demo_account():
 		messages.info(request, 'You will not receive an order confirmation email because you are using a demo account.')
 	return redirect(order.get_read_url())
 

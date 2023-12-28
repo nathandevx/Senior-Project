@@ -30,9 +30,11 @@ def post_create(request):
 
 def post_read(request, pk):
 	post = get_object_or_404(Post, pk=pk)
-	if not post.is_admin_or_active_post(request.user):
+	# If the Post is active. Or the user is logged in and they are an admin.
+	if post.is_active() or (request.user.is_authenticated and request.user.in_admin_group()):
+		return render(request, 'blog/read.html', {'post': post, 'post_model': Post})
+	else:
 		return HttpResponseForbidden()
-	return render(request, 'blog/read.html', {'post': post, 'post_model': Post})
 
 
 @superuser_or_admin_required

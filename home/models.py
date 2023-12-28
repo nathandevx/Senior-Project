@@ -171,6 +171,7 @@ class Product(TimestampCreatorMixin):
 			# Create product on stripe
 			stripe_product = stripe.Product.create(
 				name=self.name,
+				description=self.description,
 				url=get_full_url(self.get_read_url())
 			)
 

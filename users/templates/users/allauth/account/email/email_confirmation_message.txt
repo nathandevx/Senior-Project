@@ -2,4 +2,4 @@
 {% load account %}
 {% load i18n %}
 
-Click the link to verify your email address -> {{ activate_url }}{% endblocktrans %}{% endautoescape %}{% endblock %}
+Click the link to verify your email address -> {{ activate_url }}{% endautoescape %}{% endblock %}

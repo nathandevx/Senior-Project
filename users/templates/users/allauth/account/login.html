@@ -7,8 +7,8 @@
 {% block head_title %}{% trans "Login" %}{% endblock %}
 
 {% block content %}
-	<h1>Login</h1>
-	<p>You can click one of the buttons below and be logged in automatically as an administrator or customer.</p>
+	<h1 class="mb-3">Login</h1>
+	<p><span class="fw-bold">Live demo: </span>click one of the buttons below and be logged in automatically as an administrator or customer.</p>
 	<p>Please be aware that the database will automatically reset to its default settings <span class="text-decoration-underline">every day at 10pm PST / 7am UTC</span>. Any items in your cart, newly registered accounts, and all other recent modifications will be automatically deleted or reset.</p>
 	{% if num_available_admin_users == 0 %}
 		<a href="#" class="btn btn-primary disabled">Login as an Administrator</a>

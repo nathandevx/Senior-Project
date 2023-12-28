@@ -12,7 +12,7 @@
 			                <th scope="col">#</th>
 			                <th scope="col"><a href="?sort_by=created_at&order_by={% if order_by == 'desc' %}asc{% else %}desc{% endif %}">Order date</a></th>
 			                <th scope="col">
-				                Order status
+				                Order Status
 				                <select onchange="location = this.value;">
 							        <option value="">---</option>
 							        <option value="?status=All">All</option>
@@ -23,10 +23,10 @@
 							    </select>
 			                </th>
 {#			                <th scope="col"><a href="?sort_by=has_errors&order_by={% if order_by == 'desc' %}asc{% else %}desc{% endif %}">Has errors</a></th>#}
-			                <th scope="col">Order link</th>
-			                <th scope="col">Delivery date</th>
-			                <th scope="col"><a href="?sort_by=total_price&order_by={% if order_by == 'desc' %}asc{% else %}desc{% endif %}">Total price</a></th>
-			                <th scope="col">User email</th>
+			                <th scope="col">Order Link</th>
+			                <th scope="col">Delivery Date</th>
+			                <th scope="col"><a href="?sort_by=total_price&order_by={% if order_by == 'desc' %}asc{% else %}desc{% endif %}">Total Price</a></th>
+			                <th scope="col">User Email</th>
 {#			                <th scope="col">Shipping address</th>#}
 {#			                <th scope="col">Ordered products</th>#}
 			            </tr>

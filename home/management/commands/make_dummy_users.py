@@ -84,7 +84,7 @@ class Command(BaseCommand):
 
 	def add_superuser_to_admin_group(self):
 		admin_group = Group.objects.get(name="ADMIN")
-		admin_group.user_set.add(User.objects.get(username="Admin", email=env("ADMIN_EMAIL")))
+		admin_group.user_set.add(User.objects.get(username="Superuser", email=env("ADMIN_EMAIL")))
 		self.stdout.write("Superuser added to Admin group.")
 
 	def handle(self, *args, **options):

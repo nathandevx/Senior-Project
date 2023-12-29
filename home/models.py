@@ -159,7 +159,7 @@ class Product(TimestampCreatorMixin):
 		"""
 		@return: a QuerySet of products with status=ACTIVE.
 		"""
-		products = cls.objects.filter(status=cls.ACTIVE)
+		products = cls.objects.filter(status=cls.ACTIVE).order_by('-created_at')
 		return products
 
 	def create_stripe_product_and_price_objs(self):
@@ -171,7 +171,6 @@ class Product(TimestampCreatorMixin):
 			# Create product on stripe
 			stripe_product = stripe.Product.create(
 				name=self.name,
-				description=self.description,
 				url=get_full_url(self.get_read_url())
 			)
 
@@ -202,7 +201,6 @@ class Product(TimestampCreatorMixin):
 			stripe_product = stripe.Product.modify(
 				self.stripe_product_id,
 				name=self.name,
-				description=self.description,
 				url=get_full_url(self.get_read_url())
 			)
 

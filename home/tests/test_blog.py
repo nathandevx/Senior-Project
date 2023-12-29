@@ -23,9 +23,9 @@ class TestBlogList(BlogBaseTestCase):
 		response = self.client.get(self.url)
 		context = response.context
 
-		self.assertEquals(resolve(self.url).func, views.post_list)
+		self.assertEqual(resolve(self.url).func, views.post_list)
 		self.assertTemplateUsed(response, 'blog/list.html')
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 
 		self.assertIn('posts', context)
 		self.assertIn('post_model', context)
@@ -34,7 +34,7 @@ class TestBlogList(BlogBaseTestCase):
 		self.assertEqual(context['post_model'], Post)
 
 		for post in context['posts']:
-			self.assertEquals(post.status, Post.ACTIVE)
+			self.assertEqual(post.status, Post.ACTIVE)
 
 
 class TestBlogCreate(BlogBaseTestCase):
@@ -45,27 +45,27 @@ class TestBlogCreate(BlogBaseTestCase):
 	def test_superuser_access(self):
 		self.client.login(username=self.superuser.username, password=self.superuser_password)
 		response = self.client.get(self.url)
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 
 	def test_user_access(self):
 		self.client.login(username=self.user1.username, password=self.user1_password)
 		response = self.client.get(self.url)
-		self.assertEquals(response.status_code, 403)
+		self.assertEqual(response.status_code, 403)
 
 	def test_get_request(self):
 		self.client.login(username=self.superuser.username, password=self.superuser_password)
 		response = self.client.get(self.url)
 		context = response.context
 
-		self.assertEquals(resolve(self.url).func, views.post_create)
+		self.assertEqual(resolve(self.url).func, views.post_create)
 		self.assertTemplateUsed(response, 'blog/create.html')
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 
 		self.assertIn('form', context)
 		self.assertIn('post_model', context)
 
 		self.assertIsInstance(context['form'], PostForm)
-		self.assertEquals(context['post_model'], Post)
+		self.assertEqual(context['post_model'], Post)
 
 	def test_post_request_valid_data(self):
 		self.client.login(username=self.superuser.username, password=self.superuser_password)
@@ -78,7 +78,7 @@ class TestBlogCreate(BlogBaseTestCase):
 		initial_count = Post.objects.count()
 		response = self.client.post(self.url, data=form_data)
 		new_post = Post.objects.latest('id')
-		self.assertEquals(Post.objects.count(), initial_count + 1)
+		self.assertEqual(Post.objects.count(), initial_count + 1)
 		self.assertRedirects(response, new_post.get_read_url(), status_code=302, target_status_code=200)
 
 	def test_post_request_invalid_data(self):
@@ -90,10 +90,10 @@ class TestBlogCreate(BlogBaseTestCase):
 		self.client.login(username=self.superuser.username, password=self.superuser_password)
 		initial_count = Post.objects.count()
 		response = self.client.post(self.url, data=form_data)
-		self.assertEquals(initial_count, initial_count)  # data invalid, no post should've been created
+		self.assertEqual(initial_count, initial_count)  # data invalid, no post should've been created
 		self.assertFormError(PostForm(form_data), 'content', [Field.default_error_messages['required']])
-		self.assertEquals(response.request.get('PATH_INFO'), self.url)
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.request.get('PATH_INFO'), self.url)
+		self.assertEqual(response.status_code, 200)
 
 
 class TestBlogRead(BlogBaseTestCase):
@@ -106,26 +106,26 @@ class TestBlogRead(BlogBaseTestCase):
 		response = self.client.get(self.active_blog_url)
 		context = response.context
 
-		self.assertEquals(resolve(self.active_blog_url).func, views.post_read)
+		self.assertEqual(resolve(self.active_blog_url).func, views.post_read)
 		self.assertTemplateUsed(response, 'blog/read.html')
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 
 		self.assertIn('post', context)
 		self.assertIn('post_model', context)
 
-		self.assertEquals(context['post'], self.active_blog1)
-		self.assertEquals(context['post_model'], Post)
-		self.assertEquals(context['post'].status, Post.ACTIVE)
+		self.assertEqual(context['post'], self.active_blog1)
+		self.assertEqual(context['post_model'], Post)
+		self.assertEqual(context['post'].status, Post.ACTIVE)
 
 	def test_inactive_post_superuser_access(self):
 		self.client.login(username=self.superuser.username, password=self.superuser_password)
 		response = self.client.get(self.inactive_blog_url)
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 
 	def test_inactive_post_user_access(self):
 		self.client.login(username=self.user1.username, password=self.user1_password)
 		response = self.client.get(self.inactive_blog_url)
-		self.assertEquals(response.status_code, 403)
+		self.assertEqual(response.status_code, 403)
 
 
 class TestBlogUpdate(BlogBaseTestCase):
@@ -136,21 +136,21 @@ class TestBlogUpdate(BlogBaseTestCase):
 	def test_superuser_access(self):
 		self.client.login(username=self.superuser.username, password=self.superuser_password)
 		response = self.client.get(self.url)
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 
 	def test_user_access(self):
 		self.client.login(username=self.user1.username, password=self.user1_password)
 		response = self.client.get(self.url)
-		self.assertEquals(response.status_code, 403)
+		self.assertEqual(response.status_code, 403)
 
 	def test_get_request(self):
 		self.client.login(username=self.superuser.username, password=self.superuser_password)
 		response = self.client.get(self.url)
 		context = response.context
 
-		self.assertEquals(resolve(self.url).func, views.post_update)
+		self.assertEqual(resolve(self.url).func, views.post_update)
 		self.assertTemplateUsed(response, 'blog/update.html')
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 
 		self.assertIn('post', context)
 		self.assertIn('form', context)
@@ -158,7 +158,7 @@ class TestBlogUpdate(BlogBaseTestCase):
 
 		self.assertIsInstance(context['post'], Post)
 		self.assertIsInstance(context['form'], PostForm)
-		self.assertEquals(context['post_model'], Post)
+		self.assertEqual(context['post_model'], Post)
 
 	def test_post_request_valid_data(self):
 		self.client.login(username=self.superuser.username, password=self.superuser_password)
@@ -170,7 +170,7 @@ class TestBlogUpdate(BlogBaseTestCase):
 		}
 		initial_count = Post.objects.count()
 		response = self.client.post(self.url, data=form_data)
-		self.assertEquals(initial_count, initial_count)
+		self.assertEqual(initial_count, initial_count)
 		self.assertRedirects(response, self.active_blog1.get_read_url(), status_code=302, target_status_code=200)
 
 	def test_post_request_invalid_data(self):
@@ -182,10 +182,10 @@ class TestBlogUpdate(BlogBaseTestCase):
 		}
 		initial_count = Post.objects.count()
 		response = self.client.post(self.url, data=form_data)
-		self.assertEquals(initial_count, initial_count)  # data invalid, no post should've been created
+		self.assertEqual(initial_count, initial_count)  # data invalid, no post should've been created
 		self.assertFormError(PostForm(form_data), 'content', [Field.default_error_messages['required']])
-		self.assertEquals(response.request.get('PATH_INFO'), self.url)
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.request.get('PATH_INFO'), self.url)
+		self.assertEqual(response.status_code, 200)
 
 
 class TestBlogDelete(BlogBaseTestCase):
@@ -196,21 +196,21 @@ class TestBlogDelete(BlogBaseTestCase):
 	def test_superuser_access(self):
 		self.client.login(username=self.superuser.username, password=self.superuser_password)
 		response = self.client.get(self.url)
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 
 	def test_user_access(self):
 		self.client.login(username=self.user1.username, password=self.user1_password)
 		response = self.client.get(self.url)
-		self.assertEquals(response.status_code, 403)
+		self.assertEqual(response.status_code, 403)
 
 	def test_get_request(self):
 		self.client.login(username=self.superuser.username, password=self.superuser_password)
 		response = self.client.get(self.url)
 		context = response.context
 
-		self.assertEquals(resolve(self.url).func, views.post_delete)
+		self.assertEqual(resolve(self.url).func, views.post_delete)
 		self.assertTemplateUsed(response, 'blog/delete.html')
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 
 		self.assertIn('post', context)
 
@@ -220,5 +220,5 @@ class TestBlogDelete(BlogBaseTestCase):
 		self.client.login(username=self.superuser.username, password=self.superuser_password)
 		initial_count = Post.objects.count()
 		response = self.client.post(self.url)
-		self.assertEquals(initial_count-1, Post.objects.count())
+		self.assertEqual(initial_count-1, Post.objects.count())
 		self.assertRedirects(response, Post.get_list_url(), status_code=302, target_status_code=200)

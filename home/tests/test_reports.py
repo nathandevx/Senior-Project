@@ -35,8 +35,8 @@ class ReportBaseTestCase(BaseTestCase):
 	def _test_access(self, url):
 		superuser = self._superuser_access(url)
 		non_superuser = self._non_superuser_access(url)
-		self.assertEquals(superuser, 200)
-		self.assertEquals(non_superuser, 403)
+		self.assertEqual(superuser, 200)
+		self.assertEqual(non_superuser, 403)
 
 	def _superuser_login(self):
 		self.client.login(username=self.superuser.username, password=self.superuser_password)
@@ -81,9 +81,9 @@ class TestReportList(ReportBaseTestCase):
 
 		self.assertIn(orders_link, content)
 		self.assertIn(api_status_link, content)
-		self.assertEquals(resolve(self.url).func, reports.report_list)
+		self.assertEqual(resolve(self.url).func, reports.report_list)
 		self.assertTemplateUsed(r, 'home/reports/list.html')
-		self.assertEquals(r.status_code, 200)
+		self.assertEqual(r.status_code, 200)
 
 
 class TestReportOrders(ReportBaseTestCase):
@@ -103,9 +103,9 @@ class TestReportOrders(ReportBaseTestCase):
 		no_orders = f"""You have no orders."""
 
 		self.assertIn(no_orders, content)
-		self.assertEquals(resolve(self.url).func, reports.report_orders)
+		self.assertEqual(resolve(self.url).func, reports.report_orders)
 		self.assertTemplateUsed(r, 'home/reports/orders.html')
-		self.assertEquals(r.status_code, 200)
+		self.assertEqual(r.status_code, 200)
 
 	def test_view_with_filters(self):
 		self.client.login(username=self.superuser.username, password=self.password)
@@ -117,7 +117,7 @@ class TestReportOrders(ReportBaseTestCase):
 		self.assertEqual(order_by, 'asc')
 
 		for order in orders:
-			self.assertEquals(order.status, Order.PLACED)
+			self.assertEqual(order.status, Order.PLACED)
 
 
 class TestReportProducts(ReportBaseTestCase):
@@ -152,9 +152,9 @@ class TestReportProducts(ReportBaseTestCase):
 		no_products = f"""You have no products."""
 
 		self.assertIn(no_products, content)
-		self.assertEquals(resolve(self.url).func, reports.report_products)
+		self.assertEqual(resolve(self.url).func, reports.report_products)
 		self.assertTemplateUsed(r, 'home/reports/products.html')
-		self.assertEquals(r.status_code, 200)
+		self.assertEqual(r.status_code, 200)
 
 	def test_view_with_filters(self):
 		self.client.login(username=self.superuser.username, password=self.password)
@@ -162,13 +162,13 @@ class TestReportProducts(ReportBaseTestCase):
 		request = self.factory.get('/dummy-url/', {"status": Product.ACTIVE, "order_by": "asc"})
 		products, order_by = get_table_data(request, Product)
 
-		self.assertEquals(len(products), 2)
-		self.assertEquals(order_by, 'asc')
-		self.assertEquals(products[0].name, 'p1')
-		self.assertEquals(products[1].name, 'p3')
+		self.assertEqual(len(products), 2)
+		self.assertEqual(order_by, 'asc')
+		self.assertEqual(products[0].name, 'p1')
+		self.assertEqual(products[1].name, 'p3')
 
 		for product in products:
-			self.assertEquals(product.status, Product.ACTIVE)
+			self.assertEqual(product.status, Product.ACTIVE)
 
 
 class TestReportBlogs(ReportBaseTestCase):
@@ -199,9 +199,9 @@ class TestReportBlogs(ReportBaseTestCase):
 		no_posts = f"""You have no blog posts."""
 
 		self.assertIn(no_posts, content)
-		self.assertEquals(resolve(self.url).func, reports.report_blogs)
+		self.assertEqual(resolve(self.url).func, reports.report_blogs)
 		self.assertTemplateUsed(r, 'home/reports/blogs.html')
-		self.assertEquals(r.status_code, 200)
+		self.assertEqual(r.status_code, 200)
 
 	def test_view_with_filters(self):
 		self.client.login(username=self.superuser.username, password=self.password)
@@ -209,13 +209,13 @@ class TestReportBlogs(ReportBaseTestCase):
 		request = self.factory.get('/dummy-url/', {"status": Post.ACTIVE, "order_by": "asc"})
 		posts, order_by = get_table_data(request, Post)
 
-		self.assertEquals(len(posts), 2)
-		self.assertEquals(order_by, 'asc')
-		self.assertEquals(posts[0].title, 'p1')
-		self.assertEquals(posts[1].title, 'p3')
+		self.assertEqual(len(posts), 2)
+		self.assertEqual(order_by, 'asc')
+		self.assertEqual(posts[0].title, 'p1')
+		self.assertEqual(posts[1].title, 'p3')
 
 		for post in posts:
-			self.assertEquals(post.status, Post.ACTIVE)
+			self.assertEqual(post.status, Post.ACTIVE)
 
 
 class TestReportCharts(ReportBaseTestCase):
@@ -244,9 +244,9 @@ class TestReportExport(ReportBaseTestCase):
 
 		self.assertIn(button, content)
 		self.assertIn(action_link, content)
-		self.assertEquals(resolve(self.url).func, reports.report_export)
+		self.assertEqual(resolve(self.url).func, reports.report_export)
 		self.assertTemplateUsed(r, 'home/reports/export.html')
-		self.assertEquals(r.status_code, 200)
+		self.assertEqual(r.status_code, 200)
 
 
 class TestReportExportDownload(ReportBaseTestCase):
@@ -265,8 +265,8 @@ class TestReportExportDownload(ReportBaseTestCase):
 		self.assertIn(header, content)
 		self.assertEqual(r['Content-Type'], 'text/tsv')
 		self.assertIn('attachment; filename="report.tsv"', r['Content-Disposition'])
-		self.assertEquals(resolve(self.url).func, reports.report_export_download)
-		self.assertEquals(r.status_code, 200)
+		self.assertEqual(resolve(self.url).func, reports.report_export_download)
+		self.assertEqual(r.status_code, 200)
 
 	def test_non_empty_export(self):
 		self._superuser_login()
@@ -278,8 +278,8 @@ class TestReportExportDownload(ReportBaseTestCase):
 		self.assertIn(find, content)
 		self.assertEqual(r['Content-Type'], 'text/tsv')
 		self.assertIn('attachment; filename="report.tsv"', r['Content-Disposition'])
-		self.assertEquals(resolve(self.url).func, reports.report_export_download)
-		self.assertEquals(r.status_code, 200)
+		self.assertEqual(resolve(self.url).func, reports.report_export_download)
+		self.assertEqual(r.status_code, 200)
 
 
 class TestReportAPIStatus(ReportBaseTestCase):
@@ -296,10 +296,10 @@ class TestReportAPIStatus(ReportBaseTestCase):
 		r = self.client.get(self.url)
 		content = r.content.decode()
 
-		self.assertEquals(content.count("Working"), 3)
-		self.assertEquals(resolve(self.url).func, reports.report_api_status)
+		self.assertEqual(content.count("Working"), 3)
+		self.assertEqual(resolve(self.url).func, reports.report_api_status)
 		self.assertTemplateUsed(r, 'home/reports/api_status.html')
-		self.assertEquals(r.status_code, 200)
+		self.assertEqual(r.status_code, 200)
 
 
 class TestTableDataUtilFunction(BaseTestCase):

@@ -16,7 +16,7 @@ class TestCartCreate(BaseTestCase):
 		"""When a user first signs up, an active cart is created for them (if they visit any page with the navbar)."""
 		cart_count = Cart.objects.filter(creator=self.user1).count()
 		first_cart = Cart.objects.filter(creator=self.user1).first()
-		self.assertEquals(cart_count, 1)
+		self.assertEqual(cart_count, 1)
 		self.assertTrue(first_cart.is_active)
 
 	def test_cart_created_on_payment_success(self):
@@ -29,8 +29,8 @@ class TestCartCreate(BaseTestCase):
 		# Visit /payment-success/ to simulate a successful stripe payment
 		response = self.client.get(reverse('home:payment-success', kwargs={'cart_uuid': cart.uuid}))
 
-		self.assertEquals(response.status_code, 302)
-		self.assertEquals(Cart.objects.filter(creator=self.user1).count(), cart_count+1)
+		self.assertEqual(response.status_code, 302)
+		self.assertEqual(Cart.objects.filter(creator=self.user1).count(), cart_count+1)
 		self.assertTrue(carts[0].is_inactive())
 		self.assertTrue(carts[1].is_active())
 
@@ -99,14 +99,14 @@ class TestCartRead(BaseTestCase):
 		self.client.login(username=self.user1.username, password=self.password)
 		cart = Cart.get_active_cart_or_create_new_cart(self.user1)
 		response = self.client.get(cart.get_read_url())
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 
 	def test_other_user_access(self):
 		"""User2 should not be able to access user1's cart page"""
 		self.client.login(username=self.superuser.username, password=self.password)
 		cart = Cart.get_active_cart_or_create_new_cart(self.user1)
 		response = self.client.get(cart.get_read_url())
-		self.assertEquals(response.status_code, 403)
+		self.assertEqual(response.status_code, 403)
 
 	def test_user1_empty_cart(self):
 		self.client.login(username=self.user1.username, password=self.password)
@@ -114,16 +114,16 @@ class TestCartRead(BaseTestCase):
 		response = self.client.get(cart.get_read_url())
 		context = response.context
 
-		self.assertEquals(resolve(cart.get_read_url()).func, carts.cart_read)
+		self.assertEqual(resolve(cart.get_read_url()).func, carts.cart_read)
 		self.assertTemplateUsed(response, 'home/carts/read.html')
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 
 		self.assertIn('cart', context)
 		self.assertIn('formset', context)
 		self.assertIn('cart_items_data', context)
 
-		self.assertEquals(context['cart'], cart)
-		self.assertEquals(context['cart_items_data'], [])
+		self.assertEqual(context['cart'], cart)
+		self.assertEqual(context['cart_items_data'], [])
 
 	def test_user1_non_empty_cart(self):
 		self.client.login(username=self.user1.username, password=self.password)
@@ -132,16 +132,16 @@ class TestCartRead(BaseTestCase):
 		response = self.client.get(cart.get_read_url())
 		context = response.context
 
-		self.assertEquals(resolve(cart.get_read_url()).func, carts.cart_read)
+		self.assertEqual(resolve(cart.get_read_url()).func, carts.cart_read)
 		self.assertTemplateUsed(response, 'home/carts/read.html')
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 
 		self.assertIn('cart', context)
 		self.assertIn('formset', context)
 		self.assertIn('cart_items_data', context)
 
-		self.assertEquals(context['cart'], cart)
-		self.assertEquals(len(context['cart_items_data']), 3)
+		self.assertEqual(context['cart'], cart)
+		self.assertEqual(len(context['cart_items_data']), 3)
 
 
 class TestCartDelete(BaseTestCase):
@@ -153,29 +153,29 @@ class TestCartDelete(BaseTestCase):
 	def test_user1_access(self):
 		self.client.login(username=self.user1.username, password=self.password)
 		response = self.client.get(self.url)
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 
 	def test_other_user_access(self):
 		self.client.login(username=self.superuser.username, password=self.password)
 		response = self.client.get(self.url)
-		self.assertEquals(response.status_code, 403)
+		self.assertEqual(response.status_code, 403)
 
 	def test_get_request(self):
 		self.client.login(username=self.user1.username, password=self.password)
 		response = self.client.get(self.url)
 		context = response.context
 
-		self.assertEquals(resolve(self.url).func, carts.cart_delete)
+		self.assertEqual(resolve(self.url).func, carts.cart_delete)
 		self.assertTemplateUsed(response, 'home/carts/delete.html')
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 
 		self.assertIn('cart', context)
 
-		self.assertEquals(context['cart'], self.cart)
+		self.assertEqual(context['cart'], self.cart)
 
 	def test_post_request(self):
 		self.client.login(username=self.user1.username, password=self.password)
 		initial_count = Cart.objects.count()
 		response = self.client.post(self.url)
-		self.assertEquals(Cart.objects.count(), initial_count-1)
+		self.assertEqual(Cart.objects.count(), initial_count-1)
 		self.assertRedirects(response, Product.get_list_url(), status_code=302, target_status_code=200)

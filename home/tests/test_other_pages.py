@@ -27,21 +27,21 @@ class TestDeleteUser(BaseTestCase):
 	def test_user_access(self):
 		self.client.login(username=self.user1.username, password=self.user1_password)
 		response = self.client.get(self.url)
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 
 	def test_non_logged_in_access(self):
 		"""Anonymous and non-authenticated users should not be able to access the page."""
 		response = self.client.get(self.url)
-		self.assertEquals(response.status_code, 403)
+		self.assertEqual(response.status_code, 403)
 
 	def test_get_request(self):
 		self.client.login(username=self.user1.username, password=self.user1_password)
 		response = self.client.get(self.url)
 		context = response.context
 
-		self.assertEquals(resolve(self.url).func, delete_user)
+		self.assertEqual(resolve(self.url).func, delete_user)
 		self.assertTemplateUsed(response, 'users/delete_account.html')
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 
 		self.assertIn('form', context)
 		self.assertIsInstance(context['form'], DeleteUserForm)
@@ -60,8 +60,8 @@ class TestDeleteUser(BaseTestCase):
 		response = self.client.post(self.url, data=form_data)
 		self.assertTrue(User.objects.filter(pk=self.user1.pk).exists())
 		self.assertFormError(DeleteUserForm(form_data), 'delete_checkbox', [Field.default_error_messages['required']])
-		self.assertEquals(response.request.get('PATH_INFO'), self.url)
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.request.get('PATH_INFO'), self.url)
+		self.assertEqual(response.status_code, 200)
 
 
 class TestContactPage(BaseTestCase):
@@ -73,9 +73,9 @@ class TestContactPage(BaseTestCase):
 		response = self.client.get(self.url)
 		context = response.context
 
-		self.assertEquals(resolve(self.url).func, views.contact)
+		self.assertEqual(resolve(self.url).func, views.contact)
 		self.assertTemplateUsed(response, 'home/contact.html')
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 
 	def test_post_request(self):
 		"""They submit the form. Tests if sending an email causes problems."""
@@ -138,9 +138,9 @@ class TestHomePage(BaseTestCase):
 		response = self.client.get(self.url)
 		context = response.context
 
-		self.assertEquals(resolve(self.url).func, views.home)
+		self.assertEqual(resolve(self.url).func, views.home)
 		self.assertTemplateUsed(response, 'home/home.html')
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 
 		self.assertIn('products', context)
 		self.assertIn('is_superuser', context)
@@ -149,4 +149,4 @@ class TestHomePage(BaseTestCase):
 		self.assertFalse(context['is_superuser'])
 
 		for product in context['products']:
-			self.assertEquals(product.status, Product.ACTIVE)
+			self.assertEqual(product.status, Product.ACTIVE)

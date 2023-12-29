@@ -21,20 +21,20 @@ class TestUtilityFunctions(BaseTestCase):
 
 	def test_format_datetime(self):
 		date = timezone.make_aware(datetime.datetime(2023, 1, 1, 6, 30))
-		self.assertEquals(utils.format_datetime(date), "January 01, 2023, 06:30 AM")
+		self.assertEqual(utils.format_datetime(date), "January 01, 2023, 06:30 AM")
 
 	def test_get_full_url(self):
 		url = '/fake-path/'
 		request = self.factory.get(url)
 		protocol = 'https' if settings.USE_HTTPS else 'http'
 		full_url = f"{protocol}://{get_current_site(request)}{url}"
-		self.assertEquals(full_url, utils.get_full_url(url))
+		self.assertEqual(full_url, utils.get_full_url(url))
 
 	def test_get_allowed_cities(self):
-		self.assertEquals(['sacramento'], utils.get_allowed_cities('sacramento'))
-		self.assertEquals(['sacramento'], utils.get_allowed_cities('sacramento,'))
-		self.assertEquals(['sacramento', 'los angeles'], utils.get_allowed_cities('sacramento, los angeles'))
-		self.assertEquals(['sacramento', 'los angeles'], utils.get_allowed_cities('sacramento,los angeles'))
+		self.assertEqual(['sacramento'], utils.get_allowed_cities('sacramento'))
+		self.assertEqual(['sacramento'], utils.get_allowed_cities('sacramento,'))
+		self.assertEqual(['sacramento', 'los angeles'], utils.get_allowed_cities('sacramento, los angeles'))
+		self.assertEqual(['sacramento', 'los angeles'], utils.get_allowed_cities('sacramento,los angeles'))
 
 
 class TestDecorators(BaseTestCase):
@@ -56,31 +56,31 @@ class TestDecorators(BaseTestCase):
 		request = self.factory.get('/fake-path/')
 		request.user = self.superuser
 		response = self._dummy_superuser_required_view(request)
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 
 	def test_superuser_required_with_normal_user(self):
 		request = self.factory.get('/fake-path/')
 		request.user = self.user1
 		response = self._dummy_superuser_required_view(request)
-		self.assertEquals(response.status_code, 403)
+		self.assertEqual(response.status_code, 403)
 
 	def test_superuser_required_with_not_logged_in_user(self):
 		request = self.factory.get('/fake-path/')
 		request.user = self.anonymous_user
 		response = self._dummy_superuser_required_view(request)
-		self.assertEquals(response.status_code, 403)
+		self.assertEqual(response.status_code, 403)
 
 	def test_login_required_with_logged_in_user(self):
 		request = self.factory.get('/fake-path/')
 		request.user = self.user1
 		response = self._dummy_login_required_view(request)
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 
 	def test_login_required_with_not_logged_in_user(self):
 		request = self.factory.get('/fake-path/')
 		request.user = self.anonymous_user
 		response = self._dummy_login_required_view(request)
-		self.assertEquals(response.status_code, 403)
+		self.assertEqual(response.status_code, 403)
 
 
 class TestTemplateTags(BaseTestCase):
@@ -135,11 +135,11 @@ class TestAWSFunctionality(BaseTestCase):
 
 	def test_get_image(self):
 		r = requests.get(self.image_url)
-		self.assertEquals(200, r.status_code)
+		self.assertEqual(200, r.status_code)
 		self.assertIn("amazonaws.com", self.image_url)
 
 	def test_get_image_after_product_deletion(self):
 		self.product1.delete_images()
 		self.product1.delete()
 		r = requests.get(self.image_url)
-		self.assertEquals(404, r.status_code)
+		self.assertEqual(404, r.status_code)

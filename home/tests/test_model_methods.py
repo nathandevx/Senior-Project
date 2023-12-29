@@ -199,27 +199,27 @@ class TestProductModelMethods(BaseTestCase):
 	def test_get_list_url(self):
 		returned_url = Product.get_list_url()
 		expected_url = '/'
-		self.assertEquals(returned_url, expected_url)
+		self.assertEqual(returned_url, expected_url)
 
 	def test_get_create_url(self):
 		returned_url = Product.get_create_url()
 		expected_url = '/product/create/'
-		self.assertEquals(returned_url, expected_url)
+		self.assertEqual(returned_url, expected_url)
 
 	def test_get_read_url(self):
 		returned_url = self.product1.get_read_url()
 		expected_url = f'/product/{self.product1.pk}/'
-		self.assertEquals(returned_url, expected_url)
+		self.assertEqual(returned_url, expected_url)
 
 	def test_get_update_url(self):
 		returned_url = self.product1.get_update_url()
 		expected_url = f'/product/update/{self.product1.pk}/'
-		self.assertEquals(returned_url, expected_url)
+		self.assertEqual(returned_url, expected_url)
 
 	def test_get_delete_url(self):
 		returned_url = self.product1.get_delete_url()
 		expected_url = f'/product/delete/{self.product1.pk}/'
-		self.assertEquals(returned_url, expected_url)
+		self.assertEqual(returned_url, expected_url)
 
 	def test_is_active(self):
 		self.assertTrue(self.product1.is_active())
@@ -230,8 +230,8 @@ class TestProductModelMethods(BaseTestCase):
 		self.assertTrue(self.inactive_product1.is_inactive())
 
 	def test_get_images(self):
-		self.assertEquals(self.product1.get_images().count(), 2)
-		self.assertEquals(self.product1.get_images().first(), self.product1_image1)
+		self.assertEqual(self.product1.get_images().count(), 2)
+		self.assertEqual(self.product1.get_images().first(), self.product1_image1)
 
 	def test_save_and_delete_images(self):
 		# Test save_images()
@@ -241,19 +241,19 @@ class TestProductModelMethods(BaseTestCase):
 			image1 = File(f1)
 			image2 = File(f2)
 			self.product2.save_images([image1, image2])
-		self.assertEquals(self.product2.get_images().count(), initial_image_count + 2)
+		self.assertEqual(self.product2.get_images().count(), initial_image_count + 2)
 
 		# Test delete_images()
 		self.product2.delete_images()
-		self.assertEquals(self.product2.get_images().count(), 0)
+		self.assertEqual(self.product2.get_images().count(), 0)
 
 	def test_get_active_products(self):
-		self.assertEquals(Product.get_active_products().count(), 2)
+		self.assertEqual(Product.get_active_products().count(), 2)
 
 	def test_get_top_10_selling_products(self):
 		product_names, total_solds = Product.get_top_10_selling_products()
-		self.assertEquals(product_names, [self.product1.name, self.product2.name, self.inactive_product1.name, self.inactive_product2.name])
-		self.assertEquals(total_solds, [20, 10, 0, 0])
+		self.assertEqual(product_names, [self.product1.name, self.product2.name, self.inactive_product1.name, self.inactive_product2.name])
+		self.assertEqual(total_solds, [20, 10, 0, 0])
 
 	def test_add_product_to_cart(self):
 		with self.assertRaises(MoreThanOneCartItemError):
@@ -261,13 +261,13 @@ class TestProductModelMethods(BaseTestCase):
 
 		initial_count = CartItem.objects.all().count()
 		self.product1.add_product_to_cart(self.superuser, self.active_cart3, 10)
-		self.assertEquals(CartItem.objects.all().count(), initial_count + 1)
+		self.assertEqual(CartItem.objects.all().count(), initial_count + 1)
 
 		cartitem = self.product1.add_product_to_cart(self.superuser, self.active_cart1, 10)
-		self.assertEquals(cartitem.quantity, 15)
+		self.assertEqual(cartitem.quantity, 15)
 
 	def test_get_associated_orders(self):
-		self.assertEquals(self.product1.get_associated_orders().first(), self.order1)
+		self.assertEqual(self.product1.get_associated_orders().first(), self.order1)
 
 
 class TestCartModelMethods(BaseTestCase):
@@ -430,12 +430,12 @@ class TestCartModelMethods(BaseTestCase):
 	def test_get_read_url(self):
 		returned_url = self.active_cart.get_read_url()
 		expected_url = f'/cart/{self.active_cart.pk}/'
-		self.assertEquals(returned_url, expected_url)
+		self.assertEqual(returned_url, expected_url)
 
 	def test_get_delete_url(self):
 		returned_url = self.active_cart.get_delete_url()
 		expected_url = f'/cart/delete/{self.active_cart.pk}/'
-		self.assertEquals(returned_url, expected_url)
+		self.assertEqual(returned_url, expected_url)
 
 	def test_is_active(self):
 		self.assertTrue(self.active_cart.is_active())
@@ -450,15 +450,15 @@ class TestCartModelMethods(BaseTestCase):
 		self.assertFalse(self.active_cart.is_empty())
 
 	def test_get_total_cart_price(self):
-		self.assertEquals(75, self.active_cart.get_total_cart_price())
+		self.assertEqual(75, self.active_cart.get_total_cart_price())
 
 	def test_get_active_cart_or_create_new_cart(self):
 		with self.assertRaises(MoreThanOneActiveCartError):
 			Cart.get_active_cart_or_create_new_cart(self.user_with_multiple_active_carts)
-		self.assertEquals(self.active_cart, Cart.get_active_cart_or_create_new_cart(self.superuser))
+		self.assertEqual(self.active_cart, Cart.get_active_cart_or_create_new_cart(self.superuser))
 		cart_count = Cart.objects.count()
 		Cart.get_active_cart_or_create_new_cart(self.user_with_no_carts)
-		self.assertEquals(cart_count + 1, Cart.objects.count())
+		self.assertEqual(cart_count + 1, Cart.objects.count())
 
 	def test_set_cart_as_inactive(self):
 		with self.assertRaises(MoreThanOneActiveCartError):
@@ -491,14 +491,14 @@ class TestCartModelMethods(BaseTestCase):
 		returned_success_url, returned_canceled_url = self.active_cart.get_payment_success_and_payment_cancel_url()
 		expected_success_url = get_full_url(f'/checkout/payment-success/{self.active_cart.uuid}/')
 		expected_canceled_url = get_full_url('/checkout/payment-cancel/')
-		self.assertEquals(returned_success_url, expected_success_url)
-		self.assertEquals(returned_canceled_url, expected_canceled_url)
+		self.assertEqual(returned_success_url, expected_success_url)
+		self.assertEqual(returned_canceled_url, expected_canceled_url)
 
 	def test_create_order(self):
 		order = self.active_cart.create_order()
-		self.assertEquals(order.cart, self.active_cart)
-		self.assertEquals(order.status, Order.PLACED)
-		self.assertEquals(order.creator, self.active_cart.creator)
+		self.assertEqual(order.cart, self.active_cart)
+		self.assertEqual(order.status, Order.PLACED)
+		self.assertEqual(order.creator, self.active_cart.creator)
 
 	def test_not_creator_or_inactive_cart(self):
 		# Test active cart with correct user
@@ -576,16 +576,16 @@ class TestCartItemModelMethods(BaseTestCase):
 		self.assertTrue(self.perfect_cartitem.is_quantity_lte_stock())
 		self.assertFalse(self.perfect_cartitem.is_quantity_zero())
 		self.assertFalse(self.perfect_cartitem.is_product_inactive())
-		self.assertEquals(self.perfect_cartitem.get_total_price(), 25)
-		self.assertEquals(self.perfect_cartitem.get_total_original_price(), 25)
+		self.assertEqual(self.perfect_cartitem.get_total_price(), 25)
+		self.assertEqual(self.perfect_cartitem.get_total_original_price(), 25)
 
 	def test_bad_cartitem(self):
 		self.assertTrue(self.bad_cartitem.is_quantity_gt_stock())
 		self.assertFalse(self.bad_cartitem.is_quantity_lte_stock())
 		self.assertFalse(self.bad_cartitem.is_quantity_zero())
 		self.assertTrue(self.bad_cartitem.is_product_inactive())
-		self.assertEquals(self.bad_cartitem.get_total_price(), 25)
-		self.assertEquals(self.bad_cartitem.get_total_original_price(), 10)
+		self.assertEqual(self.bad_cartitem.get_total_price(), 25)
+		self.assertEqual(self.bad_cartitem.get_total_original_price(), 10)
 
 
 class TestOrderModelMethods(BaseTestCase):
@@ -757,12 +757,12 @@ class TestOrderModelMethods(BaseTestCase):
 	def test_get_list_url(self):
 		returned_url = Order.get_list_url()
 		expected_url = f'/order/list/'
-		self.assertEquals(returned_url, expected_url)
+		self.assertEqual(returned_url, expected_url)
 
 	def test_get_read_url(self):
 		returned_url = self.order1.get_read_url()
 		expected_url = f'/order-confirmation/{self.order1.uuid}/'
-		self.assertEquals(returned_url, expected_url)
+		self.assertEqual(returned_url, expected_url)
 
 	def test_is_placed(self):
 		self.assertTrue(self.order1.is_placed())
@@ -788,10 +788,10 @@ class TestOrderModelMethods(BaseTestCase):
 		reader = list(csv.reader(StringIO(content)))
 
 		# Header
-		self.assertEquals(reader[0], ['Order ID\tOrder date\tOrder total price\tOrder status\tUser email\tShipping address\tOrdered products'])
+		self.assertEqual(reader[0], ['Order ID\tOrder date\tOrder total price\tOrder status\tUser email\tShipping address\tOrdered products'])
 
 	def test_get_users_orders(self):
-		self.assertEquals(Order.get_users_orders(self.superuser).count(), 5)
+		self.assertEqual(Order.get_users_orders(self.superuser).count(), 5)
 
 	def test_send_order_confirmation_email(self):
 		with self.assertRaises(Exception):
@@ -802,15 +802,15 @@ class TestOrderModelMethods(BaseTestCase):
 
 	def test_get_year_months_total_orders(self):
 		months, months_order_totals = Order.get_year_months_total_orders(self.order1.created_at.year)
-		self.assertEquals(months, MONTHS)
+		self.assertEqual(months, MONTHS)
 		self.assertIn(5, months_order_totals)
 
 	def test_get_years_with_orders(self):
-		self.assertEquals(Order.get_years_with_orders().first(), self.order1.created_at.year)
+		self.assertEqual(Order.get_years_with_orders().first(), self.order1.created_at.year)
 
 	def test_get_order_statuses(self):
 		expected_list = [{'status': 'Canceled', 'total': 2}, {'status': 'Delivered', 'total': 1}, {'status': 'Placed', 'total': 1}, {'status': 'Shipped', 'total': 1}]
-		self.assertEquals(list(Order.get_order_statuses()), expected_list)
+		self.assertEqual(list(Order.get_order_statuses()), expected_list)
 
 
 class TestOrderHistoryModelMethods(BaseTestCase):
@@ -857,7 +857,7 @@ class TestOrderHistoryModelMethods(BaseTestCase):
 
 	def test_create_order_history_objs(self):
 		OrderHistory.create_order_history_objs(Order.objects.all())
-		self.assertEquals(OrderHistory.objects.count(), 2)
+		self.assertEqual(OrderHistory.objects.count(), 2)
 
 
 class TestBlogModelMethods(BaseTestCase):
@@ -898,30 +898,30 @@ class TestBlogModelMethods(BaseTestCase):
 	def test_get_list_url(self):
 		returned_url = Post.get_list_url()
 		expected_url = f'/blog/posts/'
-		self.assertEquals(returned_url, expected_url)
+		self.assertEqual(returned_url, expected_url)
 
 	def test_get_create_url(self):
 		returned_url = Post.get_create_url()
 		expected_url = f'/blog/post/create/'
-		self.assertEquals(returned_url, expected_url)
+		self.assertEqual(returned_url, expected_url)
 
 	def test_get_read_url(self):
 		returned_url = self.post1.get_read_url()
 		expected_url = f'/blog/post/{self.post1.pk}/'
-		self.assertEquals(returned_url, expected_url)
+		self.assertEqual(returned_url, expected_url)
 
 	def test_get_update_url(self):
 		returned_url = self.post1.get_update_url()
 		expected_url = f'/blog/post/update/{self.post1.pk}/'
-		self.assertEquals(returned_url, expected_url)
+		self.assertEqual(returned_url, expected_url)
 
 	def test_get_delete_url(self):
 		returned_url = self.post1.get_delete_url()
 		expected_url = f'/blog/post/delete/{self.post1.pk}/'
-		self.assertEquals(returned_url, expected_url)
+		self.assertEqual(returned_url, expected_url)
 
 	def test_get_active_posts(self):
-		self.assertEquals(Post.get_active_posts().count(), 2)
+		self.assertEqual(Post.get_active_posts().count(), 2)
 
 	def test_is_superuser_or_active_post(self):
 		self.assertTrue(self.post1.is_admin_or_active_post(self.superuser))
@@ -1021,16 +1021,16 @@ class TestCheckoutModelMethods(BaseTestCase):
 		p2 = stripe.Product.retrieve(self.product2.stripe_product_id)
 
 		# Check if name was assigned correctly
-		self.assertEquals(p1.name, self.product1.name)
-		self.assertEquals(p2.name, self.product2.name)
+		self.assertEqual(p1.name, self.product1.name)
+		self.assertEqual(p2.name, self.product2.name)
 
 		# Attempt to retrieve stripe price
 		price1 = stripe.Price.retrieve(self.product1.stripe_price_id)
 		price2 = stripe.Price.retrieve(self.product2.stripe_price_id)
 
 		# Check if the price was assigned correctly
-		self.assertEquals(price1.unit_amount/100, self.product1.price)
-		self.assertEquals(price2.unit_amount/100, self.product2.price)
+		self.assertEqual(price1.unit_amount/100, self.product1.price)
+		self.assertEqual(price2.unit_amount/100, self.product2.price)
 
 	def test_update_stripe_product_and_price_objs(self):
 		# Change the product name and price
@@ -1047,23 +1047,23 @@ class TestCheckoutModelMethods(BaseTestCase):
 		p2 = stripe.Product.retrieve(self.product2.stripe_product_id)
 
 		# Check if name was assigned correctly
-		self.assertEquals(self.product1.name, p1.name)
-		self.assertEquals(self.product2.name, p2.name)
+		self.assertEqual(self.product1.name, p1.name)
+		self.assertEqual(self.product2.name, p2.name)
 
 		# Attempt to retrieve stripe price
 		price1 = stripe.Price.retrieve(self.product1.stripe_price_id)
 		price2 = stripe.Price.retrieve(self.product2.stripe_price_id)
 
 		# Check if the price was assigned correctly
-		self.assertEquals(price1.unit_amount / 100, 100)
-		self.assertEquals(price2.unit_amount / 100, 200)
+		self.assertEqual(price1.unit_amount / 100, 100)
+		self.assertEqual(price2.unit_amount / 100, 200)
 
 	def test_create_stripe_checkout_session(self):
 		self.cart.create_stripe_checkout_session()
 		sessions = stripe.checkout.Session.list(limit=1)
 		actual_url = sessions.data[0].success_url
 		expected_url = get_full_url(reverse('home:payment-success', kwargs={'cart_uuid': self.cart.uuid}))
-		self.assertEquals(actual_url, expected_url)
+		self.assertEqual(actual_url, expected_url)
 
 	def test_handle_cart_purchase(self):
 		request = self.factory.get('/fake-path/')
@@ -1078,9 +1078,9 @@ class TestCheckoutModelMethods(BaseTestCase):
 		# Product 2: total=80, stock=2
 		# Total = 130
 		products = Product.objects.all()
-		self.assertEquals(products[0].stock, 0)
-		self.assertEquals(products[1].stock, 2)
-		self.assertEquals(order.total_price, 130)
+		self.assertEqual(products[0].stock, 0)
+		self.assertEqual(products[1].stock, 2)
+		self.assertEqual(order.total_price, 130)
 
 	def test_delete_product_and_set_stripe_product_as_inactive(self):
 		initial_count = Product.objects.all().count()
@@ -1088,5 +1088,5 @@ class TestCheckoutModelMethods(BaseTestCase):
 		self.product1.delete_product_and_set_stripe_product_as_inactive()
 
 		stripe_product_id_status = stripe.Product.retrieve(stripe_product_id)
-		self.assertEquals(Product.objects.all().count(), initial_count-1)
+		self.assertEqual(Product.objects.all().count(), initial_count-1)
 		self.assertFalse(stripe_product_id_status.active)

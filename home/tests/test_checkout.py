@@ -64,7 +64,7 @@ class TestShippingAddress(CheckoutBaseTestCase):
 	def test_login_required(self):
 		"""Login is required to access the url."""
 		response = self.client.get(self.url)
-		self.assertEquals(response.status_code, 403)
+		self.assertEqual(response.status_code, 403)
 
 	def test_get_request_cart_errors1(self):
 		"""On get request, are users shown the cart_errors.html template if their cart has a product with no stock?"""
@@ -73,7 +73,7 @@ class TestShippingAddress(CheckoutBaseTestCase):
 		self.out_of_stock_product.add_product_to_cart(self.user1, cart, 5)
 
 		response = self.client.get(self.url)
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 		self.assertTemplateUsed(response, 'home/carts/cart_errors.html')
 
 	def test_get_request_cart_errors2(self):
@@ -83,14 +83,14 @@ class TestShippingAddress(CheckoutBaseTestCase):
 		self.inactive_product.add_product_to_cart(self.user1, cart, 5)
 
 		response = self.client.get(self.url)
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 		self.assertTemplateUsed(response, 'home/carts/cart_errors.html')
 
 	def test_get_request_cart_empty(self):
 		"""On get request, are users shown the cart_empty.html template if their cart is empty?"""
 		self.client.login(username=self.user1.username, password=self.password)
 		response = self.client.get(self.url)
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 		self.assertTemplateUsed(response, 'home/carts/cart_empty.html')
 
 	def test_get_request_valid(self):
@@ -101,9 +101,9 @@ class TestShippingAddress(CheckoutBaseTestCase):
 
 		response = self.client.get(self.url)
 
-		self.assertEquals(resolve(self.url).func, checkout.shipping_info)
+		self.assertEqual(resolve(self.url).func, checkout.shipping_info)
 		self.assertTemplateUsed(response, 'home/checkout/shipping_info.html')
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 
 	def test_post_request_valid(self):
 		"""On a valid post request, a user's active cart should now be associated with the valid shipping address."""
@@ -120,7 +120,7 @@ class TestShippingAddress(CheckoutBaseTestCase):
 		initial_count = ShippingAddress.objects.count()
 		response = self.client.post(self.url, data=form_data)
 
-		self.assertEquals(ShippingAddress.objects.count(), initial_count + 1)
+		self.assertEqual(ShippingAddress.objects.count(), initial_count + 1)
 		self.assertRedirects(response, reverse("home:proceed-to-stripe"), status_code=302, target_status_code=200)
 
 	def test_post_request_invalid(self):
@@ -138,10 +138,10 @@ class TestShippingAddress(CheckoutBaseTestCase):
 		initial_count = ShippingAddress.objects.count()
 		response = self.client.post(self.url, data=form_data)
 
-		self.assertEquals(ShippingAddress.objects.count(), initial_count)
+		self.assertEqual(ShippingAddress.objects.count(), initial_count)
 		self.assertFormError(ShippingAddressForm(form_data), 'city', [constants.SHIPPING_ADDRESS_FORM_ERROR])
-		self.assertEquals(response.request.get('PATH_INFO'), self.url)
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.request.get('PATH_INFO'), self.url)
+		self.assertEqual(response.status_code, 200)
 
 
 class TestProceedToStripe(CheckoutBaseTestCase):
@@ -152,7 +152,7 @@ class TestProceedToStripe(CheckoutBaseTestCase):
 	def test_login_required(self):
 		"""Login is required to access the url."""
 		response = self.client.get(self.url)
-		self.assertEquals(response.status_code, 403)
+		self.assertEqual(response.status_code, 403)
 
 	def test_get_request_cart_errors1(self):
 		"""On get request, are users shown the cart_errors.html template if their cart has a product with no stock?"""
@@ -161,7 +161,7 @@ class TestProceedToStripe(CheckoutBaseTestCase):
 		self.out_of_stock_product.add_product_to_cart(self.user1, cart, 5)
 
 		response = self.client.get(self.url)
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 		self.assertTemplateUsed(response, 'home/carts/cart_errors.html')
 
 	def test_get_request_cart_errors2(self):
@@ -171,14 +171,14 @@ class TestProceedToStripe(CheckoutBaseTestCase):
 		self.inactive_product.add_product_to_cart(self.user1, cart, 5)
 
 		response = self.client.get(self.url)
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 		self.assertTemplateUsed(response, 'home/carts/cart_errors.html')
 
 	def test_get_request_cart_empty(self):
 		"""On get request, are users shown the cart_empty.html template if their cart is empty?"""
 		self.client.login(username=self.user1.username, password=self.password)
 		response = self.client.get(self.url)
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 		self.assertTemplateUsed(response, 'home/carts/cart_empty.html')
 
 	def test_get_request_no_shipping_address(self):
@@ -188,7 +188,7 @@ class TestProceedToStripe(CheckoutBaseTestCase):
 		self.product1.add_product_to_cart(self.user1, cart, 5)
 
 		response = self.client.get(self.url)
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 		self.assertTemplateUsed(response, 'home/checkout/no_shipping_info.html')
 
 	def test_get_request_valid(self):
@@ -200,9 +200,9 @@ class TestProceedToStripe(CheckoutBaseTestCase):
 
 		response = self.client.get(self.url)
 
-		self.assertEquals(resolve(self.url).func, checkout.proceed_to_stripe)
+		self.assertEqual(resolve(self.url).func, checkout.proceed_to_stripe)
 		self.assertTemplateUsed(response, 'home/checkout/proceed_to_stripe.html')
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 
 	def test_post_request_valid(self):
 		"""On a post request, is the user redirected to the stripe checkout session url?"""
@@ -226,12 +226,12 @@ class TestPaymentSuccess(CheckoutBaseTestCase):
 	def test_login_required(self):
 		"""Login is required to access the url."""
 		response = self.client.get(self.url)
-		self.assertEquals(response.status_code, 403)
+		self.assertEqual(response.status_code, 403)
 
 	def test_get_request_valid(self):
 		self.client.login(username=self.user1.username, password=self.password)
 		response = self.client.get(self.url)
-		self.assertEquals(resolve(self.url).func, checkout.payment_success)
+		self.assertEqual(resolve(self.url).func, checkout.payment_success)
 		self.assertRedirects(response, self.cart.get_order().get_read_url(), status_code=302, target_status_code=200)
 
 	def test_get_request_invalid(self):
@@ -239,7 +239,7 @@ class TestPaymentSuccess(CheckoutBaseTestCase):
 		self.client.login(username=self.user1.username, password=self.password)
 		self.cart.create_order()
 		response = self.client.get(self.url)
-		self.assertEquals(response.status_code, 403)
+		self.assertEqual(response.status_code, 403)
 
 
 class TestPaymentCanceled(CheckoutBaseTestCase):
@@ -250,20 +250,20 @@ class TestPaymentCanceled(CheckoutBaseTestCase):
 	def test_login_required(self):
 		"""Login is required to access the url."""
 		response = self.client.get(self.url)
-		self.assertEquals(response.status_code, 403)
+		self.assertEqual(response.status_code, 403)
 
 	def test_get_request_no_order_associated_with_cart(self):
 		"""On a get request, make sure that there is no order associated with the current active cart."""
 		self.client.login(username=self.user1.username, password=self.password)
 		response = self.client.get(self.url)
 		self.assertFalse(Cart.get_active_cart_or_create_new_cart(self.user1).has_order())
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 
 	def test_get_request_valid(self):
 		"""On a get request, is the user shown the correct template?"""
 		self.client.login(username=self.user1.username, password=self.password)
 		response = self.client.get(self.url)
 
-		self.assertEquals(resolve(self.url).func, checkout.payment_cancel)
+		self.assertEqual(resolve(self.url).func, checkout.payment_cancel)
 		self.assertTemplateUsed(response, 'home/checkout/payment_cancel.html')
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)

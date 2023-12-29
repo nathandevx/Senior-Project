@@ -43,27 +43,27 @@ class TestProductCreate(ProductBaseTestCase):
 	def test_superuser_access(self):
 		self.client.login(username=self.superuser.username, password=self.password)
 		response = self.client.get(self.url)
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 
 	def test_user_access(self):
 		self.client.login(username=self.user1.username, password=self.password)
 		response = self.client.get(self.url)
-		self.assertEquals(response.status_code, 403)
+		self.assertEqual(response.status_code, 403)
 
 	def test_get_request(self):
 		self.client.login(username=self.superuser.username, password=self.password)
 		response = self.client.get(self.url)
 		context = response.context
 
-		self.assertEquals(resolve(self.url).func, products.product_create)
+		self.assertEqual(resolve(self.url).func, products.product_create)
 		self.assertTemplateUsed(response, 'home/products/create.html')
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 
 		self.assertIn('product_model', context)
 		self.assertIn('product_form', context)
 		self.assertIn('product_image_form', context)
 
-		self.assertEquals(context['product_model'], Product)
+		self.assertEqual(context['product_model'], Product)
 		self.assertIsInstance(context['product_form'], ProductForm)
 		self.assertIsInstance(context['product_image_form'], ProductImageForm)
 
@@ -81,8 +81,8 @@ class TestProductCreate(ProductBaseTestCase):
 			}
 			response = self.client.post(self.url, data=form_data)
 
-		self.assertEquals(Product.objects.count(), initial_product_count + 1)
-		self.assertEquals(ProductImage.objects.count(), initial_product_image_count + 1)
+		self.assertEqual(Product.objects.count(), initial_product_count + 1)
+		self.assertEqual(ProductImage.objects.count(), initial_product_image_count + 1)
 		self.assertRedirects(response, Product.get_list_url(), status_code=302, target_status_code=200)
 
 	def test_post_request_invalid_data(self):
@@ -100,11 +100,11 @@ class TestProductCreate(ProductBaseTestCase):
 			}
 			response = self.client.post(self.url, data=form_data)
 
-		self.assertEquals(Product.objects.count(), initial_product_count)
-		self.assertEquals(ProductImage.objects.count(), initial_product_image_count)
+		self.assertEqual(Product.objects.count(), initial_product_count)
+		self.assertEqual(ProductImage.objects.count(), initial_product_image_count)
 		self.assertFormError(ProductForm(form_data), 'status', [constants.PRODUCT_FORM_ERROR1])
-		self.assertEquals(response.request.get('PATH_INFO'), self.url)
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.request.get('PATH_INFO'), self.url)
+		self.assertEqual(response.status_code, 200)
 
 
 class TestProductRead(ProductBaseTestCase):
@@ -117,36 +117,36 @@ class TestProductRead(ProductBaseTestCase):
 	def test_user_access_active_product(self):
 		self.client.login(username=self.user1.username, password=self.password)
 		response = self.client.get(self.active_product_url)
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 
 	def test_superuser_access_active_product(self):
 		self.client.login(username=self.superuser.username, password=self.password)
 		response = self.client.get(self.active_product_url)
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 
 	def test_user_access_inactive_product(self):
 		self.client.login(username=self.user1.username, password=self.password)
 		response = self.client.get(self.inactive_product_url)
-		self.assertEquals(response.status_code, 403)
+		self.assertEqual(response.status_code, 403)
 
 	def test_superuser_access_inactive_product(self):
 		self.client.login(username=self.superuser.username, password=self.password)
 		response = self.client.get(self.inactive_product_url)
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 
 	def test_get_request(self):
 		self.client.login(username=self.superuser.username, password=self.password)
 		response = self.client.get(self.active_product_url)
 		context = response.context
 
-		self.assertEquals(resolve(self.active_product_url).func, products.product_read)
+		self.assertEqual(resolve(self.active_product_url).func, products.product_read)
 		self.assertTemplateUsed(response, 'home/products/read.html')
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 
 		self.assertIn('product', context)
 		self.assertIn('form', context)
 
-		self.assertEquals(context['product'], self.active_product)
+		self.assertEqual(context['product'], self.active_product)
 		self.assertIsInstance(context['form'], QuantityForm)
 
 	def test_post_request_valid_data(self):
@@ -158,9 +158,9 @@ class TestProductRead(ProductBaseTestCase):
 		response = self.client.post(self.active_product_url, data=form_data)
 		cartitems = self.superuser_cart.get_cartitems()
 
-		self.assertEquals(CartItem.objects.count(), initial_cartitem_count + 1)
-		self.assertEquals(cartitems.count(), 1)
-		self.assertEquals(cartitems[0].quantity, 5)
+		self.assertEqual(CartItem.objects.count(), initial_cartitem_count + 1)
+		self.assertEqual(cartitems.count(), 1)
+		self.assertEqual(cartitems[0].quantity, 5)
 		self.assertRedirects(response, self.superuser_cart.get_read_url(), status_code=302, target_status_code=200)
 
 	def test_post_request_invalid_data(self):
@@ -172,10 +172,10 @@ class TestProductRead(ProductBaseTestCase):
 		response = self.client.post(self.active_product_url, data=form_data)
 		cartitems = self.superuser_cart.get_cartitems()
 
-		self.assertEquals(CartItem.objects.count(), initial_cartitem_count)
-		self.assertEquals(cartitems.count(), 0)
-		self.assertEquals(response.request.get('PATH_INFO'), self.active_product_url)
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(CartItem.objects.count(), initial_cartitem_count)
+		self.assertEqual(cartitems.count(), 0)
+		self.assertEqual(response.request.get('PATH_INFO'), self.active_product_url)
+		self.assertEqual(response.status_code, 200)
 
 
 class TestProductUpdate(ProductBaseTestCase):
@@ -187,27 +187,27 @@ class TestProductUpdate(ProductBaseTestCase):
 	def test_superuser_access(self):
 		self.client.login(username=self.superuser.username, password=self.password)
 		response = self.client.get(self.active_product_url)
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 
 	def test_user_access(self):
 		self.client.login(username=self.user1.username, password=self.password)
 		response = self.client.get(self.active_product_url)
-		self.assertEquals(response.status_code, 403)
+		self.assertEqual(response.status_code, 403)
 
 	def test_get_request(self):
 		self.client.login(username=self.superuser.username, password=self.password)
 		response = self.client.get(self.active_product_url)
 		context = response.context
 
-		self.assertEquals(resolve(self.active_product_url).func, products.product_update)
+		self.assertEqual(resolve(self.active_product_url).func, products.product_update)
 		self.assertTemplateUsed(response, 'home/products/update.html')
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 
 		self.assertIn('product', context)
 		self.assertIn('product_form', context)
 		self.assertIn('product_image_form', context)
 
-		self.assertEquals(context['product'], self.active_product)
+		self.assertEqual(context['product'], self.active_product)
 		self.assertIsInstance(context['product_form'], ProductForm)
 		self.assertIsInstance(context['product_image_form'], ProductImageForm)
 
@@ -224,8 +224,8 @@ class TestProductUpdate(ProductBaseTestCase):
 				'image': file,
 			}
 			response = self.client.post(self.active_product_url, data=form_data)
-		self.assertEquals(Product.objects.count(), initial_product_count)
-		self.assertEquals(ProductImage.objects.count(), initial_product_image_count + 1)
+		self.assertEqual(Product.objects.count(), initial_product_count)
+		self.assertEqual(ProductImage.objects.count(), initial_product_image_count + 1)
 		self.assertRedirects(response, Product.get_list_url(), status_code=302, target_status_code=200)
 
 	def test_post_request_invalid_data_stock_and_status(self):
@@ -266,27 +266,27 @@ class TestProductDelete(ProductBaseTestCase):
 	def test_superuser_access(self):
 		self.client.login(username=self.superuser.username, password=self.password)
 		response = self.client.get(self.url)
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 
 	def test_user_access(self):
 		self.client.login(username=self.user1.username, password=self.password)
 		response = self.client.get(self.url)
-		self.assertEquals(response.status_code, 403)
+		self.assertEqual(response.status_code, 403)
 
 	def test_get_request(self):
 		self.client.login(username=self.superuser.username, password=self.password)
 		response = self.client.get(self.url)
 		context = response.context
 
-		self.assertEquals(resolve(self.url).func, products.product_delete)
+		self.assertEqual(resolve(self.url).func, products.product_delete)
 		self.assertTemplateUsed(response, 'home/products/delete.html')
-		self.assertEquals(response.status_code, 200)
+		self.assertEqual(response.status_code, 200)
 		self.assertIn('product', context)
-		self.assertEquals(context['product'], self.active_product)
+		self.assertEqual(context['product'], self.active_product)
 
 	def test_post_request(self):
 		self.client.login(username=self.superuser.username, password=self.password)
 		initial_count = Product.objects.count()
 		response = self.client.post(self.url)
-		self.assertEquals(Product.objects.count(), initial_count - 1)
+		self.assertEqual(Product.objects.count(), initial_count - 1)
 		self.assertRedirects(response, Product.get_list_url(), status_code=302, target_status_code=200)

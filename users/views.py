@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.http import HttpResponseForbidden
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.contrib.auth import logout, get_user_model, login
+from django.conf import settings
 from allauth.account.views import LoginView, PasswordChangeView, EmailView, PasswordResetView
 from senior_project.utils import login_required, get_dummy_user, logout_required, get_num_available_dummy_users, email_num_dummy_users
 from home.models import Order, OrderHistory
@@ -16,6 +17,8 @@ class CustomLoginView(LoginView):
         context = super(CustomLoginView, self).get_context_data(**kwargs)
         context['num_available_admin_users'] = get_num_available_dummy_users('ADMIN')
         context['num_available_customer_users'] = get_num_available_dummy_users('CUSTOMER')
+        if settings.DEBUG:
+            context['debug'] = True
         # Checks how many dummy accounts are in use
         email_num_dummy_users()
         return context
@@ -64,6 +67,17 @@ def login_as_admin(request):
 @logout_required
 def login_as_customer(request):
     user = get_dummy_user("CUSTOMER")
+    user.backend = 'django.contrib.auth.backends.ModelBackend'
+    login(request, user)
+    messages.info(request, f'You logged in as {user.username}. You may be logged out in an hour.')
+    return redirect('home:home')
+
+# Used on login page to login the user as a superuser (only available during dev)
+@logout_required
+def login_as_superuser(request):
+    if settings.DEBUG is False:  # if in production
+        return HttpResponseForbidden()
+    user = User.objects.get(is_superuser=True, username="Superuser")
     user.backend = 'django.contrib.auth.backends.ModelBackend'
     login(request, user)
     messages.info(request, f'You logged in as {user.username}. You may be logged out in an hour.')

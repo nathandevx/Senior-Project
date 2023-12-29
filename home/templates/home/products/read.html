@@ -40,7 +40,7 @@
 	        {# Product description #}
             <div class="col-md-6">
                 <h2 class="mt-2">{{ product.name }}</h2>
-                <p class="text-muted">${{ product.price }}</p>
+                <p class="text-muted">Price: ${{ product.price }} each</p>
                 <p class="text-muted">Stock: {{ product.stock }}</p>
                 {% if product.estimated_delivery_date %}
 	                <p class="text-muted">Estimated delivery date: {{ product.estimated_delivery_date }}</p>

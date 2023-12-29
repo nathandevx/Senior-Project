@@ -161,7 +161,7 @@ def get_dummy_user(group: str):
 	:return: None or a User object.
 	"""
 	group = Group.objects.get(name=group)
-	users = group.user_set.filter(last_login__lte=get_one_hour_ago()).order_by('last_login')
+	users = group.user_set.filter(is_superuser=False, last_login__lte=get_one_hour_ago()).order_by('last_login')
 	if users:
 		return users.first()
 	else:  # there are no users that were last logged in over an hour ago

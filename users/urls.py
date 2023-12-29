@@ -8,6 +8,7 @@ urlpatterns = [
 	path('delete-account/', views.delete_user, name='delete-user'),
 	path('login-as-admin/', views.login_as_admin, name='login-as-admin'),
 	path('login-as-customer/', views.login_as_customer, name='login-as-customer'),
+	path('login-as-superuser/', views.login_as_superuser, name='login-as-superuser'),
 
 	# Overrides django-allauth views
 	path('email/', views.custom_email_change, name='account_email'),

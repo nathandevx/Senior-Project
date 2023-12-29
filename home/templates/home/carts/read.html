@@ -50,16 +50,16 @@
 		        </table>
 	        </div>
 		    <p>Total price: ${{ cart.get_total_cart_price }}</p>
-	        <button type="submit" class="btn btn-primary">Update Cart</button>
+	        <button type="submit" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="This is used to update the quantity of an item and/or remove an item.">Update Cart</button>
 		    <br>
 		    <br>
 		        <div>
 				    <a href="{% url 'home:shipping-info' %}" class="btn btn-success" data-bs-toggle="tooltip" data-bs-placement="bottom" title="You will not be charged, dummy payment info will be provided.">Checkout</a>
 		        </div>
 		    <br>
-		    <div>
-			    <a href="{{ cart.get_delete_url }}" class="btn btn-danger">Empty Cart</a>
-		    </div>
+{#		    <div>#}
+{#			    <a href="{{ cart.get_delete_url }}" class="btn btn-danger">Empty Cart</a>#}
+{#		    </div>#}
 	    </form>
 	{% endif %}
 </div>

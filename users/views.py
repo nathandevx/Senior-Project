@@ -57,7 +57,7 @@ def login_as_admin(request):
     user.backend = 'django.contrib.auth.backends.ModelBackend'
     login(request, user)
     messages.info(request, f'You logged in as {user.username}. You may be logged out in an hour.')
-    return redirect('home:report-list')
+    return redirect('home:report-charts')
 
 
 # Used on login page to login the user as a customer

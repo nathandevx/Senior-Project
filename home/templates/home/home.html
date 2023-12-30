@@ -5,16 +5,16 @@
 
 {% block contents %}
     <div class="container">
-		<h1 class="text-center">PastryBites: University Senior Project</h1>
+		<h1 class="text-center">PastryBites: Final Year University Project</h1>
 		<p>
 			In collaboration with a client, my team and I developed a website for our final year project at Sacramento State University.
-			The website allows the client to manage product orders and view/export business reports.
+			The website allows the client to manage product orders and view & export business reports.
 		</p>
 		<p>
 			After completing the course, I (Nathan) independently continued to enhance the website's codebase, enabling its use as a demonstration tool for potential employers.
-			I added a button on the login page which allows users to login as an administrator without having an account so that they can demonstrate the site. You can view this feature on the
+			A button was added to the login page which allows users to login as an administrator without having an account so that they can demonstrate the site. This feature can be seen on the
 			<a href="{% url 'account_login' %}">login page</a>.
-			View the code on <a href="https://github.com/nathandevx/University-Senior-Project/" target="_blank">GitHub</a>.
+			The codebase can be viewed on <a href="https://github.com/nathandevx/University-Senior-Project/" target="_blank">GitHub</a>.
 		</p>
         <div class="row">
 		{% if user.in_admin_group %}
@@ -36,13 +36,14 @@
 							    <a class="btn btn-primary" href="{{ product.get_read_url }}">View</a>
 							</div>
                                 <small>${{ product.price }}</small></div>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        {% else %}
-            <h2 class="text-center">No products found.</h2>
-        {% endif %}
-        </div>
+	                        </div>
+	                    </div>
+	                </div>
+	            {% endfor %}
+	        {% else %}
+	            <h2 class="text-center">No products found.</h2>
+	        {% endif %}
+	        </div>
+	    </div>
     </div>
 {% endblock %}

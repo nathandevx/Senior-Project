@@ -9,7 +9,7 @@
     <div class="container">
         <h1 class="text-center">Shipping address information.</h1>
 	    <p>View your cart <a href="{% cart_url %}">here</a>.</p>
-	    <p>We currently are only fulfilling orders in the following cities: <span class="fw-bold">{{ cities }}</span>.</p>
+	    <p>We only accept orders from the following cities: <span class="fw-bold">{{ cities }}</span>.</p>
 	    <p>Enter the address you want your order delivered to.</p>
 	    <form method="POST" enctype="multipart/form-data">
 		    {% csrf_token %}

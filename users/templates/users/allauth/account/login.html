@@ -31,8 +31,20 @@
 	{% endif %}
 	<br>
 	<br>
-	<hr class="thick-hr">
 	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<hr class="thick-hr">
+
+	<p>Alternatively, you can <a href="{{ signup_url }}">create an account</a> and then login.</p>
 	{% get_providers as socialaccount_providers %}
 
 	{% if socialaccount_providers %}
@@ -59,9 +71,7 @@
 		{% if redirect_field_value %}
 			<input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
 		{% endif %}
-		<a href="{{ signup_url }}">Create an account</a>
-		| <a class="button secondaryAction" href="{% url 'account_reset_password' %}">Forgot Password</a> |
-		<a href="https://temp-mail.org/en/" target="_blank">Temporary Email</a>
+		<a class="button secondaryAction" href="{% url 'account_reset_password' %}">Forgot Password</a>
 		<button class="primaryAction btn btn-primary mt-3 d-block" type="submit">{% trans "Login" %}</button>
 	</form>
 	<br>

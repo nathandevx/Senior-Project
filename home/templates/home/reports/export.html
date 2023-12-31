@@ -7,7 +7,6 @@
     <div class="container-fluid text-center">
         <h1>Report Exports</h1>
 	    <p>Click download to download a TSV file of all orders.</p>
-	    <p>The page may take a while to load as the processing is being done server side.</p>
 	    <p>Information in the file; Order ID, Order date, Order total price, Order status, User email,
 			Shipping address, Ordered products.</p>
 	    <form action="{% url 'home:report-export-download' %}" method="post">

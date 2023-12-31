@@ -168,18 +168,26 @@ BLOG_POSTS = {
 
 SHIPPING_ADDRESSES = {
 	"address": [
+		# Customers
 		"1600 Independence Avenue",
 		"123 Sesame Street",
 		"124 Bluestone Road",
 		"13 Mockingjay Lane",
 		"1337 Cyber Street",
+
+		# Admins
+		"485 Echo Base",
+		"444 Yavin Base",
+		"1111 Avengers Compound",
+		"10880 Malibu Point"
+		"15 Triskelion",
 	],
-	"city": ["Sacramento", "San Francisco", "Los Angeles", "Seattle", "Sacramento"],
-	"state": ["CA", "CA", "CA", "WA", "CA"],
-	"country": ["U.S", "U.S", "U.S", "U.S", "U.S"],
-	"postal_code": ["95814", "94114", "90012", "98104", "95834"],
-	"creator": [CUSTOMER1, CUSTOMER2, CUSTOMER3, CUSTOMER4, CUSTOMER5],
-	"updater": [CUSTOMER1, CUSTOMER2, CUSTOMER3, CUSTOMER4, CUSTOMER5],
+	"city": ["Sacramento", "San Francisco", "Los Angeles", "Seattle", "Sacramento", "Seattle", "Los Angeles", "San Francisco", "San Francisco", "Sacramento"],
+	"state": ["CA", "CA", "CA", "WA", "CA", "WA", "CA", "CA", "CA", "CA"],
+	"country": ["U.S", "U.S", "U.S", "U.S", "U.S", "U.S", "U.S", "U.S", "U.S", "U.S"],
+	"postal_code": ["95814", "94114", "90012", "98104", "95834", "98011", "90032", "94080", "94015", "95818"],
+	"creator": [CUSTOMER1, CUSTOMER2, CUSTOMER3, CUSTOMER4, CUSTOMER5, ADMIN1, ADMIN2, ADMIN3, ADMIN4, ADMIN5],
+	"updater": [CUSTOMER1, CUSTOMER2, CUSTOMER3, CUSTOMER4, CUSTOMER5, ADMIN1, ADMIN2, ADMIN3, ADMIN4, ADMIN5],
 }
 
 
@@ -236,7 +244,7 @@ class Command(BaseCommand):
 
 	def create_shipping_addresses(self) -> None:
 		for i in range(len(SHIPPING_ADDRESSES['address'])):
-			address = ShippingAddress.objects.create(
+			ShippingAddress.objects.create(
 				address=SHIPPING_ADDRESSES['address'][i],
 				city=SHIPPING_ADDRESSES['city'][i],
 				state=SHIPPING_ADDRESSES['state'][i],

@@ -5,7 +5,7 @@
 
 {% block contents %}
     <div class="container">
-		<h1 class="text-center">PastryBites: Final Year University Project</h1>
+		<h1 class="text-center">Senior Project</h1>
 		<p>
 			In collaboration with a client, my team and I developed a website for our final year project at Sacramento State University.
 			The website allows the client to manage product orders and view & export business reports.
@@ -24,9 +24,9 @@
             {% for product in products %}
                 <div class="col-md-4">
 		            {% if product.get_first_image_url %}
-						<div class="card mb-4 shadow-sm"><img alt="Product image" class="bd-placeholder-img" width="100%" height="300" src="{{ product.get_first_image_url }}">
+						<div class="card mb-4 shadow-sm"><img alt="Product image" class="rounded" width="100%" height="300" src="{{ product.get_first_image_url }}">
                     {% else %}
-			            <div class="card mb-4 shadow-sm"><img alt="Product image" class="bd-placeholder-img" width="100%" height="300" src="https://placehold.co/600x400">
+			            <div class="card mb-4 shadow-sm"><img alt="Product image" class="rounded" width="100%" height="300" src="https://placehold.co/600x400">
 		            {% endif %}
                         <div class="card-body">
                             <p class="card-text fw-bold">{{ product.name }} </p>

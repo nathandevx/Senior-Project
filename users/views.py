@@ -5,7 +5,7 @@ from django.contrib.auth import logout, get_user_model, login
 from django.conf import settings
 from allauth.account.views import LoginView, PasswordChangeView, EmailView, PasswordResetView
 from senior_project.utils import login_required, get_dummy_user, logout_required, get_num_available_dummy_users, email_num_dummy_users
-from home.models import Order, OrderHistory, Product
+from home.models import Order, OrderHistory
 from users.forms import DeleteUserForm
 
 User = get_user_model()
@@ -26,8 +26,6 @@ class CustomLoginView(LoginView):
 
 @login_required
 def profile(request):
-    products = Product.get_top_10_selling_products()
-    print(products)
     return render(request, 'users/profile.html', {"is_demo_account": request.user.is_demo_account()})
 
 

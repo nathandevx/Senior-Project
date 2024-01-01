@@ -1,4 +1,5 @@
 # Pastry Bites: University Senior Project
+- The website is live at [pythonwebapp.com](https://pythonwebapp.com).
 
 ## Quick Links
 - [Introduction](#introduction)
@@ -17,6 +18,7 @@
   - [Profile Page](#profile-page), [Contact Page](#contact-page), [Blog Pages](#blog-pages)
 
 ## Introduction
+- The website is live at [pythonwebapp.com](https://pythonwebapp.com).
 - California State University, Sacramento CSC [190](https://catalog.csus.edu/search/?P=CSC%20190)-[191](https://catalog.csus.edu/search/?P=CSC%20191) Senior Project.
 - I and 7 team members created a website for our client, an individual who is interested in a website that will help her manage orders she receives. 
 - Prior to the website's creation, Cigdem managed orders and customer data using Excel, a process that was both time-consuming and error-prone. 
@@ -59,7 +61,8 @@
 - We tested functionality such as shopping cart creation, checkout functionality, ensuring emails are sent, and ensuring that pages display the correct information.
 
 ## Deployment
-- We used Heroku to host the web application and Heroku PostgresSQL to host the database. 
+- The website is live at [pythonwebapp.com](https://pythonwebapp.com).
+- We used Heroku to host the web application and Heroku PostgresSQL to host the database.
 
 ## The Order Process (With Images)
 - This section outlines the user's journey from the homepage to completing an order payment.

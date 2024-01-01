@@ -1,9 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
-from django.conf import settings
-from senior_project.exceptions import CommandNotAllowedInProduction
-from home.models import Product, ProductImage, ShippingAddress, Cart, CartItem, Order, OrderHistory
+from home.models import Product, ShippingAddress, Cart, CartItem, Order, OrderHistory
 from blog.models import Post
 
 User = get_user_model()

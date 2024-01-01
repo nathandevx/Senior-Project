@@ -3,7 +3,7 @@ from django.core.validators import RegexValidator, MinValueValidator
 from django.db import models
 from django.conf import settings
 from django.shortcuts import reverse
-from django.db.models.functions import ExtractYear
+from django.db.models.functions import ExtractYear, Coalesce
 from django.db.models import Count, Sum, Q
 from django.contrib import messages
 from ckeditor.fields import RichTextField
@@ -263,9 +263,11 @@ class Product(TimestampCreatorMixin):
 	def get_top_10_selling_products(cls):
 		"""
 		Gets the top 10 setting products and how many of each were sold.
-		@return: a tuple of 2 lists. (product names, total solds).
+		@return: a tuple of 2 lists. (product names, total sold).
 		"""
-		top_products = cls.objects.annotate(total_sold=Sum('cartitem__quantity', filter=Q(cartitem__cart__status=Cart.INACTIVE))).order_by('-total_sold')[:10]
+		top_products = cls.objects.annotate(
+			total_sold=Coalesce(Sum('cartitem__quantity', filter=Q(cartitem__cart__status=Cart.INACTIVE)), 0)
+		).order_by('-total_sold')[:10]
 		product_names = [product.name for product in top_products]
 		total_solds = [product.total_sold if product.total_sold else 0 for product in top_products]
 		return product_names, total_solds

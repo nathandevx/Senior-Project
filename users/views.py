@@ -99,11 +99,12 @@ def custom_email_change(request, *args, **kwargs):
         return HttpResponseForbidden()
     return EmailView.as_view()(request, *args, **kwargs)
 
-
+# Login not required
 # Overrides django-allauth PasswordResetView to not allow demo accounts to access it
-@login_required
 def custom_password_reset(request, *args, **kwargs):
-    if request.user.is_demo_account():
-        return HttpResponseForbidden()
-    return PasswordResetView.as_view()(request, *args, **kwargs)
-
+    # if request.user.is_anonymous:
+    if not request.user.is_anonymous:
+        if request.user.is_demo_account():
+            return HttpResponseForbidden()
+    else:
+        return PasswordResetView.as_view()(request, *args, **kwargs)

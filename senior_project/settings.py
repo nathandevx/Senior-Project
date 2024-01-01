@@ -172,8 +172,10 @@ CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
 # Dev vs prod settings
 if DEBUG:
+    USE_HTTPS = False
     SECURE_SSL_REDIRECT = False
 else:
+    USE_HTTPS = True
     SECURE_SSL_REDIRECT = True
     ALLOWED_HOSTS.append(env('DOMAIN'))
     LOCKDOWN_PASSWORDS = (env('DJANGO_LOCKDOWN_PASSWORD'),)  # django-lockdown

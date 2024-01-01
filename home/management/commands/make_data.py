@@ -280,9 +280,10 @@ class Command(BaseCommand):
 				creator=creator,
 				updater=creator,
 			)
+
 		# Cart 1
-		create_cartitem(carts[0], products[0], 10, customers[0])
-		create_cartitem(carts[0], products[1], 5, customers[0])
+		create_cartitem(carts[0], products[9], 10, customers[0])
+		create_cartitem(carts[0], products[8], 5, customers[0])
 		create_cartitem(carts[0], products[2], 1, customers[0])
 
 		# Cart 2
@@ -293,12 +294,12 @@ class Command(BaseCommand):
 		# Cart 3
 		create_cartitem(carts[2], products[6], 1, customers[2])
 		create_cartitem(carts[2], products[7], 2, customers[2])
-		create_cartitem(carts[2], products[8], 1, customers[2])
+		create_cartitem(carts[2], products[11], 5, customers[2])
 
 		# Cart 4
-		create_cartitem(carts[3], products[9], 1, customers[3])
-		create_cartitem(carts[3], products[0], 5, customers[3])
-		create_cartitem(carts[3], products[1], 4, customers[3])
+		create_cartitem(carts[3], products[10], 10, customers[3])
+		create_cartitem(carts[3], products[9], 5, customers[3])
+		create_cartitem(carts[3], products[8], 4, customers[3])
 
 		# Cart 5
 		create_cartitem(carts[4], products[2], 4, customers[4])
@@ -311,12 +312,12 @@ class Command(BaseCommand):
 		create_cartitem(carts[5], products[7], 2, customers[0])
 
 		# Cart 7
-		create_cartitem(carts[6], products[8], 5, customers[1])
-		create_cartitem(carts[6], products[9], 1, customers[1])
-		create_cartitem(carts[6], products[0], 4, customers[1])
+		create_cartitem(carts[6], products[11], 5, customers[1])
+		create_cartitem(carts[6], products[10], 1, customers[1])
+		create_cartitem(carts[6], products[9], 4, customers[1])
 
 		# Cart 8
-		create_cartitem(carts[7], products[1], 1, customers[2])
+		create_cartitem(carts[7], products[8], 1, customers[2])
 		create_cartitem(carts[7], products[2], 10, customers[2])
 		create_cartitem(carts[7], products[3], 2, customers[2])
 
@@ -327,8 +328,8 @@ class Command(BaseCommand):
 
 		# Cart 10
 		create_cartitem(carts[9], products[7], 2, customers[4])
-		create_cartitem(carts[9], products[8], 3, customers[4])
-		create_cartitem(carts[9], products[9], 1, customers[4])
+		create_cartitem(carts[9], products[11], 3, customers[4])
+		create_cartitem(carts[9], products[10], 1, customers[4])
 
 		self.stdout.write("CartItems created.")
 

@@ -1,4 +1,4 @@
-# Pastry Bites: University Senior Project
+# Senior Project - California State University, Sacramento
 - The website is live at [pythonwebapp.com](https://pythonwebapp.com).
 
 ## Quick Links

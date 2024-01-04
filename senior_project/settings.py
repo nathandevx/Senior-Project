@@ -32,7 +32,6 @@ INSTALLED_APPS = [
     'storages',  # django-storages
     'crispy_forms',  # crispy-forms
     'crispy_bootstrap5',  # crispy-forms
-    'lockdown',  # django-lockdown
 
     # Our apps
     "users.apps.UsersConfig",
@@ -178,8 +177,6 @@ else:
     USE_HTTPS = True
     SECURE_SSL_REDIRECT = True
     ALLOWED_HOSTS.append(env('DOMAIN'))
-    LOCKDOWN_PASSWORDS = (env('DJANGO_LOCKDOWN_PASSWORD'),)  # django-lockdown
-    MIDDLEWARE.append('lockdown.middleware.LockdownMiddleware')
 
 # django-heroku
 django_heroku.settings(locals())

@@ -62,10 +62,7 @@
 						It appears that a product the customer ordered is inactive and may have stock overflow.
 					</p>
 				{% endif %}
-				<p>The prices here are the original prices at the time the customer finished paying.</p>
-				<p>
-					Changing the status, estimated delivery date, or notes will result in the user being sent an email.
-				</p>
+				<p>Changing the status, estimated delivery date, or notes will result in the user being sent an email.</p>
 				<form method="POST">
 				    {% csrf_token %}
 				    {{ form|crispy }}

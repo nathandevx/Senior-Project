@@ -30,8 +30,12 @@ def order_confirmation(request, order_uuid):
 				order.updater = request.user
 				order.save()
 				url = get_full_url(order.get_read_url())
+				if order.creator.is_demo_account():
+					messages.info(request, "An email was not sent to the customer because it's a demo account.")
+				else:
+					messages.info(request, "An email was sent to update the customer about their order changes.")
+				# Send email regardless for tracking purposes
 				send_mail(f"Updates to your order", f"Changes have been made to your order, view them here -> {url}", env('ADMIN_EMAIL'), [order.creator.email])
-				messages.info(request, "An email was sent to update the customer about their order changes.")
 				return redirect(order.get_read_url())
 		else:
 			form = OrderForm(instance=order)

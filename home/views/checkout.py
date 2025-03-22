@@ -78,6 +78,7 @@ def payment_success(request, cart_uuid):
 	if access:
 		return HttpResponseForbidden()
 	if cart.has_order():  # they already ordered, don't let them order again
+		cart.set_cart_as_inactive(request.user)
 		return HttpResponseForbidden()
 	order = cart.create_order()
 	cart.handle_cart_purchase(request, order)

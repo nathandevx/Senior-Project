@@ -64,21 +64,23 @@ class TestDeleteUser(BaseTestCase):
 		self.assertEqual(response.status_code, 200)
 
 
+# You need to be logged in to view the page
 class TestContactPage(BaseTestCase):
 	def setUp(self):
 		super().setUp()
 		self.url = reverse('home:contact')
 
 	def test_get_request(self):
+		self._user1_login()
 		response = self.client.get(self.url)
-		context = response.context
 
 		self.assertEqual(resolve(self.url).func, views.contact)
 		self.assertTemplateUsed(response, 'home/contact.html')
 		self.assertEqual(response.status_code, 200)
 
 	def test_post_request(self):
-		"""They submit the form. Tests if sending an email causes problems."""
+		"""They submit the form. Tests if sending an email causes problems. They need to be logged in."""
+		self._user1_login()
 		form_data = {
 			'email': env('ADMIN_EMAIL'),
 			'subject': 'Email subject',
@@ -143,10 +145,8 @@ class TestHomePage(BaseTestCase):
 		self.assertEqual(response.status_code, 200)
 
 		self.assertIn('products', context)
-		self.assertIn('is_superuser', context)
 
 		self.assertEqual(len(context['products']), 2)
-		self.assertFalse(context['is_superuser'])
 
 		for product in context['products']:
 			self.assertEqual(product.status, Product.ACTIVE)

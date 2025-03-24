@@ -182,9 +182,7 @@ SHIPPING_ADDRESSES = {
 		"10880 Malibu Point"
 		"15 Triskelion",
 	],
-	"city": ["Sacramento", "San Francisco", "Los Angeles", "Seattle", "Sacramento", "Seattle", "Los Angeles", "San Francisco", "San Francisco", "Sacramento"],
-	"state": ["CA", "CA", "CA", "WA", "CA", "WA", "CA", "CA", "CA", "CA"],
-	"country": ["U.S", "U.S", "U.S", "U.S", "U.S", "U.S", "U.S", "U.S", "U.S", "U.S"],
+	"city": ["Sacramento", "San Francisco", "Los Angeles", "Sacramento", "Sacramento", "Los Angeles", "Los Angeles", "San Francisco", "San Francisco", "Sacramento"],
 	"postal_code": ["95814", "94114", "90012", "98104", "95834", "98011", "90032", "94080", "94015", "95818"],
 	"creator": [CUSTOMER1, CUSTOMER2, CUSTOMER3, CUSTOMER4, CUSTOMER5, ADMIN1, ADMIN2, ADMIN3, ADMIN4, ADMIN5],
 	"updater": [CUSTOMER1, CUSTOMER2, CUSTOMER3, CUSTOMER4, CUSTOMER5, ADMIN1, ADMIN2, ADMIN3, ADMIN4, ADMIN5],
@@ -247,8 +245,8 @@ class Command(BaseCommand):
 			ShippingAddress.objects.create(
 				address=SHIPPING_ADDRESSES['address'][i],
 				city=SHIPPING_ADDRESSES['city'][i],
-				state=SHIPPING_ADDRESSES['state'][i],
-				country=SHIPPING_ADDRESSES['country'][i],
+				state="CA",
+				country="US",
 				postal_code=SHIPPING_ADDRESSES['postal_code'][i],
 				creator=SHIPPING_ADDRESSES['creator'][i],
 				updater=SHIPPING_ADDRESSES['updater'][i],

@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block stylesheet %}
+	<link rel="stylesheet" href="{% static 'home/home.css' %}">
+{% endblock %}
+
 {% block contents %}
     <div class="container">
 		<h1 class="text-center mt-2">Senior Project</h1>
@@ -14,34 +18,34 @@
 			<a href="{% url 'account_login' %}">login page</a>.
 			The codebase can be viewed on <a href="https://github.com/nathandevx/University-Senior-Project/" target="_blank">GitHub</a>.
 		</p>
-        <div class="row">
 		{% if user.in_admin_group %}
 		    <p class="text-center"><span class="fw-bold">Admin viewable only:</span> <a href="{% url 'home:product-create' %}">Create a product</a></p>
 		{% endif %}
+        <div class="row home-card-container">
         {% if products %}
             {% for product in products %}
-                <div class="col-md-4">
+                <div class="col-md-4 home-card">
 		            {% if product.get_first_image_url %}
-						<div class="card mb-4 shadow-sm"><img alt="Product image" class="rounded" width="100%" height="300" src="{{ product.get_first_image_url }}">
+						<div class="card shadow-sm"><img alt="Product image" class="rounded home-img" width="100%" height="300" src="{{ product.get_first_image_url }}">
                     {% else %}
-			            <div class="card mb-4 shadow-sm"><img alt="Product image" class="rounded" width="100%" height="300" src="https://placehold.co/600x400">
+			            <div class="card shadow-sm"><img alt="Product image" class="rounded home-img" width="100%" height="300" src="https://placehold.co/600x400">
 		            {% endif %}
-                        <div class="card-body">
+                        <div class="card-body my-card-body">
                             <p class="card-text fw-bold">{{ product.name }} </p>
                             <p class="card-text">{{ product.description }}</p>
-                            <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex justify-content-between align-items-center card-body-bottom">
                                 <div class="btn-group">
-							    <a class="btn btn-primary" href="{{ product.get_read_url }}">View</a>
-							</div>
-                                <small>${{ product.price }}</small></div>
-	                        </div>
-	                    </div>
-	                </div>
-	            {% endfor %}
-	        {% else %}
-	            <h2 class="text-center">No products found.</h2>
-	        {% endif %}
-	        </div>
+								    <a class="btn btn-primary" href="{{ product.get_read_url }}">View</a>
+								</div>
+	                                <small>${{ product.price }}</small></div>
+		                        </div>
+		                    </div>
+		                </div>
+		            {% endfor %}
+		        {% else %}
+		            <h2 class="text-center">No products found.</h2>
+		        {% endif %}
+		        </div>
 	    </div>
     </div>
 {% endblock %}

@@ -38,9 +38,6 @@ class ReportBaseTestCase(BaseTestCase):
 		self.assertEqual(superuser, 200)
 		self.assertEqual(non_superuser, 403)
 
-	def _superuser_login(self):
-		self.client.login(username=self.superuser.username, password=self.superuser_password)
-
 	def _create_orders(self, count: int = 1):
 		orders = {}
 		fixed_time = datetime(2023, 12, 8, 12, 12, 12, 12000)
@@ -76,8 +73,8 @@ class TestReportList(ReportBaseTestCase):
 		self._superuser_login()
 		r = self.client.get(self.url)
 		content = r.content.decode()
-		orders_link = f"""<p><a href="{reverse('home:report-orders')}">Orders</a></p>"""
-		api_status_link = f"""<p><a href="{reverse('home:report-api-status')}">API status</a></p>"""
+		orders_link = f"""<p><a href="{reverse('home:report-orders')}">Orders Table</a></p>"""
+		api_status_link = f"""<p><a href="{reverse('home:report-api-status')}">API Status</a></p>"""
 
 		self.assertIn(orders_link, content)
 		self.assertIn(api_status_link, content)
@@ -90,8 +87,6 @@ class TestReportOrders(ReportBaseTestCase):
 	def setUp(self):
 		super().setUp()
 		self.url = reverse('home:report-orders')
-
-
 
 	def test_access(self):
 		self._test_access(self.url)

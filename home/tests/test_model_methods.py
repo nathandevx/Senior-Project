@@ -1009,12 +1009,12 @@ class TestCheckoutModelMethods(BaseTestCase):
 		self.product2.create_stripe_product_and_price_objs()
 
 		# Check if stripe product ID was assigned
-		self.assertNotEquals(self.product1.stripe_product_id, '')
-		self.assertNotEquals(self.product2.stripe_product_id, '')
+		self.assertNotEqual(self.product1.stripe_product_id, '')
+		self.assertNotEqual(self.product2.stripe_product_id, '')
 
 		# Check if stripe price ID was assigned
-		self.assertNotEquals(self.product1.stripe_price_id, '')
-		self.assertNotEquals(self.product2.stripe_price_id, '')
+		self.assertNotEqual(self.product1.stripe_price_id, '')
+		self.assertNotEqual(self.product2.stripe_price_id, '')
 
 		# Attempt to retrieve stripe product
 		p1 = stripe.Product.retrieve(self.product1.stripe_product_id)

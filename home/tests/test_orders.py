@@ -128,7 +128,7 @@ class TestOrderConfirmation(OrderBaseTestCase):
 		response = self.client.post(self.user_1_url, data=form_data)
 		order = Order.objects.get(pk=self.order1.pk)
 		self.assertEqual(order.notes, 'MY NOTES!')
-		self.assertNotEquals(previous_notes, order.notes)
+		self.assertNotEqual(previous_notes, order.notes)
 		self.assertRedirects(response, self.user_1_url, status_code=302, target_status_code=200)
 
 	def test_post_request_invalid(self):
@@ -142,7 +142,7 @@ class TestOrderConfirmation(OrderBaseTestCase):
 		response = self.client.post(self.user_1_url, data=form_data)
 		order = Order.objects.get(pk=self.order1.pk)
 		self.assertEqual(order.notes, '')
-		self.assertNotEquals(order.notes, 'MY NOTES!')
+		self.assertNotEqual(order.notes, 'MY NOTES!')
 		self.assertFormError(OrderForm(form_data), 'estimated_delivery_date', [constants.ORDER_FORM_ERROR])
 		self.assertEqual(response.request.get('PATH_INFO'), self.user_1_url)
 		self.assertEqual(response.status_code, 200)

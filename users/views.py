@@ -3,6 +3,7 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.contrib.auth import logout, get_user_model, login
 from django.conf import settings
+from django.utils.safestring import mark_safe
 from allauth.account.views import LoginView, PasswordChangeView, EmailView, PasswordResetView
 from senior_project.utils import login_required, get_dummy_user, logout_required, get_num_available_dummy_users, email_num_dummy_users
 from home.models import Order, OrderHistory
@@ -59,8 +60,8 @@ def login_as_admin(request):
     user = get_dummy_user("ADMIN")
     user.backend = 'django.contrib.auth.backends.ModelBackend'
     login(request, user)
-    messages.info(request, f'You logged in as {user.username}. You may be logged out in an hour.')
-    return redirect('home:report-charts')
+    messages.info(request, mark_safe(f'You logged in as {user.username}. You may be logged out in an hour. As an admin, you can access <a href={reverse("home:report-charts")}>Reports</a>'))
+    return redirect('home:home')
 
 
 # Used on login page to login the user as a customer

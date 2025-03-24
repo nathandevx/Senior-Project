@@ -1,4 +1,6 @@
+from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.files import File
 from faker import Faker
@@ -6,6 +8,15 @@ from home.models import Product, ProductImage, ShippingAddress, Cart, CartItem, 
 from blog.models import Post
 from datetime import datetime, date
 import warnings
+import environ
+
+
+env = environ.Env(
+	# set casting, default value
+	DEBUG=(bool, False)
+)
+
+DOMAIN = env('DOMAIN')
 
 
 warnings.filterwarnings("ignore")
@@ -352,6 +363,12 @@ class Command(BaseCommand):
 			order.save()
 		self.stdout.write("Orders created.")
 
+	def update_site_model(self) -> None:
+		site = Site.objects.get(pk=settings.SITE_ID)
+		site.domain, site.name = DOMAIN
+		site.save()
+		self.stdout.write(f"Site model object changed to: {DOMAIN}")
+
 	# Define logic of command
 	def handle(self, *args, **options):
 		self.stdout.write("----- Making data... -----")
@@ -362,4 +379,5 @@ class Command(BaseCommand):
 		carts = self.create_carts()
 		self.create_cartitems(carts, products)
 		self.create_orders(carts)
+		self.update_site_model()
 		self.stdout.write("----- Finished. -----")

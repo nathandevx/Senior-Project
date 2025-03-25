@@ -365,7 +365,8 @@ class Command(BaseCommand):
 
 	def update_site_model(self) -> None:
 		site = Site.objects.get(pk=settings.SITE_ID)
-		site.domain, site.name = DOMAIN
+		site.domain = DOMAIN
+		site.name = DOMAIN
 		site.save()
 		self.stdout.write(f"Site model object changed to: {DOMAIN}")
 

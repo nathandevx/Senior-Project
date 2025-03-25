@@ -7,6 +7,7 @@ from faker import Faker
 from home.models import Product, ProductImage, ShippingAddress, Cart, CartItem, Order
 from blog.models import Post
 from datetime import datetime, date
+from senior_project.constants import YEAR
 import warnings
 import environ
 
@@ -219,7 +220,7 @@ class Command(BaseCommand):
 				creator=PRODUCT['creator'][i],
 				updater=PRODUCT['updater'][i],
 			)
-			product.created_at = date(2024, 1, i+1)
+			product.created_at = date(YEAR, 1, i+1)
 			product.save()
 			product.create_stripe_product_and_price_objs()
 			products.append(product)
@@ -344,12 +345,12 @@ class Command(BaseCommand):
 
 	def create_orders(self, carts: list[Cart]) -> None:
 		statuses = [Order.PLACED, Order.SHIPPED, Order.DELIVERED, Order.CANCELED, Order.PLACED, Order.SHIPPED, Order.DELIVERED, Order.CANCELED, Order.DELIVERED, Order.DELIVERED]
-		# 2018, 2020, 2021, 2021, 2021, 2022, 2023, 2024, 2024, 2024
+		# 2018, 2020, 2021, 2021, 2021, 2022, 2023, 2024, 2024, 2025
 		created_at = [
 			datetime(2018, 1, 25, 0, 0), datetime(2020, 9, 10, 0, 0), datetime(2021, 3, 28, 0, 0),
 			datetime(2021, 3, 20, 0, 0), datetime(2021, 12, 25, 0, 0), datetime(2022, 4, 5, 0, 0),
 			datetime(2023, 5, 18, 0, 0), datetime(2024, 1, 15, 0, 0), datetime(2024, 1, 22, 0, 0),
-			datetime(2024, 4, 10, 0, 0),
+			datetime(2025, 4, 10, 0, 0),
 		]
 		for i, cart in enumerate(carts):
 			order = Order.objects.create(

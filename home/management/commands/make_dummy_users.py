@@ -3,6 +3,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from senior_project.env_settings import env
 from senior_project.utils import get_one_hour_ago
+from senior_project.constants import YEAR
 from datetime import datetime
 import warnings
 
@@ -69,12 +70,12 @@ class Command(BaseCommand):
 
 		customer4 = User.objects.create_user(first_name="Jemma", last_name="Simmons", username=env('CUSTOMER_USERNAME4'), email=env('DUMMY_EMAIL'), password=env('CUSTOMER_PASSWORD4'))
 		customer4.last_login = get_one_hour_ago()
-		customer4.date_joined = datetime(2024, 1, 1, 0, 0)
+		customer4.date_joined = datetime(YEAR, 2, 1, 0, 0)
 		customer4.save()
 
 		customer5 = User.objects.create_user(first_name="Christopher", last_name="Pike", username=env('CUSTOMER_USERNAME5'), email=env('DUMMY_EMAIL'), password=env('CUSTOMER_PASSWORD5'))
 		customer5.last_login = get_one_hour_ago()
-		customer5.date_joined = datetime(2024, 6, 20, 0, 0)
+		customer5.date_joined = datetime(YEAR, 6, 20, 0, 0)
 		customer5.save()
 
 		customer_group = Group.objects.get(name="CUSTOMER")

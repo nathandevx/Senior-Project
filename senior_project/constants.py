@@ -1,4 +1,8 @@
 from senior_project.utils import get_allowed_cities
+from datetime import datetime
+
+
+YEAR = datetime.now().year
 
 MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 

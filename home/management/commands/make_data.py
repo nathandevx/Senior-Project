@@ -194,7 +194,7 @@ SHIPPING_ADDRESSES = {
 		"10880 Malibu Point"
 		"15 Triskelion",
 	],
-	"city": ["Sacramento", "San Francisco", "Los Angeles", "Sacramento", "Sacramento", "Los Angeles", "Los Angeles", "San Francisco", "San Francisco", "Sacramento"],
+	"city": ["Sacramento", "Sacramento", "Los Angeles", "Sacramento", "Sacramento", "Los Angeles", "Los Angeles", "Los Angeles", "Sacramento", "Sacramento"],
 	"postal_code": ["95814", "94114", "90012", "98104", "95834", "98011", "90032", "94080", "94015", "95818"],
 	"creator": [CUSTOMER1, CUSTOMER2, CUSTOMER3, CUSTOMER4, CUSTOMER5, ADMIN1, ADMIN2, ADMIN3, ADMIN4, ADMIN5],
 	"updater": [CUSTOMER1, CUSTOMER2, CUSTOMER3, CUSTOMER4, CUSTOMER5, ADMIN1, ADMIN2, ADMIN3, ADMIN4, ADMIN5],
